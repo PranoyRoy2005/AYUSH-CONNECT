@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" fill="none">
+  <defs>
+    <linearGradient id="flow-grad" x1="50" y1="50" x2="550" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#134e3f"/>
+      <stop offset="50%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#e07a2c"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8faf7"/>
+    </linearGradient>
+    <filter id="soft-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0d9488" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background Decorative Concentric Wellness Geometry -->
+  <circle cx="300" cy="250" r="220" stroke="#134e3f" stroke-width="1" opacity="0.08" stroke-dasharray="6 6"/>
+  <circle cx="300" cy="250" r="160" stroke="#0d9488" stroke-width="1" opacity="0.12" stroke-dasharray="4 4"/>
+  <circle cx="300" cy="250" r="100" stroke="#e07a2c" stroke-width="1" opacity="0.15"/>
+
+  <!-- Subtle connecting orbital curves -->
+  <path d="M110 90 C220 50 380 70 480 120 C540 160 520 300 450 370 C380 430 200 440 120 370 C50 300 60 150 110 90 Z" 
+        stroke="url(#flow-grad)" stroke-width="2" stroke-dasharray="8 6" opacity="0.45"/>
+
+  <!-- Connection lines linking the 5 milestones -->
+  <path d="M120 110 L280 90 L460 150 L420 340 L180 370 Z" 
+        stroke="#0d9488" stroke-width="2.5" opacity="0.3" stroke-linecap="round"/>
+
+  <!-- Node 1: Student -->
+  <g transform="translate(60, 60)" filter="url(#soft-glow)">
+    <rect width="130" height="76" rx="14" fill="url(#card-grad)" stroke="#0d9488" stroke-width="1.5"/>
+    <circle cx="28" cy="28" r="14" fill="#e6f4f1"/>
+    <path d="M28 20 A6 6 0 1 0 28 32 A6 6 0 1 0 28 20" fill="#0d9488"/>
+    <text x="50" y="26" font-family="system-ui, sans-serif" font-weight="700" font-size="12" fill="#134e3f">Student</text>
+    <text x="50" y="40" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">AYUSH Scholar</text>
+    <!-- Indicator chip -->
+    <rect x="18" y="52" width="94" height="14" rx="7" fill="#f0fdf4"/>
+    <text x="24" y="62" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" fill="#166534">● Profile Active</text>
+  </g>
+
+  <!-- Flow Arrow 1 -->
+  <path d="M195 100 Q245 75 275 88" stroke="#134e3f" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- Node 2: Skills Identification -->
+  <g transform="translate(240, 50)" filter="url(#soft-glow)">
+    <rect width="145" height="80" rx="14" fill="url(#card-grad)" stroke="#134e3f" stroke-width="1.5"/>
+    <circle cx="28" cy="28" r="14" fill="#e8f5ec"/>
+    <!-- Leaf / Herbal skill icon -->
+    <path d="M28 20 C22 25 24 32 30 35 C32 28 34 23 28 20 Z" fill="#134e3f"/>
+    <text x="50" y="26" font-family="system-ui, sans-serif" font-weight="700" font-size="12" fill="#134e3f">Skills Taxonomy</text>
+    <text x="50" y="40" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Herbal QC • Python</text>
+    <!-- Badges -->
+    <rect x="16" y="54" width="54" height="16" rx="8" fill="#e6f4f1"/>
+    <text x="22" y="65" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" fill="#0d9488">Validated</text>
+    <rect x="74" y="54" width="55" height="16" rx="8" fill="#fef3c7"/>
+    <text x="80" y="65" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" fill="#d97706">92% Match</text>
+  </g>
+
+  <!-- Node 3: Assessment -->
+  <g transform="translate(410, 120)" filter="url(#soft-glow)">
+    <rect width="150" height="82" rx="14" fill="url(#card-grad)" stroke="#e07a2c" stroke-width="1.5"/>
+    <circle cx="28" cy="28" r="14" fill="#fef3c7"/>
+    <path d="M24 28 L27 31 L33 24" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+    <text x="50" y="26" font-family="system-ui, sans-serif" font-weight="700" font-size="12" fill="#134e3f">Skill Assessment</text>
+    <text x="50" y="40" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Adaptive Evaluation</text>
+    <!-- Progress bar -->
+    <rect x="18" y="56" width="114" height="6" rx="3" fill="#e2e8f0"/>
+    <rect x="18" y="56" width="96" height="6" rx="3" fill="#e07a2c"/>
+    <text x="18" y="72" font-family="system-ui, sans-serif" font-size="8" font-weight="600" fill="#b45309">Verified Score: 84/100</text>
+  </g>
+
+  <!-- Node 4: Opportunity Discovery -->
+  <g transform="translate(360, 290)" filter="url(#soft-glow)">
+    <rect width="170" height="88" rx="14" fill="url(#card-grad)" stroke="#0d9488" stroke-width="1.5"/>
+    <circle cx="28" cy="28" r="14" fill="#e6f4f1"/>
+    <!-- Building / Industry icon -->
+    <path d="M22 34 L22 22 L34 22 L34 34 Z" fill="#0d9488"/>
+    <text x="50" y="26" font-family="system-ui, sans-serif" font-weight="700" font-size="12" fill="#134e3f">Opportunities</text>
+    <text x="50" y="40" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Dabur, Himalaya & CCRAS</text>
+    <!-- Opportunity pill -->
+    <rect x="18" y="54" width="134" height="20" rx="10" fill="#f0fdf4"/>
+    <text x="26" y="68" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#166534">★ Clinical Research Intern</text>
+  </g>
+
+  <!-- Node 5: Career Fulfillment (Center / Bottom) -->
+  <g transform="translate(100, 310)" filter="url(#soft-glow)">
+    <rect width="180" height="92" rx="14" fill="url(#card-grad)" stroke="#134e3f" stroke-width="2"/>
+    <circle cx="30" cy="30" r="16" fill="#ecfdf5"/>
+    <!-- Trophy / Sun rise -->
+    <path d="M24 24 L36 24 L34 33 C34 36 26 36 26 33 Z" fill="#134e3f"/>
+    <line x1="30" y1="36" x2="30" y2="40" stroke="#134e3f" stroke-width="2"/>
+    <line x1="24" y1="40" x2="36" y2="40" stroke="#134e3f" stroke-width="2"/>
+    <text x="54" y="28" font-family="system-ui, sans-serif" font-weight="800" font-size="13" fill="#134e3f">Career Pathway</text>
+    <text x="54" y="44" font-family="system-ui, sans-serif" font-size="10" fill="#0d9488">Industry Verified Placement</text>
+    <!-- Status -->
+    <rect x="18" y="58" width="144" height="22" rx="6" fill="#134e3f"/>
+    <text x="32" y="73" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#ffffff">Direct Industry Connect</text>
+  </g>
+
+  <!-- Center Core: AYUSH Circular Balance Motif -->
+  <g transform="translate(260, 210)">
+    <circle cx="40" cy="40" r="38" fill="#ffffff" stroke="url(#flow-grad)" stroke-width="3" filter="url(#soft-glow)"/>
+    <!-- Rotating Mandala / Wellness Ring -->
+    <circle cx="40" cy="40" r="28" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <!-- Organic Leaf Center -->
+    <path d="M40 18 C30 28 29 45 40 58 C40 58 34 42 36 28 Z" fill="#134e3f"/>
+    <path d="M40 18 C50 28 51 45 40 58 C40 58 46 42 44 28 Z" fill="#0d9488"/>
+    <circle cx="40" cy="40" r="4" fill="#e07a2c"/>
+  </g>
+</svg>

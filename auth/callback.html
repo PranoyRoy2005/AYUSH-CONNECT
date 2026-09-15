@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authenticating — AYUSH CONNECT</title>
+  <meta name="description" content="Processing secure Supabase OAuth authentication for AYUSH Connect.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <style>
+    .callback-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      max-width: 540px;
+      margin: 2rem auto;
+      padding: 2.25rem 2rem;
+      text-align: center;
+      box-sizing: border-box;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .status-spinner {
+      width: 52px;
+      height: 52px;
+      border: 4px solid rgba(27, 77, 62, 0.15);
+      border-top-color: var(--primary-deep);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+      margin: 0 auto 1.5rem auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .role-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+    .role-choice-card {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+    }
+    .role-choice-card:hover {
+      border-color: var(--primary-deep);
+      background: #ffffff;
+      transform: translateY(-2px);
+    }
+    .role-choice-card.selected {
+      border-color: var(--primary-deep);
+      background: rgba(27, 77, 62, 0.06);
+      box-shadow: 0 0 0 1px var(--primary-deep);
+    }
+  </style>
+</head>
+<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <!-- Header -->
+  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+    <a href="/index.html" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
+    </a>
+    <a href="/login.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Login
+    </a>
+  </header>
+
+  <!-- Main Content Area -->
+  <main style="padding: 1rem; flex: 1; display: flex; align-items: center; justify-content: center;">
+    <div class="callback-card" id="callback-card">
+
+      <!-- View 1: Processing State (Default) -->
+      <div id="state-processing">
+        <div class="status-spinner"></div>
+        <h2 style="color: var(--primary-deep); font-size: 1.45rem; margin-bottom: 0.5rem;" id="processing-title">Verifying OAuth Authentication</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.25rem;" id="processing-desc">
+          Connecting to Supabase and retrieving verified credentials from your provider...
+        </p>
+        <div style="font-size: 0.8rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.4rem;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--secondary-teal);"></i> 256-bit Encrypted Government Authentication Handshake
+        </div>
+      </div>
+
+      <!-- View 2: Complete Your Profile (Select Role if Not Yet Known) -->
+      <div id="state-complete-profile" style="display: none; text-align: left;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div id="user-avatar-preview" style="width: 58px; height: 58px; border-radius: 50%; background: var(--primary-deep); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            AY
+          </div>
+          <h2 style="color: var(--primary-deep); font-size: 1.35rem; margin-bottom: 0.2rem;">Welcome to AYUSH Connect!</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 0;" id="user-oauth-email-display">
+            Authenticated via Google / GitHub
+          </p>
+        </div>
+
+        <div style="background: rgba(27, 77, 62, 0.05); border: 1px solid rgba(27, 77, 62, 0.15); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.84rem; color: var(--primary-deep);">
+          <i class="fa-solid fa-circle-info" style="color: var(--secondary-teal); margin-right: 4px;"></i>
+          <strong>Almost there!</strong> Please select your portal role to configure your personalized dashboard and verify access rights.
+        </div>
+
+        <form id="form-complete-profile">
+          <label class="form-label" style="font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; display: block;">
+            Select Your Role in the AYUSH Ecosystem *
+          </label>
+          
+          <div class="role-choice-grid">
+            <div class="role-choice-card selected" data-role="student" onclick="window.selectCallbackRole('student')">
+              <div style="font-size: 1.3rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Student</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Scholar &amp; Intern</div>
+            </div>
+
+            <div class="role-choice-card" data-role="industry" onclick="window.selectCallbackRole('industry')">
+              <div style="font-size: 1.3rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Organization</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Enterprises &amp; R&amp;D</div>
+            </div>
+
+            <div class="role-choice-card" data-role="academician" onclick="window.selectCallbackRole('academician')">
+              <div style="font-size: 1.3rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Academician</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Faculty &amp; Deans</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Institution / Company Input -->
+          <div class="gov-email-group" style="margin-bottom: 1.25rem;">
+            <div class="gov-email-label-row">
+              <label class="form-label" for="profile-org-input" id="profile-org-label" style="margin: 0; font-weight: 600; font-size: 0.86rem;">
+                College / Institution Name *
+              </label>
+            </div>
+            <div class="gov-email-wrapper">
+              <span class="gov-email-icon"><i class="fa-solid fa-school" id="profile-org-icon"></i></span>
+              <input type="text" id="profile-org-input" class="gov-email-input" placeholder="e.g. National Institute of Ayurveda, Jaipur" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" id="btn-save-profile">
+            <span>Confirm Role &amp; Enter Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- View 3: Error State -->
+      <div id="state-error" style="display: none;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h2 style="color: #b91c1c; font-size: 1.35rem; margin-bottom: 0.5rem;">Authentication Incomplete</h2>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; margin-bottom: 1.25rem;" id="error-message-text">
+          We could not complete your OAuth sign-in.
+        </p>
+
+        <div style="background: #f8fafc; border: 1px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: left; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+          <div style="font-weight: 700; color: var(--primary-deep); margin-bottom: 0.35rem;">
+            <i class="fa-solid fa-gear"></i> Supabase Setup Checklist:
+          </div>
+          <ul style="margin: 0; padding-left: 1.25rem; line-height: 1.6;">
+            <li>Ensure <strong>Google</strong> or <strong>GitHub</strong> is enabled under <em>Supabase Dashboard &gt; Authentication &gt; Providers</em>.</li>
+            <li>Verify your Google Client ID / GitHub Client ID and Secret are configured.</li>
+            <li>Add this origin to your <em>Redirect URLs Allow List</em> in Supabase URL Configuration.</li>
+          </ul>
+        </div>
+
+        <a href="/login.html" class="btn btn-primary" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <i class="fa-solid fa-arrow-left"></i> Return to Sign In
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India
+  </footer>
+
+  <script type="module">
+    import { supabase } from '/js/supabase.js';
+    import { setCurrentUser, saveRegisteredUser, getRedirectForRole, showToast } from '/js/auth.js';
+
+    let currentSessionUser = null;
+    let selectedCallbackRole = 'student';
+
+    window.selectCallbackRole = function(role) {
+      selectedCallbackRole = role;
+      document.querySelectorAll('.role-choice-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.role === role);
+      });
+
+      const label = document.getElementById('profile-org-label');
+      const input = document.getElementById('profile-org-input');
+      const icon = document.getElementById('profile-org-icon');
+
+      if (role === 'industry') {
+        label.textContent = 'Company / Organization Name *';
+        input.placeholder = 'e.g. Himalaya Wellness Company, Dabur R&D';
+        icon.className = 'fa-solid fa-building';
+      } else if (role === 'academician') {
+        label.textContent = 'University / Department *';
+        input.placeholder = 'e.g. All India Institute of Ayurveda, New Delhi';
+        icon.className = 'fa-solid fa-building-columns';
+      } else {
+        label.textContent = 'College / Institution Name *';
+        input.placeholder = 'e.g. National Institute of Ayurveda, Jaipur';
+        icon.className = 'fa-solid fa-school';
+      }
+    };
+
+    function showErrorState(message) {
+      document.getElementById('state-processing').style.display = 'none';
+      document.getElementById('state-complete-profile').style.display = 'none';
+      const errEl = document.getElementById('state-error');
+      errEl.style.display = 'block';
+      if (message) {
+        document.getElementById('error-message-text').textContent = message;
+      }
+    }
+
+    function showCompleteProfileState(user) {
+      document.getElementById('state-processing').style.display = 'none';
+      document.getElementById('state-error').style.display = 'none';
+      const completeEl = document.getElementById('state-complete-profile');
+      completeEl.style.display = 'block';
+
+      const emailEl = document.getElementById('user-oauth-email-display');
+      if (emailEl && user.email) {
+        emailEl.textContent = `Authenticated account: ${user.email}`;
+      }
+
+      const avatarEl = document.getElementById('user-avatar-preview');
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+      const fullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Ayush User';
+      
+      if (avatarUrl && avatarEl) {
+        avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${fullName}" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer">`;
+      } else if (avatarEl) {
+        avatarEl.textContent = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY';
+      }
+
+      // Check if user had selected a role on register/login page before OAuth redirect
+      const pendingRole = localStorage.getItem('ayush_oauth_pending_role');
+      if (pendingRole && ['student', 'industry', 'academician'].includes(pendingRole)) {
+        window.selectCallbackRole(pendingRole);
+      } else {
+        window.selectCallbackRole('student');
+      }
+    }
+
+    async function finishLoginAndRedirect(authUser) {
+      document.getElementById('state-complete-profile').style.display = 'none';
+      document.getElementById('state-processing').style.display = 'block';
+      document.getElementById('processing-title').textContent = 'Authentication Verified!';
+      document.getElementById('processing-desc').textContent = `Welcome, ${authUser.full_name}! Launching your ${authUser.role.toUpperCase()} portal...`;
+
+      setCurrentUser(authUser);
+      saveRegisteredUser(authUser);
+      localStorage.setItem('ayush_oauth_just_logged_in', 'true');
+      localStorage.setItem('ayush_oauth_last_timestamp', String(Date.now()));
+      sessionStorage.setItem('ayush_just_logged_in', 'true');
+      localStorage.removeItem('ayush_oauth_pending_role');
+      sessionStorage.removeItem('ayush_oauth_in_progress');
+      localStorage.removeItem('ayush_oauth_in_progress');
+
+      const targetDest = authUser.redirect || getRedirectForRole(authUser.role);
+
+      // If opened in a popup window by iframe, notify opener
+      if (window.opener && window.opener !== window) {
+        try {
+          window.opener.postMessage({ type: 'AYUSH_OAUTH_SUCCESS', user: authUser }, '*');
+        } catch (e) {
+          console.warn('postMessage to opener skipped:', e);
+        }
+        setTimeout(() => {
+          try { window.close(); } catch (e) {}
+        }, 600);
+      }
+
+      // Guarantee navigation in this window if popup was opened directly or remains open
+      setTimeout(() => {
+        window.location.replace(targetDest);
+      }, 700);
+    }
+
+    async function createProfileAndFinish(user, role, orgName) {
+      const userId = user.id;
+      const userEmail = user.email;
+      const fullName = user.user_metadata?.full_name 
+        || user.user_metadata?.name 
+        || user.user_metadata?.preferred_username 
+        || userEmail?.split('@')[0] 
+        || 'Ayush User';
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+      const provider = user.app_metadata?.provider || 'oauth';
+
+      const isStudent = (role === 'student');
+      const initialStatus = isStudent ? 'active' : 'pending';
+      const isApproved = isStudent;
+      const isVerified = isStudent;
+
+      // 1. Upsert into public.profiles
+      try {
+        const { error: pErr } = await supabase.from('profiles').upsert({
+          id: userId,
+          role: role,
+          full_name: fullName,
+          email: userEmail,
+          avatar_url: avatarUrl,
+          is_verified: isVerified,
+          is_approved: isApproved,
+          status: initialStatus,
+          updated_at: new Date().toISOString()
+        });
+        if (pErr) console.warn('profiles upsert note:', pErr);
+      } catch (e) {
+        console.warn('profiles table write error:', e);
+      }
+
+      // 2. Upsert into role-specific table
+      try {
+        if (role === 'student') {
+          await supabase.from('student_profiles').upsert({
+            profile_id: userId,
+            college_institution: orgName || 'National Institute of Ayurveda',
+            course: 'BAMS (Ayurveda)',
+            stream: 'Clinical Sciences',
+            year: '3rd Year',
+            graduation_year: '2027',
+            profile_completion_pct: 45,
+            overall_skill_score: 0,
+            career_stage: 'profile',
+            updated_at: new Date().toISOString()
+          });
+        } else if (role === 'industry') {
+          await supabase.from('industry_profiles').upsert({
+            profile_id: userId,
+            company_name: orgName || `${fullName} Healthcare & R&D`,
+            designation: 'Recruitment & Partnerships Lead',
+            industry_sector: 'Ayurveda & Herbal Pharmaceuticals',
+            is_verified: false,
+            updated_at: new Date().toISOString()
+          });
+        } else if (role === 'academician') {
+          await supabase.from('academician_profiles').upsert({
+            profile_id: userId,
+            institution: orgName || 'National Institute of Ayurveda',
+            department: 'Clinical Pharmacology & Research',
+            designation: 'Assistant Professor / Faculty',
+            is_verified: false,
+            updated_at: new Date().toISOString()
+          });
+        }
+      } catch (e) {
+        console.warn('role profile write error:', e);
+      }
+
+      // If not a student, account requires administrative approval
+      if (!isStudent) {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {}
+        localStorage.removeItem('ayush_current_user');
+        localStorage.removeItem('ayush_oauth_pending_role');
+
+        window.location.replace(`/pending-approval.html?status=pending&role=${role}&email=${encodeURIComponent(userEmail || '')}`);
+        return;
+      }
+
+      const authUser = {
+        id: userId,
+        email: userEmail,
+        full_name: fullName,
+        role: role,
+        avatar: avatarUrl || fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY',
+        avatar_url: avatarUrl,
+        auth_provider: provider,
+        redirect: getRedirectForRole(role)
+      };
+
+      await finishLoginAndRedirect(authUser);
+    }
+
+    // Form submission handler for Complete Profile step
+    document.getElementById('form-complete-profile').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orgName = document.getElementById('profile-org-input').value.trim();
+      const submitBtn = document.getElementById('btn-save-profile');
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Saving Profile to Supabase...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+
+      try {
+        if (currentSessionUser) {
+          await createProfileAndFinish(currentSessionUser, selectedCallbackRole, orgName);
+        } else {
+          showErrorState('User session expired. Please sign in again.');
+        }
+      } catch (err) {
+        console.error('Profile creation error:', err);
+        showErrorState(err.message || 'Failed to initialize profile.');
+      }
+    });
+
+    // Main OAuth Callback Initialization
+    async function initAuthCallback() {
+      // 1. Check for errors in URL (e.g. user canceled consent, provider error)
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const error = urlParams.get('error') || hashParams.get('error');
+      const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+
+      if (error) {
+        console.error('OAuth Callback URL Error:', error, errorDescription);
+        showErrorState(errorDescription || `OAuth provider returned error: ${error}`);
+        return;
+      }
+
+      // 2. If PKCE code is present in query parameters, exchange it
+      const code = urlParams.get('code');
+      if (code) {
+        try {
+          const { data, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeErr) {
+            console.warn('exchangeCodeForSession note:', exchangeErr.message);
+          }
+        } catch (e) {
+          console.warn('Exchange code error:', e);
+        }
+      }
+
+      // 3. Retrieve authenticated Supabase session
+      let session = null;
+      try {
+        const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+        if (sessionErr) throw sessionErr;
+        session = sessionData?.session;
+      } catch (err) {
+        console.error('getSession error:', err);
+      }
+
+      // If not available immediately, listen to onAuthStateChange with a 3.5s timeout
+      if (!session?.user) {
+        session = await new Promise((resolve) => {
+          const timeout = setTimeout(() => resolve(null), 3500);
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+            if (s?.user) {
+              clearTimeout(timeout);
+              subscription.unsubscribe();
+              resolve(s);
+            }
+          });
+        });
+      }
+
+      if (!session?.user) {
+        showErrorState('No active Supabase authentication session detected. Please try signing in again.');
+        return;
+      }
+
+      const user = session.user;
+      currentSessionUser = user;
+
+      // 4. Query public.profiles to check if this is an EXISTING user (Requirement 3)
+      let existingProfile = null;
+      try {
+        const { data, error: profileErr } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (!profileErr && data) {
+          existingProfile = data;
+        }
+      } catch (err) {
+        console.warn('Profile lookup error:', err);
+      }
+
+      // Case A: Existing user with a confirmed role -> Directly sign in (no duplicate account, no role prompt)
+      if (existingProfile && existingProfile.role && ['student', 'industry', 'academician', 'admin'].includes(existingProfile.role)) {
+        // Enforce approval check for Industry & Academician
+        if (existingProfile.role === 'industry' || existingProfile.role === 'academician') {
+          const isApproved = existingProfile.is_approved === true || existingProfile.status === 'approved';
+          if (!isApproved) {
+            try {
+              await supabase.auth.signOut();
+            } catch (e) {}
+            localStorage.removeItem('ayush_current_user');
+            const statusReason = (existingProfile.status === 'rejected') ? 'rejected' : 'pending';
+            window.location.replace(`/pending-approval.html?status=${statusReason}&role=${existingProfile.role}&email=${encodeURIComponent(user.email || '')}`);
+            return;
+          }
+        }
+
+        const userFullName = existingProfile.full_name 
+          || user.user_metadata?.full_name 
+          || user.user_metadata?.name 
+          || user.email?.split('@')[0] 
+          || 'Ayush User';
+        const avatarUrl = existingProfile.avatar_url 
+          || user.user_metadata?.avatar_url 
+          || user.user_metadata?.picture 
+          || null;
+
+        const authUser = {
+          id: user.id,
+          email: user.email,
+          full_name: userFullName,
+          role: existingProfile.role,
+          avatar: avatarUrl || userFullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY',
+          avatar_url: avatarUrl,
+          auth_provider: user.app_metadata?.provider || 'oauth',
+          redirect: getRedirectForRole(existingProfile.role)
+        };
+
+        await finishLoginAndRedirect(authUser);
+        return;
+      }
+
+      // Case B: Resolve role from query param, pending registration storage, or default to student
+      const roleFromQuery = urlParams.get('role');
+      const pendingRole = localStorage.getItem('ayush_oauth_pending_role');
+      const candidateRole = (roleFromQuery && ['student', 'industry', 'academician', 'admin'].includes(roleFromQuery.toLowerCase().trim()))
+        ? roleFromQuery.toLowerCase().trim()
+        : ((pendingRole && ['student', 'industry', 'academician', 'admin'].includes(pendingRole.toLowerCase().trim()))
+          ? pendingRole.toLowerCase().trim()
+          : 'student');
+
+      const defaultOrg = candidateRole === 'industry' 
+        ? 'AYUSH Enterprise Partner' 
+        : (candidateRole === 'academician' ? 'National Institute of Ayurveda' : 'National Institute of Ayurveda, Jaipur');
+      await createProfileAndFinish(user, candidateRole, defaultOrg);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAuthCallback();
+    });
+  </script>
+</body>
+</html>

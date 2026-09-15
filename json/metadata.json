@@ -1,0 +1,6 @@
+{
+  "name": "AYUSH CONNECT",
+  "description": "Connecting Skills, Opportunities & Careers — Student-to-industry career connection and skill development portal for the AYUSH ecosystem.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

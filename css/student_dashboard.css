@@ -1,0 +1,549 @@
+/* ==========================================================================
+   AYUSH CONNECT — Student Dashboard & Features CSS
+   ========================================================================== */
+
+/* Metric Cards Grid */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-info h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.metric-number {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  line-height: 1;
+}
+
+.metric-sub {
+  font-size: 0.75rem;
+  color: var(--secondary-teal);
+  font-weight: 600;
+  margin-top: 0.35rem;
+}
+
+.metric-icon-bubble {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  background: var(--primary-subtle);
+  color: var(--primary-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-icon-bubble.saffron {
+  background: var(--accent-subtle);
+  color: var(--accent-saffron);
+}
+
+.metric-icon-bubble.teal {
+  background: var(--secondary-subtle);
+  color: var(--secondary-teal);
+}
+
+/* Career Progress Journey Tracker (Profile -> Skills -> Assessment -> Portfolio -> Applications -> Career Ready) */
+.career-journey-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fbf9 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.journey-steps {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  position: relative;
+}
+
+.journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.journey-step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.journey-step.done .journey-step-circle {
+  background: var(--primary-deep);
+  color: #ffffff;
+}
+
+.journey-step.active .journey-step-circle {
+  background: var(--accent-saffron);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(224, 122, 44, 0.2);
+}
+
+.journey-step.pending .journey-step-circle {
+  background: #ffffff;
+  border: 2px dashed var(--border-color);
+  color: var(--text-muted);
+}
+
+.journey-step-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.journey-step-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Skill Profile Page */
+.skill-category-block {
+  margin-bottom: 2rem;
+}
+
+.skill-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.skill-level-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.skill-level-card:hover {
+  border-color: var(--secondary-teal);
+}
+
+.skill-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.skill-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+}
+
+.skill-level-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary-dark);
+}
+
+.skill-visual-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skill-blocks-track {
+  display: flex;
+  gap: 3px;
+  flex-grow: 1;
+}
+
+.skill-block {
+  height: 8px;
+  flex: 1;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.skill-block.filled {
+  background: var(--primary-deep);
+}
+
+.skill-block.filled.teal {
+  background: var(--secondary-teal);
+}
+
+.skill-pct-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+  min-width: 38px;
+}
+
+/* Skills to Improve Card */
+.skill-improve-card {
+  background: var(--accent-subtle);
+  border: 1px solid rgba(224, 122, 44, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+/* Assessment Page UI */
+.assessment-container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.assessment-meta-header {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-box-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.question-counter-pill {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+  background: var(--primary-subtle);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 1rem;
+}
+
+.question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.option-item:hover {
+  border-color: var(--secondary-teal);
+  background: var(--secondary-subtle);
+}
+
+.option-item.selected {
+  border-color: var(--primary-deep);
+  background: var(--primary-subtle);
+}
+
+.option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.option-item.selected .option-letter {
+  background: var(--primary-deep);
+  border-color: var(--primary-deep);
+  color: #ffffff;
+}
+
+/* Assessment Result Panel */
+.result-breakdown-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Opportunities Marketplace */
+.filter-bar-sticky {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+
+.filter-pill-btn {
+  background: var(--bg-cream);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-pill-btn:hover {
+  border-color: var(--secondary-teal);
+  color: var(--secondary-dark);
+}
+
+.filter-pill-btn.active {
+  background: var(--primary-deep);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+}
+
+.opportunity-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.opportunity-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(13, 148, 136, 0.4);
+  transform: translateY(-2px);
+}
+
+.opp-company-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--primary-subtle);
+  color: var(--primary-deep);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* Intelligent Recommendation Matching Score Visual */
+.match-score-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.match-circle-visual {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: conic-gradient(var(--secondary-teal) calc(var(--pct) * 1%), #e2e8f0 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.match-circle-inner {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--primary-deep);
+}
+
+/* Applications Tracking Timeline (Applied -> Under Review -> Shortlisted -> Interview -> Selected) */
+.app-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  position: relative;
+  gap: 0.5rem;
+}
+
+.timeline-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+}
+
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--border-color);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.timeline-node.done .timeline-dot {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.timeline-node.current .timeline-dot {
+  background: var(--accent-saffron);
+  border-color: var(--accent-saffron);
+  box-shadow: 0 0 0 3px rgba(224, 122, 44, 0.25);
+  color: #ffffff;
+}
+
+.timeline-node span {
+  display: block;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.timeline-node.done span, .timeline-node.current span {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .journey-steps {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 1rem;
+  }
+
+  /* Responsive timeline layout to prevent green ticks and text from collapsing */
+  .app-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--border-color);
+    margin-left: 0.75rem;
+    border-top: none;
+  }
+
+  .timeline-node {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    text-align: left !important;
+    margin-left: -1.35rem;
+  }
+
+  .timeline-dot {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .timeline-node span {
+    margin-top: 0 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+  }
+}

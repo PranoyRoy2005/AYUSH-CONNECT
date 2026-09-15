@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator Access Desk — AYUSH CONNECT</title>
+  <meta name="description" content="Official Government of India & Ministry of AYUSH administrator access portal.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <!-- Header -->
+  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 0.75rem;">
+    <a href="/index.html">
+      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
+    </a>
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <a href="/login.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i class="fa-solid fa-arrow-left"></i> Standard Login
+      </a>
+      <button type="button" class="mode-toggle-btn mode-dev" id="app-mode-toggle" onclick="window.toggleAppMode()" title="Toggle Development / Production Mode">
+        <i class="fa-solid fa-code" style="color: #ea580c;"></i>
+        <span>Dev Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Login Container -->
+  <main class="login-wrapper">
+    <div class="login-card" style="border-top: 4px solid #ef4444; max-width: 500px;">
+      
+      <!-- Gov Seal & Header -->
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%; background: #fef2f2; border: 2px solid #fca5a5; color: #dc2626; font-size: 1.5rem; margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div style="display: inline-block; background: #fef2f2; color: #dc2626; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.65rem; border-radius: var(--radius-pill); margin-bottom: 0.5rem; letter-spacing: 0.05em;">
+          GOVERNMENT OF INDIA &bull; RESTRICTED ACCESS
+        </div>
+        <h1 style="font-size: 1.65rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">Ministry of AYUSH Admin Desk</h1>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">Centralized Governance, Question Bank Oversight & KYC Accreditation</p>
+      </div>
+
+      <!-- Security Notice -->
+      <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; gap: 0.65rem; align-items: flex-start;">
+        <i class="fa-solid fa-triangle-exclamation" style="color: #d97706; margin-top: 0.15rem; font-size: 0.9rem;"></i>
+        <div style="font-size: 0.8rem; color: #92400e; line-height: 1.4;">
+          This portal is strictly authorized for Ministry Officials, Technical Evaluators, and National Nodal Officers.
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="admin-login-form">
+        <!-- Error Notice Banner -->
+        <div id="adm-error-box" style="display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 0.85rem 1rem; color: #991b1b; font-size: 0.85rem; line-height: 1.45; margin-bottom: 1.25rem; text-align: left;">
+          <div style="font-weight: 700; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span id="adm-error-title">Authentication Failed</span>
+          </div>
+          <span id="adm-error-msg">Invalid administrator credentials.</span>
+        </div>
+
+        <div class="gov-email-group" style="margin-bottom: 1.15rem;">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="adm-email" style="margin: 0; font-weight: 600;">Administrator Email</label>
+            <span class="gov-domain-badge" style="background: #fef2f2; color: #dc2626; border-color: #fca5a5;"><i class="fa-solid fa-shield-halved"></i> Ministry Official</span>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon" style="color: #dc2626;"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email" id="adm-email" class="gov-email-input" placeholder="e.g. nodal.officer@ayush.gov.in" autocomplete="email" required>
+          </div>
+          <div class="gov-email-footer">
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Validated against Supabase database (role: admin)</span>
+          </div>
+        </div>
+
+        <div class="gov-email-group" style="margin-bottom: 1.5rem;">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="adm-password" style="margin: 0; font-weight: 600;">Security Passphrase</label>
+            <span class="gov-domain-badge"><i class="fa-solid fa-lock"></i> Encrypted</span>
+          </div>
+          <div class="gov-email-wrapper" style="position: relative;">
+            <span class="gov-email-icon"><i class="fa-solid fa-key"></i></span>
+            <input type="password" id="adm-password" class="gov-email-input" placeholder="••••••••" autocomplete="current-password" required style="padding-right: 2.75rem !important;">
+            <button type="button" onclick="window.toggleAdminPasswordVisibility()" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; z-index: 2;" title="Toggle Password Visibility" id="btn-adm-toggle-pwd">
+              <i class="fa-solid fa-eye" id="adm-pwd-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem; background: #dc2626; border-color: #b91c1c; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; white-space: normal; text-align: center; line-height: 1.35; box-sizing: border-box; word-break: break-word;" id="btn-admin-submit">
+          <i class="fa-solid fa-shield-halved" id="adm-submit-icon"></i> <span id="adm-submit-label">Authenticate &amp; Enter Admin Console</span>
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.84rem; color: var(--text-muted);">
+        Need student, employer, or academic login? <a href="/login.html" style="color: var(--secondary-teal); font-weight: 600;">Return to Main Portal</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Minimal Footer -->
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India
+  </footer>
+
+  <script type="module">
+    import { supabase, signInUserWithSupabase, signOutUserWithSupabase } from '/js/supabase.js';
+    import { setCurrentUser, showToast } from '/js/auth.js';
+
+    // Password visibility toggle
+    window.toggleAdminPasswordVisibility = function() {
+      const pwdInput = document.getElementById('adm-password');
+      const pwdIcon = document.getElementById('adm-pwd-icon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        pwdIcon.className = 'fa-solid fa-eye-slash';
+      } else {
+        pwdInput.type = 'password';
+        pwdIcon.className = 'fa-solid fa-eye';
+      }
+    };
+
+    function showError(title, message) {
+      const errBox = document.getElementById('adm-error-box');
+      const errTitle = document.getElementById('adm-error-title');
+      const errMsg = document.getElementById('adm-error-msg');
+      if (errBox && errTitle && errMsg) {
+        errTitle.textContent = title;
+        errMsg.textContent = message;
+        errBox.style.display = 'block';
+      }
+    }
+
+    function clearError() {
+      const errBox = document.getElementById('adm-error-box');
+      if (errBox) errBox.style.display = 'none';
+    }
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const email = document.getElementById('adm-email').value.trim();
+      const password = document.getElementById('adm-password').value;
+      const submitBtn = document.getElementById('btn-admin-submit');
+      const submitLabel = document.getElementById('adm-submit-label');
+      const submitIcon = document.getElementById('adm-submit-icon');
+
+      if (!email || !password) {
+        showError('Missing Credentials', 'Please enter your administrator email and security passphrase.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Verifying with Supabase...';
+      submitIcon.className = 'fa-solid fa-spinner fa-spin';
+
+      try {
+        // 1. Real Supabase Authentication
+        const { data: authData, error: authError } = await signInUserWithSupabase(email, password);
+
+        if (authError || !authData?.user) {
+          const errMsg = authError?.message?.includes('Invalid login credentials')
+            ? 'Invalid admin credentials. Please ensure your registered administrator email and password are correct.'
+            : (authError?.message || 'Authentication failed. Please check your credentials.');
+          showError('Authentication Failed', errMsg);
+          showToast(errMsg, 'error');
+          return;
+        }
+
+        const sbUser = authData.user;
+
+        // 2. Query Profiles Table to Strictly Verify role === 'admin'
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', sbUser.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error('[Admin Login] Failed to fetch profile:', profileError);
+          showError('Database Error', 'Unable to retrieve administrator profile from Supabase database.');
+          await signOutUserWithSupabase();
+          return;
+        }
+
+        const userRole = (profile?.role || sbUser.user_metadata?.role || '').toLowerCase();
+
+        // 3. Strict RBAC Enforcement: MUST be role === 'admin'
+        if (userRole !== 'admin') {
+          // Immediately revoke session
+          await signOutUserWithSupabase();
+          localStorage.removeItem('ayush_current_user');
+
+          const roleName = userRole ? userRole.toUpperCase() : 'STANDARD USER';
+          showError(
+            'Access Denied (Insufficient Privileges)',
+            `Your account (${email}) is registered with role '${roleName}'. The Ministry of AYUSH Admin Desk strictly requires role 'admin' in the profiles table.`
+          );
+          showToast(`Access Denied: Role '${roleName}' is not authorized for Admin Console.`, 'error');
+          return;
+        }
+
+        // 4. Authorized Admin: Save Session and Redirect
+        const adminSession = {
+          id: sbUser.id,
+          email: sbUser.email,
+          full_name: profile.full_name || sbUser.user_metadata?.full_name || 'Ministry Administrator',
+          role: 'admin',
+          avatar: 'RK',
+          auth_provider: 'supabase',
+          redirect: '/admin/dashboard.html'
+        };
+
+        setCurrentUser(adminSession);
+        showToast('Administrator credentials verified. Access granted to Ministry Console.', 'success');
+
+        setTimeout(() => {
+          window.location.replace('/admin/dashboard.html');
+        }, 600);
+
+      } catch (err) {
+        console.error('[Admin Login] Unexpected error:', err);
+        showError('Unexpected Error', err.message || 'An unexpected error occurred while connecting to Supabase.');
+      } finally {
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'Authenticate & Enter Admin Console';
+        submitIcon.className = 'fa-solid fa-shield-halved';
+      }
+    });
+  </script>
+</body>
+</html>

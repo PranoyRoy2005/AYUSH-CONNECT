@@ -1,0 +1,8 @@
+[
+  { "id": "sk_01", "name": "HPTLC Fingerprinting", "category": "Analytical Chemistry", "level": "Advanced", "pct": 88 },
+  { "id": "sk_02", "name": "Phytochemistry QC", "category": "Pharmacognosy", "level": "Advanced", "pct": 85 },
+  { "id": "sk_03", "name": "Classical Rasa Shastra Formulations", "category": "Traditional Medicine", "level": "Intermediate", "pct": 74 },
+  { "id": "sk_04", "name": "Clinical Python & EHR Data Processing", "category": "Informatics & AI", "level": "Advanced", "pct": 82 },
+  { "id": "sk_05", "name": "Good Agricultural & Collection Practices (GACP)", "category": "Regulatory", "level": "Intermediate", "pct": 70 },
+  { "id": "sk_06", "name": "Ayurvedic Pharmacopoeia Standardization", "category": "Standards", "level": "Advanced", "pct": 91 }
+]

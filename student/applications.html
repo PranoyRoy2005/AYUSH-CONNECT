@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications — AYUSH CONNECT</title>
+  <meta name="description" content="Track your real-time application stages, interview invitations, and employer updates.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display">AS</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Ayush Sharma</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Application Track</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/student/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard</a></li>
+        <li><a href="/student/skill-profile.html"><span class="menu-icon"><i class="fa-solid fa-leaf"></i></span> Skill Profile</a></li>
+        <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
+        <li><a href="/student/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio & Projects</a></li>
+        <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
+        <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
+        <li><a href="/student/applications.html" class="active"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.75rem; color: var(--primary-deep);">Application Tracker</h1>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Real-time status tracking for every opportunity you have submitted.</p>
+        </div>
+        <a href="/student/opportunities.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Apply to More</a>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.75rem; flex-wrap: wrap;" id="app-filter-pills">
+        <button class="badge badge-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;" onclick="window.filterApps('All')">All Applications (6)</button>
+        <button class="badge badge-teal" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;" onclick="window.filterApps('Interview')">Interview (2)</button>
+        <button class="badge badge-teal" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;" onclick="window.filterApps('Shortlisted')">Shortlisted (2)</button>
+        <button class="badge badge-teal" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;" onclick="window.filterApps('Applied')">Applied (2)</button>
+      </div>
+
+      <!-- Applications List with Timelines -->
+      <div id="applications-list">
+        <!-- Rendered by student.js -->
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderApplications } from '/js/student.js';
+
+    window.filterApps = function(status) {
+      renderApplications(status);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderApplications('All');
+
+      const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+      const avatarEl = document.getElementById('sidebar-avatar-display');
+      if (savedPhoto && avatarEl) {
+        avatarEl.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <pattern id="ayush-geo" width="80" height="80" patternUnits="userSpaceOnUse">
+      <circle cx="40" cy="40" r="28" stroke="#134e3f" stroke-width="0.75" opacity="0.06" stroke-dasharray="2 2"/>
+      <circle cx="40" cy="40" r="16" stroke="#0d9488" stroke-width="0.75" opacity="0.08"/>
+      <!-- Subtle petal geometry -->
+      <path d="M40 24 C36 30 36 38 40 44 C44 38 44 30 40 24 Z" fill="#134e3f" opacity="0.04"/>
+      <path d="M24 40 C30 36 38 36 44 40 C38 44 30 44 24 40 Z" fill="#0d9488" opacity="0.04"/>
+      <!-- Grid connection nodes -->
+      <circle cx="0" cy="0" r="1.5" fill="#e07a2c" opacity="0.12"/>
+      <circle cx="80" cy="0" r="1.5" fill="#e07a2c" opacity="0.12"/>
+      <circle cx="0" cy="80" r="1.5" fill="#e07a2c" opacity="0.12"/>
+      <circle cx="80" cy="80" r="1.5" fill="#e07a2c" opacity="0.12"/>
+      <circle cx="40" cy="40" r="1.5" fill="#0d9488" opacity="0.15"/>
+    </pattern>
+  </defs>
+  <rect width="80" height="80" fill="url(#ayush-geo)"/>
+</svg>

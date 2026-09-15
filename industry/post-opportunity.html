@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Opportunity — AYUSH CONNECT</title>
+  <meta name="description" content="Publish internships, full-time careers, and research fellowships to reach pre-assessed AYUSH talent across India.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/industry_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" style="background: var(--secondary-teal); font-weight: 700;">HW</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Himalaya Wellness</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Post Role</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/industry/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span> Dashboard</a></li>
+        <li><a href="/industry/post-opportunity.html" class="active"><span class="menu-icon"><i class="fa-solid fa-circle-plus"></i></span> Post Opportunity</a></li>
+        <li><a href="/industry/post-event.html"><span class="menu-icon"><i class="fa-solid fa-calendar-check"></i></span> Post Event / Hackathon</a></li>
+        <li><a href="/industry/applicants.html"><span class="menu-icon"><i class="fa-solid fa-users-viewfinder"></i></span> Review Applicants</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.industryLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/academician/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Academic</a> &bull;
+          <a href="/admin/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="margin-bottom: 2rem;">
+        <a href="/industry/dashboard.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">Publish New Career Opportunity</h1>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">
+          Target certified AYUSH graduates and scholars nationwide. Candidate applications will automatically include verified skill credentials and proctored assessment percentiles.
+        </p>
+      </div>
+
+      <div style="max-width: 900px;">
+        <form id="post-opportunity-form">
+          
+          <!-- SECTION 1: Position Fundamentals -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-briefcase"></i></div>
+              <div>
+                <div class="form-section-title">Position Fundamentals</div>
+                <div class="form-section-desc">Specify the core position identity, designation, and appointment category.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 2;">
+                <label class="form-label" for="post-title">Opportunity / Job Title *</label>
+                <input type="text" id="post-title" class="form-input" placeholder="e.g. Clinical Research Associate (Ayurvedic Formulations)" value="Clinical Research Associate (Ayurvedic Formulations)" required>
+                <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; display: block;">Clearly reflect the clinical, laboratory, or computational focus.</span>
+              </div>
+              
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label" for="post-type">Appointment Type *</label>
+                <select id="post-type" class="form-input" required>
+                  <option value="Internship">Clinical Internship</option>
+                  <option value="Job" selected>Full-Time Job</option>
+                  <option value="Fellowship">Research Fellowship</option>
+                  <option value="Project">Sponsored Project</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: Role Scope & Responsibilities -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+              <div>
+                <div class="form-section-title">Role Scope & Technical Responsibilities</div>
+                <div class="form-section-desc">Outline specific laboratory workflows, pharmacopoeia standards, or software environments.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="post-desc">Detailed Responsibilities & Milestones *</label>
+              <textarea id="post-desc" class="form-input" rows="5" placeholder="Detail the core laboratory tasks, clinical trials, or computational modeling expected..." required style="line-height: 1.6;">- Execute rigorous batch testing and botanical fingerprinting conforming with the Ayurvedic Pharmacopoeia of India (API).
+- Coordinate multi-centric clinical trial documentation using electronic health records and HL7/FHIR guidelines.
+- Prepare regulatory compliance dossiers for Schedule T GMP submissions.
+- Collaborate with pharmacology faculty for botanical active-constituent validation.</textarea>
+            </div>
+          </div>
+
+          <!-- SECTION 3: Competencies & Skill Matching -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-tags"></i></div>
+              <div>
+                <div class="form-section-title">Required Competencies & Skill Matching</div>
+                <div class="form-section-desc">Click to select skills. Candidates with verified assessments in these tags will be prioritized.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="margin-bottom: 0.75rem;">Selected & Available Skill Tags (Click to toggle)</label>
+              <div class="tag-selector-box" id="selectable-skills-container" style="display: flex; flex-wrap: wrap; gap: 0.65rem; padding: 1.25rem; background: var(--bg-cream); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                <!-- Populated by industry.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 4: Logistics, Compensation & Eligibility -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div>
+                <div class="form-section-title">Logistics, Compensation & Eligibility</div>
+                <div class="form-section-desc">Specify work location, compensation parameters, and application timeline.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="post-location">Work Location & Mode *</label>
+                <input type="text" id="post-location" class="form-input" placeholder="e.g. Bengaluru, Karnataka (Hybrid)" value="Bengaluru, Karnataka (Hybrid)" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="post-stipend">Annual Package / Monthly Stipend *</label>
+                <input type="text" id="post-stipend" class="form-input" placeholder="e.g. ₹7.5 - 9.5 LPA" value="₹7.5 - 9.5 LPA" required>
+              </div>
+            </div>
+
+            <div class="form-row" style="margin-top: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="post-eligibility">Eligibility & Academic Qualification *</label>
+                <input type="text" id="post-eligibility" class="form-input" placeholder="e.g. BAMS / MD Dravyaguna / M.Pharm Ayurveda" value="BAMS / MD Dravyaguna / M.Pharm Ayurveda" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="post-deadline">Application Deadline *</label>
+                <input type="date" id="post-deadline" class="form-input" value="2026-11-30" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="form-action-bar" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--border-color); margin-top: 1rem; flex-wrap: wrap;">
+            <a href="/industry/dashboard.html" class="btn btn-secondary" style="min-width: 120px; text-align: center; justify-content: center;">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.75rem; font-size: 1rem; white-space: normal; text-align: center; justify-content: center; line-height: 1.35;">
+              <i class="fa-solid fa-paper-plane"></i> Publish Opportunity to Marketplace
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initPostOpportunityPage } from '/js/industry.js';
+    import { handleLogout } from '/js/auth.js';
+
+    window.industryLogout = handleLogout;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initPostOpportunityPage();
+    });
+  </script>
+</body>
+</html>

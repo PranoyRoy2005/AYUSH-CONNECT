@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portfolio — AYUSH CONNECT</title>
+  <meta name="description" content="Showcase your AYUSH interdisciplinary research, computational health projects, certifications, and achievements.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display">AS</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Ayush Sharma</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Verified Portfolio</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/student/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard</a></li>
+        <li><a href="/student/skill-profile.html"><span class="menu-icon"><i class="fa-solid fa-leaf"></i></span> Skill Profile</a></li>
+        <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
+        <li><a href="/student/portfolio.html" class="active"><span class="menu-icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio & Projects</a></li>
+        <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
+        <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
+        <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.75rem; color: var(--primary-deep);">Academic &amp; Research Portfolio</h1>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Manage your candidate profile, verified images, and research credentials.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="alert('Downloading Standardized AYUSH Connect Verified Resume (PDF)...');">
+            <i class="fa-solid fa-file-arrow-down"></i> Download Verified CV
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="window.addProjectPrompt()"><i class="fa-solid fa-plus"></i> Add Project</button>
+        </div>
+      </div>
+
+      <!-- CANDIDATE IDENTITY & PHOTO UPLOAD CARD -->
+      <div class="candidate-identity-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+          <!-- Candidate Photo with Live Upload Trigger -->
+          <div class="candidate-avatar-wrapper" id="candidate-photo-container">
+            <div class="candidate-avatar-fallback" id="candidate-avatar-initials">AS</div>
+            <img src="" alt="Candidate Photo" class="candidate-avatar-img" id="candidate-photo-img" style="display: none;">
+            <label for="candidate-photo-input" class="candidate-upload-trigger" title="Upload Candidate Photo">
+              <i class="fa-solid fa-camera"></i>
+            </label>
+            <input type="file" id="candidate-photo-input" accept="image/*" style="display: none;">
+          </div>
+
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+              <h2 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0;" id="candidate-card-name">Ayush Sharma</h2>
+              <span class="badge badge-teal"><i class="fa-solid fa-circle-check"></i> Verified Candidate</span>
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.35rem;">
+              <span id="candidate-course-badge"><i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> BAMS Final Year &bull; Clinical Informatics</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 1.25rem; flex-wrap: wrap;">
+              <span><i class="fa-solid fa-id-card"></i> Candidate ID: <strong>AYU-2026-STU-8821</strong></span>
+              <span id="candidate-institution-badge"><i class="fa-solid fa-building-columns"></i> All India Institute of Ayurveda (AIIA)</span>
+              <span><i class="fa-solid fa-location-dot"></i> New Delhi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo & Profile Action Controls -->
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <button class="btn btn-sm btn-primary" onclick="window.toggleAcademicEditForm(true)" title="Edit Academic Information">
+            <i class="fa-solid fa-user-pen"></i> Edit Profile
+          </button>
+          <label for="candidate-photo-input" class="btn btn-sm btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+          </label>
+          <button class="btn btn-sm btn-secondary" id="btn-remove-photo" style="display: none;" onclick="window.removeCandidatePhoto()">
+            <i class="fa-solid fa-trash-can"></i> Remove
+          </button>
+        </div>
+      </div>
+
+      <!-- EDIT PROFILE FORM (Collapsible) -->
+      <div id="academic-edit-card" class="ayush-card" style="display: none; border-left: 5px solid var(--secondary-teal); margin-bottom: 2rem; background: #fffcf7;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">Edit Candidate &amp; Academic Profile</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Update your enrolled degree, institution, and graduation timeline.</p>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="window.toggleAcademicEditForm(false)"><i class="fa-solid fa-xmark"></i> Close</button>
+        </div>
+
+        <form id="portfolio-edit-profile-form" onsubmit="window.savePortfolioProfile(event)">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="font-size: 0.82rem;">Candidate Full Name</label>
+              <input type="text" id="edit-candidate-name" class="form-input" placeholder="e.g. Ayush Sharma" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="font-size: 0.82rem;">College / University</label>
+              <input type="text" id="edit-college" class="form-input" placeholder="e.g. All India Institute of Ayurveda" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="font-size: 0.82rem;">Course / Discipline</label>
+              <select id="edit-course" class="form-input" required>
+                <option value="BAMS (Ayurveda)">BAMS (Ayurveda)</option>
+                <option value="MD / MS (Ayurveda)">MD / MS (Ayurveda)</option>
+                <option value="BNYS (Yoga &amp; Naturopathy)">BNYS (Yoga &amp; Naturopathy)</option>
+                <option value="BUMS (Unani)">BUMS (Unani)</option>
+                <option value="BSMS (Siddha)">BSMS (Siddha)</option>
+                <option value="BHMS (Homoeopathy)">BHMS (Homoeopathy)</option>
+                <option value="HealthTech &amp; AI Diagnostics">HealthTech &amp; AI Diagnostics</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="font-size: 0.82rem;">Year of Study</label>
+              <select id="edit-year" class="form-input" required>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="Final Year" selected>Final Year</option>
+                <option value="Internship Year">Internship Year</option>
+                <option value="Postgraduate / PhD">Postgraduate / PhD</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" style="font-size: 0.82rem;">Graduation Year</label>
+              <input type="number" id="edit-grad-year" class="form-input" value="2027" min="2024" max="2032" required>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="window.toggleAcademicEditForm(false)">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary">
+              <i class="fa-solid fa-check"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- PROJECTS SECTION -->
+      <div style="margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; color: var(--primary-deep);">Featured Interdisciplinary Projects</h3>
+          <span class="badge badge-primary">3 Projects</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;" id="portfolio-projects-grid">
+          <!-- Populated by student.js -->
+        </div>
+      </div>
+
+      <!-- CERTIFICATIONS & CREDENTIALS -->
+      <div style="margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin-bottom: 1rem;">Institutional Certifications</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+          <div class="ayush-card" style="border-left: 4px solid var(--secondary-teal);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <h4 style="color: var(--primary-deep); font-size: 1.05rem;">Good Clinical Practice (GCP) for ASU Drugs</h4>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">All India Institute of Ayurveda & CDSCO</div>
+              </div>
+              <span class="badge badge-teal"><i class="fa-solid fa-circle-check"></i> Verified</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem;">
+              Credential ID: <strong>AYUSH-GCP-2025-9941</strong> &bull; Issued: Dec 2025
+            </div>
+          </div>
+
+          <div class="ayush-card" style="border-left: 4px solid var(--accent-saffron);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <h4 style="color: var(--primary-deep); font-size: 1.05rem;">HPTLC Botanical Fingerprinting & QC Analysis</h4>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">CAMAG Lab & Pharmacopoeia Commission for Indian Medicine (PCIM&H)</div>
+              </div>
+              <span class="badge badge-saffron"><i class="fa-solid fa-circle-check"></i> Verified</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem;">
+              Credential ID: <strong>PCIMH-QC-8102</strong> &bull; Issued: Aug 2025
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HONORS & PUBLICATIONS -->
+      <div class="ayush-card">
+        <h3 style="font-size: 1.2rem; color: var(--primary-deep); margin-bottom: 0.75rem;">Research Publications & Awards</h3>
+        
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 0.85rem;">
+          <div style="font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
+            "High-Throughput HPTLC Screening of Flavonoids in Classical Triphala Churna Formulations"
+          </div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Published in <em>Journal of Ayurveda and Integrative Medicine (JAIM)</em> &bull; DOI: 10.1016/j.jaim.2025.100912
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
+            <i class="fa-solid fa-trophy" style="color: #f59e0b; margin-right: 0.35rem;"></i> 1st Runner-Up — National AYUSH Interdisciplinary Hackathon
+          </div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Ministry of AYUSH & AICTE &bull; AI Diagnosis track for traditional tongue & pulse sensor integration
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderPortfolio, initCandidatePhoto } from '/js/student.js';
+    import { MOCK_DB } from '/js/supabase.js';
+    import { showToast, getCurrentUser, setCurrentUser } from '/js/auth.js';
+
+    window.toggleAcademicEditForm = function(show) {
+      const editCard = document.getElementById('academic-edit-card');
+      if (editCard) {
+        editCard.style.display = show ? 'block' : 'none';
+        if (show) {
+          const user = getCurrentUser();
+          if (user.full_name) document.getElementById('edit-candidate-name').value = user.full_name;
+          if (user.institution) document.getElementById('edit-college').value = user.institution;
+          if (user.course) document.getElementById('edit-course').value = user.course;
+          if (user.year) document.getElementById('edit-year').value = user.year;
+          if (user.grad_year) document.getElementById('edit-grad-year').value = user.grad_year;
+          editCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    };
+
+    window.savePortfolioProfile = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('edit-candidate-name').value;
+      const college = document.getElementById('edit-college').value;
+      const course = document.getElementById('edit-course').value;
+      const year = document.getElementById('edit-year').value;
+      const gradYear = document.getElementById('edit-grad-year').value;
+
+      const user = getCurrentUser();
+      user.full_name = name;
+      user.institution = college;
+      user.course = course;
+      user.year = year;
+      user.grad_year = gradYear;
+      setCurrentUser(user);
+
+      // Update Identity Card Elements
+      const nameEl = document.getElementById('candidate-card-name');
+      if (nameEl) nameEl.textContent = name;
+      const courseBadge = document.getElementById('candidate-course-badge');
+      if (courseBadge) {
+        courseBadge.innerHTML = `<i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> ${course} &bull; ${year} (Class of ${gradYear})`;
+      }
+      const instBadge = document.getElementById('candidate-institution-badge');
+      if (instBadge) {
+        instBadge.innerHTML = `<i class="fa-solid fa-building-columns"></i> ${college}`;
+      }
+
+      window.toggleAcademicEditForm(false);
+      showToast('Candidate profile successfully updated & verified!', 'success');
+    };
+
+    window.addProjectPrompt = function() {
+      const title = prompt('Project Title:');
+      if (!title) return;
+      const desc = prompt('Short Description:');
+      const tech = prompt('Technologies / Domains (comma-separated):', 'Python, Dravyaguna, SQL');
+
+      MOCK_DB.projects.push({
+        id: 'proj_' + Date.now(),
+        title,
+        description: desc || 'Interdisciplinary health project.',
+        technologies: tech.split(',').map(s => s.trim()),
+        github_url: 'https://github.com/ayush-connect',
+        live_demo_url: 'https://ayushconnect.gov.in',
+        date: '2026'
+      });
+
+      renderPortfolio();
+      showToast(`Added project "${title}" to portfolio!`, 'success');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getCurrentUser();
+      renderPortfolio();
+      initCandidatePhoto(user);
+
+      // Populate user fields on identity card
+      if (user) {
+        const nameEl = document.getElementById('candidate-card-name');
+        if (nameEl && user.full_name) nameEl.textContent = user.full_name;
+        const courseBadge = document.getElementById('candidate-course-badge');
+        if (courseBadge && user.course) {
+          courseBadge.innerHTML = `<i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> ${user.course} ${user.year ? '&bull; ' + user.year : ''}`;
+        }
+        const instBadge = document.getElementById('candidate-institution-badge');
+        if (instBadge && user.institution) {
+          instBadge.innerHTML = `<i class="fa-solid fa-building-columns"></i> ${user.institution}`;
+        }
+      }
+
+      const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+      const avatarEl = document.getElementById('sidebar-avatar-display');
+      if (savedPhoto && avatarEl) {
+        avatarEl.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — AYUSH CONNECT</title>
+  <meta name="description" content="Manage your AYUSH career trajectory, track skill scores, view matched opportunities, and monitor applications.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <!-- User Mini Profile -->
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="user-avatar">AS</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);" id="user-name-display">Ayush Sharma</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">BAMS &bull; 4th Year</div>
+        </div>
+      </div>
+
+      <!-- Nav Menu -->
+      <ul class="sidebar-menu">
+        <li><a href="/student/dashboard.html" class="active"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard</a></li>
+        <li><a href="/student/skill-profile.html"><span class="menu-icon"><i class="fa-solid fa-leaf"></i></span> Skill Profile</a></li>
+        <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
+        <li><a href="/student/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio & Projects</a></li>
+        <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
+        <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
+        <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.studentLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/industry/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('industry');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Industry</a> &bull;
+          <a href="/academician/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('academician');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Academic</a> &bull;
+          <a href="/admin/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('admin');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <!-- Top Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.75rem; color: var(--primary-deep);" id="student-greeting">Welcome back!</h1>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Track your verified competencies, opportunity matches, and application pipeline.</p>
+        </div>
+        <div class="student-header-actions" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <a href="/student/assessment.html" class="btn btn-accent btn-sm" style="white-space: normal; text-align: center;"><i class="fa-solid fa-clipboard-check"></i> Take Skill Assessment</a>
+          <a href="/student/opportunities.html" class="btn btn-primary btn-sm" style="white-space: normal; text-align: center;"><i class="fa-solid fa-compass"></i> Find Opportunities</a>
+        </div>
+      </div>
+
+      <!-- Quick Metric Summary Cards -->
+      <div class="summary-cards-grid">
+        <div class="metric-card">
+          <div class="metric-title">Profile Completion</div>
+          <div class="metric-value" id="metric-profile-completion">--%</div>
+          <div class="progress-track" style="margin-top: 0.5rem;">
+            <div class="progress-fill" id="profile-progress-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Verified Skill Score</div>
+          <div class="metric-value" id="metric-skill-score">--/100</div>
+          <div style="font-size: 0.8rem; color: #10b981; font-weight: 600; margin-top: 0.5rem;" id="metric-sub-rank"><i class="fa-solid fa-check"></i> Verified via Assessment</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Applications Tracked</div>
+          <div class="metric-value" id="metric-applications">0</div>
+          <div style="font-size: 0.8rem; color: var(--secondary-teal); font-weight: 600; margin-top: 0.5rem;" id="metric-sub-apps"><i class="fa-solid fa-clock"></i> Active Submissions</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Recommended Matches</div>
+          <div class="metric-value" id="metric-recommendations">0</div>
+          <div style="font-size: 0.8rem; color: var(--accent-saffron); font-weight: 600; margin-top: 0.5rem;" id="metric-sub-recs"><i class="fa-solid fa-wand-magic-sparkles"></i> Matched Roles</div>
+        </div>
+      </div>
+
+      <!-- CAREER JOURNEY PROGRESS STEPS -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-size: 1.15rem; color: var(--primary-deep);">Your AYUSH Career Journey</h3>
+          <span class="badge badge-primary" id="journey-stage-badge">Career Pathway</span>
+        </div>
+
+        <div class="journey-steps" id="journey-steps-container">
+          <div class="journey-step done">
+            <div class="journey-step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="journey-step-label">1. Profile</div>
+            <div class="journey-step-sub" id="journey-sub-profile">Verified</div>
+          </div>
+          <div class="journey-step done">
+            <div class="journey-step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="journey-step-label">2. Skills</div>
+            <div class="journey-step-sub" id="journey-sub-skills">Logged</div>
+          </div>
+          <div class="journey-step active">
+            <div class="journey-step-circle">3</div>
+            <div class="journey-step-label">3. Assessment</div>
+            <div class="journey-step-sub" id="journey-sub-assessment">Test Score</div>
+          </div>
+          <div class="journey-step pending">
+            <div class="journey-step-circle">4</div>
+            <div class="journey-step-label">4. Portfolio</div>
+            <div class="journey-step-sub" id="journey-sub-portfolio">Projects</div>
+          </div>
+          <div class="journey-step pending">
+            <div class="journey-step-circle">5</div>
+            <div class="journey-step-label">5. Applications</div>
+            <div class="journey-step-sub" id="journey-sub-apps">Active</div>
+          </div>
+          <div class="journey-step pending">
+            <div class="journey-step-circle">6</div>
+            <div class="journey-step-label">6. Career Ready</div>
+            <div class="journey-step-sub">Placement</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TWO COLUMN SECTION: Recommended Opps & Applications Status -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Left: High Match Opportunities -->
+        <div class="ayush-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; color: var(--primary-deep);">Top Matched Opportunities</h3>
+            <a href="/student/recommendations.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600;">View All Matches <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <div id="student-top-matched-opps">
+            <!-- Dynamically populated from Supabase or isolated DEMO_MODE -->
+          </div>
+        </div>
+
+        <!-- Right: Recent Application Status -->
+        <div class="ayush-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; color: var(--primary-deep);">Application Pipeline</h3>
+            <a href="/student/applications.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600;" id="pipeline-track-all-link">Track All <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <div id="student-recent-apps-pipeline">
+            <!-- Dynamically populated from Supabase or isolated DEMO_MODE -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Skills to Improve / Suggested Actions -->
+      <div class="ayush-card">
+        <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin-bottom: 0.5rem;">Targeted Skills to Improve</h3>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          Based on algorithmic industry demand analysis for upcoming hiring cycles:
+        </p>
+        <div class="skills-improve-grid" id="skills-to-improve-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initStudentDashboard, renderSkillProfile } from '/js/student.js';
+    import { handleLogout, showToast, getCurrentUser } from '/js/auth.js';
+
+    window.studentLogout = handleLogout;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initStudentDashboard();
+      renderSkillProfile('skills-container-null');
+
+      const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+      const avatarEl = document.getElementById('user-avatar');
+      if (savedPhoto && avatarEl) {
+        avatarEl.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    });
+  </script>
+</body>
+</html>

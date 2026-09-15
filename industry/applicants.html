@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Pipeline — AYUSH CONNECT</title>
+  <meta name="description" content="Manage and evaluate candidates who have applied for your active positions.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/industry_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" style="background: var(--secondary-teal); font-weight: 700;">HW</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Himalaya Wellness</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Candidate Pool</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/industry/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span> Dashboard</a></li>
+        <li><a href="/industry/post-opportunity.html"><span class="menu-icon"><i class="fa-solid fa-circle-plus"></i></span> Post Opportunity</a></li>
+        <li><a href="/industry/post-event.html"><span class="menu-icon"><i class="fa-solid fa-calendar-check"></i></span> Post Event / Hackathon</a></li>
+        <li><a href="/industry/applicants.html" class="active"><span class="menu-icon"><i class="fa-solid fa-users-viewfinder"></i></span> Review Applicants</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.industryLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/academician/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Academic</a> &bull;
+          <a href="/admin/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <a href="/industry/dashboard.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+          </a>
+          <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">Applicant Evaluation Pipeline</h1>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">Assess verified laboratory credentials, proctored test percentiles, and manage interview invitations.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <button class="btn btn-secondary" onclick="alert('Exporting verified applicant roster to CSV...')">
+            <i class="fa-solid fa-file-arrow-down"></i> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div class="ayush-card" style="margin-bottom: 1.75rem; padding: 1.25rem 1.5rem;">
+        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+          <div style="position: relative; flex: 1; min-width: 280px;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+            <input type="text" id="cand-search-input" class="form-input" placeholder="Search candidate by name, university, or applied role..." style="padding-left: 2.75rem; width: 100%;">
+          </div>
+
+          <!-- Filter buttons with generous spacing -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-right: 0.25rem;">Filter by:</span>
+            <button class="badge badge-primary" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('All')">
+              <i class="fa-solid fa-layer-group"></i> All (28)
+            </button>
+            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Interview')">
+              <i class="fa-solid fa-calendar-check"></i> Interview (2)
+            </button>
+            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Shortlisted')">
+              <i class="fa-solid fa-star"></i> Shortlisted (8)
+            </button>
+            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Selected')">
+              <i class="fa-solid fa-circle-check"></i> Selected (4)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Table with Bordered Style & Clean Padding -->
+      <div class="ayush-card" style="padding: 0; overflow: hidden;">
+        <div style="overflow-x: auto;">
+          <table class="bordered-table" style="width: 100%; border: none;">
+            <thead>
+              <tr>
+                <th style="padding: 1.1rem 1.25rem;">Candidate & Academic Background</th>
+                <th style="padding: 1.1rem 1.25rem;">Role Applied & Verified Skills</th>
+                <th style="padding: 1.1rem 1.25rem;">Match Score</th>
+                <th style="padding: 1.1rem 1.25rem;">Applied Date</th>
+                <th style="padding: 1.1rem 1.25rem;">Status</th>
+                <th style="padding: 1.1rem 1.25rem;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-applicants-table">
+              <!-- Rendered via industry.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderAllApplicants } from '/js/industry.js';
+    import { handleLogout } from '/js/auth.js';
+
+    window.industryLogout = handleLogout;
+
+    let currentFilter = 'All';
+
+    window.filterCandidates = function(status) {
+      currentFilter = status;
+      renderAllApplicants(currentFilter, document.getElementById('cand-search-input').value);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAllApplicants('All');
+
+      const search = document.getElementById('cand-search-input');
+      if (search) {
+        search.addEventListener('input', (e) => {
+          renderAllApplicants(currentFilter, e.target.value);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

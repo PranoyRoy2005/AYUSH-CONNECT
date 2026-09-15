@@ -1,0 +1,42 @@
+/* ==========================================================================
+   AYUSH CONNECT — Administrator Dashboard Styles
+   ========================================================================== */
+
+.admin-badge-role {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+}
+
+.admin-badge-role.student { background: #e0f2fe; color: #0369a1; }
+.admin-badge-role.industry { background: #dcfce7; color: #15803d; }
+.admin-badge-role.academician { background: #fef3c7; color: #b45309; }
+.admin-badge-role.admin { background: #f3e8ff; color: #7e22ce; }
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.pending::before { background: var(--accent-saffron); }
+.status-indicator.approved::before { background: #10b981; }
+.status-indicator.rejected::before { background: #ef4444; }
+
+.admin-stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}

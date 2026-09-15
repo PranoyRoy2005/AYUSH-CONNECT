@@ -1,0 +1,14 @@
+<!-- Symlink mirror to /auth/callback.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="refresh" content="0; url=/auth/callback.html">
+  <title>Redirecting to Auth Callback...</title>
+</head>
+<body>
+  <script>
+    // Preserve query parameters and hash fragments
+    window.location.replace('/auth/callback.html' + window.location.search + window.location.hash);
+  </script>
+</body>
+</html>

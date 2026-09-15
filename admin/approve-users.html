@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approve Users — AYUSH CONNECT</title>
+  <meta name="description" content="Audit and approve industry partners, recruiters, and university professors.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div id="admin-sidebar-avatar" class="user-avatar-circle admin-sidebar-avatar" style="background: #1e3a8a; font-weight: 700;">AD</div>
+        <div style="overflow: hidden;">
+          <div id="admin-sidebar-name" class="admin-sidebar-name" style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Administrator</div>
+          <div id="admin-sidebar-role" class="admin-sidebar-role" style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">admin@ayushconnect.gov.in</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-shield-halved"></i></span> Admin Overview</a></li>
+        <li><a href="/admin/approve-users.html" class="active"><span class="menu-icon"><i class="fa-solid fa-user-check"></i></span> Approve Users (<span class="admin-pending-count-num" id="adm-pending-badge-count">1</span>)</a></li>
+        <li><a href="/admin/manage-questions.html"><span class="menu-icon"><i class="fa-solid fa-book-open"></i></span> Question Bank</a></li>
+        <li><a href="/admin/manage-roles.html"><span class="menu-icon"><i class="fa-solid fa-user-shield"></i></span> Role Governance</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.adminLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/industry/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Industry</a> &bull;
+          <a href="/academician/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Academic</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="margin-bottom: 2rem;">
+        <a href="/admin/dashboard.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Admin Dashboard
+        </a>
+        <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">KYC Verification & User Approvals</h1>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">Verify corporate registration certificates, university domain ownership, and academic faculty credentials.</p>
+      </div>
+
+      <div class="ayush-card" style="padding: 0; overflow: hidden; border: 1px solid var(--border-color);">
+        <div style="overflow-x: auto;">
+          <table class="bordered-table" style="width: 100%; border: none;">
+            <thead>
+              <tr>
+                <th style="padding: 1.1rem 1.25rem;">Applicant & Email</th>
+                <th style="padding: 1.1rem 1.25rem;">Role</th>
+                <th style="padding: 1.1rem 1.25rem;">Organization / Institution</th>
+                <th style="padding: 1.1rem 1.25rem;">Registered Date</th>
+                <th style="padding: 1.1rem 1.25rem;">Status</th>
+                <th style="padding: 1.1rem 1.25rem;">Decision Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adm-full-approvals-table">
+              <!-- Rendered via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderFullApprovalsTable, syncAdminProfile, refreshAdminStats } from '/js/admin.js';
+    import { handleLogout } from '/js/auth.js';
+
+    window.adminLogout = handleLogout;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await syncAdminProfile();
+      await renderFullApprovalsTable();
+      await refreshAdminStats();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AYUSH CONNECT — Connecting Skills, Opportunities & Careers</title>
+  <meta name="description" content="Empowering students to discover their skills, connect with industry, and build meaningful career opportunities in the AYUSH and health technology ecosystem.">
+  <meta property="og:title" content="AYUSH CONNECT — Connecting Skills, Opportunities & Careers">
+  <meta property="og:description" content="Empowering students to discover their skills, connect with industry, and build meaningful career opportunities.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body class="ayush-bg-pattern">
+
+  <script type="module">
+    // Only forward if an OAuth provider redirected directly to root with tokens/codes in the URL
+    if (window.location.hash.includes('access_token=') || (window.location.search.includes('code=') && !window.location.search.includes('error='))) {
+      window.location.replace('/auth/callback.html' + window.location.search + window.location.hash);
+    }
+  </script>
+
+
+  <!-- Sticky Navbar -->
+  <header class="ayush-navbar" id="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="brand-link" id="nav-brand-logo">
+        <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT Logo">
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav>
+        <ul class="nav-menu" id="nav-menu">
+          <li><a href="/index.html" class="nav-link active" id="nav-home">Home</a></li>
+          <li><a href="#how-it-works" class="nav-link" id="nav-how">How It Works</a></li>
+          <li><a href="#ecosystem" class="nav-link" id="nav-ecosystem">Ecosystem</a></li>
+          <li><a href="/student/opportunities.html" class="nav-link" id="nav-opps">Opportunities</a></li>
+          <li><a href="#about" class="nav-link" id="nav-about">About Us</a></li>
+        </ul>
+      </nav>
+
+      <!-- Action Buttons & Demo Quick Switcher -->
+      <div class="nav-actions">
+        <!-- Quick Role Switcher -->
+        <div class="role-demo-pill" id="demo-role-dropdown" title="Quick Role Switcher">
+          <span style="font-size: 11px;"><i class="fa-solid fa-bolt" style="color: var(--accent-saffron); margin-right: 2px;"></i> DEMO:</span>
+          <select id="quick-role-select" style="border:none;background:transparent;font-size:12px;font-weight:700;color:var(--accent-saffron);cursor:pointer;outline:none;" onchange="window.switchDemoRoleDirect(this.value)">
+            <option value="">Switch Role...</option>
+            <option value="student">Student (Ayush Sharma)</option>
+            <option value="industry">Industry (Himalaya R&D)</option>
+            <option value="academician">Academician (NIA Jaipur)</option>
+          </select>
+        </div>
+
+        <a href="/login.html" class="btn btn-secondary btn-sm" id="btn-login-nav">Login</a>
+        <a href="/register.html" class="btn btn-primary btn-sm" id="btn-register-nav">Register</a>
+        <!-- One-click Development / Production Mode Switcher -->
+        <button type="button" class="mode-toggle-btn mode-dev" id="app-mode-toggle" onclick="window.toggleAppMode()" title="Toggle Development / Production Mode">
+          <i class="fa-solid fa-code" style="color: #ea580c;"></i>
+          <span>Dev Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" style="padding: 4rem 1.5rem 5rem; max-width: 1280px; margin: 0 auto; position: relative;">
+      <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 3.5rem; align-items: center;">
+        
+        <!-- Left Hero Content -->
+        <div class="hero-content">
+          <div class="hero-national-badge">
+            <img src="/assets/icons/ayush-emblem.svg" alt="Seal" style="width: 18px; height: 18px; flex-shrink: 0;">
+            <span>NATIONAL DIGITAL WORKFORCE PLATFORM</span>
+          </div>
+
+          <h1 style="font-size: 3rem; line-height: 1.15; color: var(--primary-dark); margin-bottom: 1rem;">
+            AYUSH <span style="color: var(--secondary-teal);">CONNECT</span>
+          </h1>
+
+          <div class="hero-tagline">
+            "Connecting Skills, Opportunities &amp; Careers"
+          </div>
+
+          <p style="font-size: 1.125rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 2rem; max-width: 540px;">
+            Empowering students to discover their skills, connect with industry, and build meaningful career opportunities — bridging traditional AYUSH wisdom with modern scientific analytics.
+          </p>
+
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="/register.html" class="btn btn-primary btn-lg" id="hero-cta-primary">
+              Get Started <i class="fa-solid fa-arrow-right" style="margin-left: 0.4rem;"></i>
+            </a>
+            <a href="/student/opportunities.html" class="btn btn-secondary btn-lg" id="hero-cta-secondary">
+              <i class="fa-solid fa-compass" style="margin-right: 0.4rem;"></i> Explore Opportunities
+            </a>
+          </div>
+
+          <!-- Secondary message -->
+          <div style="margin-top: 2rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; color: var(--text-muted);">
+            <span style="color: var(--secondary-teal); font-weight: 700;"><i class="fa-solid fa-certificate"></i></span>
+            <span>Where classical learning meets next-generation industry opportunity.</span>
+          </div>
+        </div>
+
+        <!-- Right Hero Visual: Floating Showcase Window with Landing Page Image -->
+        <div class="hero-visual">
+          <div class="hero-floating-window" id="hero-floating-window" style="padding: 0.65rem; background: #ffffff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--border-color);">
+            <div style="width: 100%; border-radius: calc(var(--radius-lg) - 4px); overflow: hidden; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fbfcfb 0%, #f4fbf8 100%);">
+              <img src="/assets/images/landing page image.png" alt="AYUSH CONNECT Platform Showcase" id="landing-hero-img" style="width: 100%; height: auto; display: block; border-radius: calc(var(--radius-lg) - 4px); object-fit: cover;" onerror="this.onerror=null; this.src='/assets/images/ayush-hero-network.svg';">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 1: WHY AYUSH CONNECT -->
+    <section style="background: #ffffff; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); padding: 4.5rem 1.5rem;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
+          <span class="badge badge-teal">National Vision</span>
+          <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">Why AYUSH Connect?</h2>
+          <p>India is experiencing an unprecedented global surge in traditional wellness, evidence-based Ayurveda, and biotechnology. AYUSH Connect solves the critical gap between academic curriculum and industrial requirements.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+          <div class="ayush-card">
+            <div style="font-size: 1.75rem; color: var(--primary-deep); margin-bottom: 0.75rem;"><i class="fa-solid fa-seedling"></i></div>
+            <h4 style="color: var(--primary-deep); margin-bottom: 0.5rem;">Interdisciplinary Synergy</h4>
+            <p style="font-size: 0.9rem;">Combines classical Ayurveda, Yoga & Naturopathy, Unani, Siddha, and Homoeopathy with modern pharmacology, biostatistics, and data science.</p>
+          </div>
+
+          <div class="ayush-card">
+            <div style="font-size: 1.75rem; color: var(--secondary-teal); margin-bottom: 0.75rem;"><i class="fa-solid fa-bullseye"></i></div>
+            <h4 style="color: var(--primary-deep); margin-bottom: 0.5rem;">Skill Taxonomy & Verification</h4>
+            <p style="font-size: 0.9rem;">Adaptive standardized assessments validate technical proficiency in HPTLC quality control, clinical research, and pharmacovigilance.</p>
+          </div>
+
+          <div class="ayush-card">
+            <div style="font-size: 1.75rem; color: var(--accent-saffron); margin-bottom: 0.75rem;"><i class="fa-solid fa-handshake"></i></div>
+            <h4 style="color: var(--primary-deep); margin-bottom: 0.5rem;">Direct Industry Pipeline</h4>
+            <p style="font-size: 0.9rem;">Direct recruitment linkage with enterprises like Dabur, Himalaya, Patanjali, and premier government councils like CCRAS and AIIA.</p>
+          </div>
+
+          <div class="ayush-card">
+            <div style="font-size: 1.75rem; color: var(--secondary-dark); margin-bottom: 0.75rem;"><i class="fa-solid fa-chart-line"></i></div>
+            <h4 style="color: var(--primary-deep); margin-bottom: 0.5rem;">Academic Trend Radar</h4>
+            <p style="font-size: 0.9rem;">Universities receive actionable telemetry on industry skill shortages to update and modernize syllabus electives dynamically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: HOW IT WORKS -->
+    <section id="how-it-works" style="padding: 5rem 1.5rem; max-width: 1240px; margin: 0 auto;">
+      <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
+        <span class="badge badge-primary">System Architecture</span>
+        <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">How AYUSH Connect Works</h2>
+        <p>A closed-loop 4-pillar career acceleration pathway linking student potential with market demand.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+        <div class="ayush-card" style="border-top: 4px solid var(--primary-deep);">
+          <div class="badge badge-primary" style="margin-bottom: 0.75rem;">Step 1</div>
+          <h4 style="color: var(--primary-deep); margin-bottom: 0.5rem;">Profile & Skill Inventory</h4>
+          <p style="font-size: 0.9rem;">Students build a standardized profile articulating both their classical AYUSH coursework and digital/laboratory competencies.</p>
+        </div>
+
+        <div class="ayush-card" style="border-top: 4px solid var(--secondary-teal);">
+          <div class="badge badge-teal" style="margin-bottom: 0.75rem;">Step 2</div>
+          <h4 style="color: var(--secondary-dark); margin-bottom: 0.5rem;">Adaptive Assessment</h4>
+          <p style="font-size: 0.9rem;">Students undergo rigorous multi-domain assessments evaluating problem solving, regulatory compliance, and laboratory QC.</p>
+        </div>
+
+        <div class="ayush-card" style="border-top: 4px solid var(--accent-saffron);">
+          <div class="badge badge-saffron" style="margin-bottom: 0.75rem;">Step 3</div>
+          <h4 style="color: #b45309; margin-bottom: 0.5rem;">Intelligent Matching</h4>
+          <p style="font-size: 0.9rem;">Our matching engine calculates cosine skill affinity between student profiles and live industry opportunities with clear gap insights.</p>
+        </div>
+
+        <div class="ayush-card" style="border-top: 4px solid #10b981;">
+          <div class="badge badge-success" style="margin-bottom: 0.75rem;">Step 4</div>
+          <h4 style="color: #065f46; margin-bottom: 0.5rem;">1-Click Apply & Placement</h4>
+          <p style="font-size: 0.9rem;">Direct application to verified internships, jobs, research grants, and hackathons with real-time status tracking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3, 4, 5: FOR STUDENTS, INDUSTRY, ACADEMICIANS (ECOSYSTEM) -->
+    <section id="ecosystem" style="background: #ffffff; border-top: 1px solid var(--border-color); padding: 5rem 1.5rem;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
+          <span class="badge badge-saffron">Multi-Stakeholder Portal</span>
+          <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">Built For Every Stakeholder</h2>
+          <p>Seamlessly unifying the key pillars of the AYUSH higher education and industrial sphere.</p>
+        </div>
+
+        <div class="portal-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 2rem;">
+          <!-- Card: For Students -->
+          <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.3rem; color: var(--primary-deep);"><i class="fa-solid fa-user-graduate" style="margin-right: 0.4rem;"></i> For Students</h3>
+                <span class="badge badge-primary">Scholars & Interns</span>
+              </div>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Standardized skill profile & verified score badge</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Discover curated internships at Dabur, Himalaya & CCRAS</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Intelligent skill gap feedback & recommendations</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Build and showcase research projects & download CV</li>
+              </ul>
+            </div>
+            <a href="/student/dashboard.html" class="btn btn-primary" style="width: 100%;">
+              Open Student Portal <i class="fa-solid fa-arrow-right" style="margin-left: 0.3rem;"></i>
+            </a>
+          </div>
+
+          <!-- Card: For Industry -->
+          <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.3rem; color: var(--secondary-dark);"><i class="fa-solid fa-building" style="margin-right: 0.4rem;"></i> For Industry</h3>
+                <span class="badge badge-teal">Recruiters & R&D</span>
+              </div>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Post jobs, internships, clinical projects & hackathons</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> View pre-assessed candidates with verified match %</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> 1-click shortlist, interview scheduling & offer tracking</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Cut recruitment turn-around time by 70%</li>
+              </ul>
+            </div>
+            <a href="/industry/dashboard.html" class="btn btn-outline-teal" style="width: 100%;" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('industry');return false;}">
+              Open Industry Portal <i class="fa-solid fa-arrow-right" style="margin-left: 0.3rem;"></i>
+            </a>
+          </div>
+
+          <!-- Card: For Academicians -->
+          <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.3rem; color: var(--primary-dark);"><i class="fa-solid fa-building-columns" style="margin-right: 0.4rem;"></i> For Academicians</h3>
+                <span class="badge badge-saffron">Universities & Deans</span>
+              </div>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Real-time telemetry on student cohort skill distributions</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Actionable gap recommendations for curriculum updates</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Monitor university assessment completion rates</li>
+                <li><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 0.4rem;"></i> Bridge campus research with industrial sponsor grants</li>
+              </ul>
+            </div>
+            <a href="/academician/dashboard.html" class="btn btn-secondary" style="width: 100%;" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('academician');return false;}">
+              Open Academic Portal <i class="fa-solid fa-arrow-right" style="margin-left: 0.3rem;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6 & 7: SKILL-BASED MATCHING & OPPORTUNITY DISCOVERY PREVIEW -->
+    <section style="padding: 5rem 1.5rem; max-width: 1240px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-teal">Intelligent Marketplace</span>
+          <h2 style="margin-top: 0.5rem;">Live Opportunities Discovery</h2>
+          <p>Explore opportunities matched directly with student competencies.</p>
+        </div>
+        <a href="/student/opportunities.html" class="btn btn-secondary">
+          View All Opportunities <i class="fa-solid fa-arrow-right" style="margin-left: 0.3rem;"></i>
+        </a>
+      </div>
+
+      <div class="landing-opps-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.5rem;" id="landing-opps-preview">
+        <!-- Opp 1 Preview -->
+        <div class="opportunity-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="opp-company-logo">DAB</div>
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Dabur India R&D Centre</div>
+                  <h4 style="color: var(--primary-dark); font-size: 1.1rem;">Ayurvedic Clinical Informatics Intern</h4>
+                </div>
+              </div>
+              <span class="badge badge-teal">Internship</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-teal);"></i> Ghaziabad / Hybrid</span> &bull; <span><i class="fa-solid fa-indian-rupee-sign" style="color: var(--accent-saffron);"></i> ₹28,000 / month</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+              <span class="badge badge-primary">Herbal Pharmacology</span>
+              <span class="badge badge-primary">Clinical Python</span>
+              <span class="badge badge-primary">SQL</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
+            <span class="match-score-badge"><i class="fa-solid fa-star" style="color: #f59e0b; margin-right: 2px;"></i> 94% Match</span>
+            <a href="/student/opportunities.html" class="btn btn-sm btn-accent">Apply Now</a>
+          </div>
+        </div>
+
+        <!-- Opp 2 Preview -->
+        <div class="opportunity-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="opp-company-logo">HIM</div>
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Himalaya Wellness Company</div>
+                  <h4 style="color: var(--primary-dark); font-size: 1.1rem;">Herbal Formulation Quality Analyst</h4>
+                </div>
+              </div>
+              <span class="badge badge-primary">Job</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-teal);"></i> Bengaluru, Karnataka</span> &bull; <span><i class="fa-solid fa-indian-rupee-sign" style="color: var(--accent-saffron);"></i> ₹7.2 - 9.0 LPA</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+              <span class="badge badge-primary">Ayurvedic QC</span>
+              <span class="badge badge-primary">HPTLC</span>
+              <span class="badge badge-primary">Pharmacovigilance</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
+            <span class="match-score-badge"><i class="fa-solid fa-star" style="color: #f59e0b; margin-right: 2px;"></i> 88% Match</span>
+            <a href="/student/opportunities.html" class="btn btn-sm btn-accent">Apply Now</a>
+          </div>
+        </div>
+
+        <!-- Opp 3 Preview -->
+        <div class="opportunity-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="opp-company-logo">GOV</div>
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Ministry of AYUSH Councils</div>
+                  <h4 style="color: var(--primary-dark); font-size: 1.1rem;">National AYUSH Datathon</h4>
+                </div>
+              </div>
+              <span class="badge badge-saffron">Hackathon</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-teal);"></i> New Delhi</span> &bull; <span><i class="fa-solid fa-indian-rupee-sign" style="color: var(--accent-saffron);"></i> ₹2.5L Prize Pool</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+              <span class="badge badge-primary">Clinical Informatics</span>
+              <span class="badge badge-primary">Data Science</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
+            <span class="match-score-badge"><i class="fa-solid fa-star" style="color: #f59e0b; margin-right: 2px;"></i> 95% Match</span>
+            <a href="/student/opportunities.html" class="btn btn-sm btn-accent">Apply Now</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: CAREER JOURNEY -->
+    <section style="background: #ffffff; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4.5rem 1.5rem;">
+      <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
+        <span class="badge badge-primary">Continuous Growth</span>
+        <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">The AYUSH Scholar Career Journey</h2>
+        <p style="max-width: 600px; margin: 0 auto 2.5rem;">From classroom learning to industry leadership in 6 structured milestones.</p>
+
+        <div class="journey-steps" style="max-width: 900px; margin: 0 auto;">
+          <div class="journey-step done">
+            <div class="journey-step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="journey-step-label">Profile</div>
+            <div class="journey-step-sub">Verified Identity</div>
+          </div>
+          <div class="journey-step done">
+            <div class="journey-step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="journey-step-label">Skills</div>
+            <div class="journey-step-sub">Taxonomy Log</div>
+          </div>
+          <div class="journey-step done">
+            <div class="journey-step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="journey-step-label">Assessment</div>
+            <div class="journey-step-sub">Objective Score</div>
+          </div>
+          <div class="journey-step active">
+            <div class="journey-step-circle">4</div>
+            <div class="journey-step-label">Portfolio</div>
+            <div class="journey-step-sub">Active Projects</div>
+          </div>
+          <div class="journey-step pending">
+            <div class="journey-step-circle">5</div>
+            <div class="journey-step-label">Applications</div>
+            <div class="journey-step-sub">Interview Track</div>
+          </div>
+          <div class="journey-step pending">
+            <div class="journey-step-circle">6</div>
+            <div class="journey-step-label">Career Ready</div>
+            <div class="journey-step-sub">Placement</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: CALL TO ACTION -->
+    <section style="padding: 5rem 1.5rem; text-align: center; max-width: 900px; margin: 0 auto;">
+      <div class="ayush-card" style="background: linear-gradient(145deg, #0d382d 0%, #134e3f 100%); color: #ffffff; padding: 3.5rem 2rem; position: relative; overflow: hidden;">
+        <div style="position: relative; z-index: 2;">
+          <span class="badge" style="background: rgba(255,255,255,0.15); color: #fff; margin-bottom: 1rem;">Join the Movement</span>
+          <h2 style="color: #ffffff; font-size: 2.25rem; margin-bottom: 1rem;">Ready to Accelerate Your AYUSH Career?</h2>
+          <p style="color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem;">
+            Whether you are a student discovering your unique strengths, an academician guiding research, or a recruiter seeking top talent.
+          </p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/register.html" class="btn btn-accent btn-lg">Create Free Account</a>
+            <a href="/login.html" class="btn btn-secondary btn-lg" style="background: transparent; color: #fff; border-color: rgba(255,255,255,0.4);">
+              Sign In
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="about" style="background: #ffffff; border-top: 1px solid var(--border-color); padding: 3.5rem 1.5rem 2rem;">
+    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem;">
+      <div>
+        <img src="/assets/icons/ayush-logo.svg" alt="Logo" style="height: 42px; margin-bottom: 1rem;">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 340px; line-height: 1.6;">
+          AYUSH CONNECT is the official national digital workforce and career acceleration platform empowering student-to-industry connection and skill development across Ayurveda, Yoga, Naturopathy, Unani, Siddha, and Homoeopathy.
+        </p>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">Portals</h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem;">
+          <li><a href="/student/dashboard.html"><i class="fa-solid fa-user-graduate" style="margin-right: 0.35rem; color: var(--primary-deep);"></i> Student Dashboard</a></li>
+          <li><a href="/industry/dashboard.html" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('industry');return false;}"><i class="fa-solid fa-building" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Industry Dashboard</a></li>
+          <li><a href="/academician/dashboard.html" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('academician');return false;}"><i class="fa-solid fa-building-columns" style="margin-right: 0.35rem; color: var(--accent-saffron);"></i> Academician Dashboard</a></li>
+          <li><a href="/admin/login.html"><i class="fa-solid fa-shield-halved" style="margin-right: 0.35rem; color: var(--primary-dark);"></i> Government Nodal Desk</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">Student Tools</h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem;">
+          <li><a href="/student/skill-profile.html"><i class="fa-solid fa-leaf" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Skill Profile</a></li>
+          <li><a href="/student/assessment.html"><i class="fa-solid fa-clipboard-check" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Skill Assessment</a></li>
+          <li><a href="/student/opportunities.html"><i class="fa-solid fa-compass" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Opportunity Discovery</a></li>
+          <li><a href="/student/recommendations.html"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> AI Recommendations</a></li>
+          <li><a href="/student/portfolio.html"><i class="fa-solid fa-briefcase" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Portfolio & Projects</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">AYUSH Systems</h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem; color: var(--text-muted);">
+          <li>Ayurveda (BAMS, MD)</li>
+          <li>Yoga & Naturopathy (BNYS)</li>
+          <li>Unani & Siddha Medicine</li>
+          <li>Homoeopathy Systems</li>
+          <li>WHO ICD-11 & NAMASTE Codes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="max-width: 1240px; margin: 0 auto; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted);">
+      <div>&copy; 2026 AYUSH CONNECT. All rights reserved.</div>
+      <div>Connecting Skills, Opportunities & Careers</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { switchDemoRole } from '/js/auth.js';
+
+    window.switchDemoRoleDirect = function(role) {
+      if (role) switchDemoRole(role);
+    };
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (nav) {
+        if (window.scrollY > 20) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

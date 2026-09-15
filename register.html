@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — AYUSH CONNECT</title>
+  <meta name="description" content="Create your AYUSH Connect account to unlock personalized career opportunities, skill assessments, and industry connections.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/register.css">
+  <script type="module" src="/js/auth.js"></script>
+</head>
+<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <!-- Header -->
+  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 0.75rem;">
+    <a href="/index.html">
+      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
+    </a>
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <a href="/login.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+      </a>
+      <button type="button" class="mode-toggle-btn mode-dev" id="app-mode-toggle" onclick="window.toggleAppMode()" title="Toggle Development / Production Mode">
+        <i class="fa-solid fa-code" style="color: #ea580c;"></i>
+        <span>Dev Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="register-wrapper">
+    <div class="register-card" style="max-width: 540px;">
+      <div class="register-header" style="text-align: center; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Join AYUSH Connect</h1>
+        <p style="font-size: 0.92rem; color: var(--text-secondary);">Connecting Skills, Opportunities &amp; Careers across the AYUSH ecosystem</p>
+      </div>
+
+      <!-- Select Account Role -->
+      <div style="margin-bottom: 1.25rem;">
+        <label class="form-label" style="text-align: center; display: block; margin-bottom: 0.6rem;">Select your primary portal role</label>
+        <div class="role-selection-grid" id="register-role-selector" style="margin: 0; gap: 0.65rem;">
+          <div class="role-select-card active" data-role="student" onclick="window.setRegisterRole('student')" style="padding: 0.85rem 0.5rem;">
+            <div style="font-size: 1.35rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="role-title" style="font-size: 0.88rem;">Student</div>
+            <div class="role-desc" style="font-size: 0.72rem;">Scholars &amp; Interns</div>
+          </div>
+
+          <div class="role-select-card" data-role="industry" onclick="window.setRegisterRole('industry')" style="padding: 0.85rem 0.5rem;">
+            <div style="font-size: 1.35rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="role-title" style="font-size: 0.88rem;">Organization</div>
+            <div class="role-desc" style="font-size: 0.72rem;">Enterprises &amp; R&amp;D</div>
+          </div>
+
+          <div class="role-select-card" data-role="academician" onclick="window.setRegisterRole('academician')" style="padding: 0.85rem 0.5rem;">
+            <div style="font-size: 1.35rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="role-title" style="font-size: 0.88rem;">Academic</div>
+            <div class="role-desc" style="font-size: 0.72rem;">Professors &amp; Deans</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Registration Options: Google & GitHub -->
+      <div class="social-login-grid">
+        <button type="button" class="social-btn" id="btn-reg-google" onclick="window.registerWithSocial('google')">
+          <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.1rem;"></i>
+          <span>Sign up with Google</span>
+        </button>
+        <button type="button" class="social-btn" id="btn-reg-github" onclick="window.registerWithSocial('github')">
+          <i class="fa-brands fa-github" style="color: #24292e; font-size: 1.15rem;"></i>
+          <span>Sign up with GitHub</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>OR COMPLETE WITH EMAIL</span>
+      </div>
+
+      <!-- Simplified Form: Name/Organization, Professional Email, and Password -->
+      <form id="register-form">
+        <!-- Professional Full Name / Organization Section -->
+        <div class="gov-email-group">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="reg-name" id="reg-name-label" style="margin: 0; font-weight: 600;">Full Name</label>
+            <span class="gov-domain-badge" id="name-badge-hint"><i class="fa-solid fa-id-card"></i> Candidate Verification</span>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon"><i class="fa-solid fa-user" id="name-input-icon"></i></span>
+            <input type="text" id="reg-name" class="gov-email-input" placeholder="e.g. Ayush Sharma" required>
+          </div>
+          <div class="gov-email-footer">
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official government or academic name</span>
+            <span id="name-format-hint" style="color: var(--secondary-teal); font-weight: 600;">As per Records</span>
+          </div>
+        </div>
+
+        <!-- Professional Government Portal Email Section -->
+        <div class="gov-email-group">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="reg-email" id="reg-email-label" style="margin: 0; font-weight: 600;">Email</label>
+            <span class="gov-domain-badge"><i class="fa-solid fa-shield-halved"></i> Institutional Verification</span>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email" id="reg-email" class="gov-email-input" placeholder="e.g. ayush.sharma@ayush.edu.in" autocomplete="email" required>
+          </div>
+          <div class="gov-email-footer">
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official or institutional email</span>
+            <span id="email-format-hint" style="color: var(--secondary-teal); font-weight: 600;">.edu.in / .gov.in / Scholar</span>
+          </div>
+        </div>
+
+        <!-- Professional Government Portal Password Section -->
+        <div class="gov-email-group">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="reg-password" style="margin: 0; font-weight: 600;">Password</label>
+            <span class="gov-domain-badge"><i class="fa-solid fa-lock"></i> 256-Bit Encrypted</span>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon"><i class="fa-solid fa-key"></i></span>
+            <input type="password" id="reg-password" class="gov-email-input" placeholder="Minimum 8 characters" style="padding-right: 2.75rem !important;" required>
+            <button type="button" onclick="window.toggleRegPasswordVisibility()" style="position: absolute; right: 0.85rem; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; z-index: 2;" title="Toggle Password Visibility" id="btn-toggle-reg-pwd">
+              <i class="fa-solid fa-eye" id="pwd-toggle-icon"></i>
+            </button>
+          </div>
+          <div class="gov-email-footer">
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Minimum 8 characters</span>
+            <span style="color: var(--secondary-teal); font-weight: 600;">Alphanumeric Passphrase</span>
+          </div>
+        </div>
+
+        <!-- Post-login profile setup notice -->
+        <div class="profile-postlogin-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <div id="postlogin-notice-text">
+            <strong>Streamlined Registration:</strong> Additional profile details (institution, degree, year of study, and verified competencies) can be completed in your dashboard after registration.
+          </div>
+        </div>
+
+        <!-- Terms checkbox -->
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer;">
+            <input type="checkbox" id="terms-checkbox" required style="margin-top: 0.2rem;">
+            <span>I agree to the AYUSH Connect platform charter, privacy policy, and institutional integrity standards.</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; white-space: normal; text-align: center; line-height: 1.35; box-sizing: border-box;" id="btn-reg-submit">
+          <span id="btn-reg-text">Create Account &amp; Access Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+        Already registered? <a href="/login.html" style="color: var(--primary-deep); font-weight: 700; text-decoration: underline;">Sign In here</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH
+  </footer>
+
+  <script type="module">
+    import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser } from '/js/auth.js';
+    import { openGoogleAuthModal } from '/js/google-sso.js';
+
+    let selectedRole = 'student';
+
+    window.setRegisterRole = function(role) {
+      selectedRole = role;
+      document.querySelectorAll('.role-select-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.role === role);
+      });
+
+      const nameLabel = document.getElementById('reg-name-label');
+      const nameInput = document.getElementById('reg-name');
+      const nameIcon = document.getElementById('name-input-icon');
+      const nameBadge = document.getElementById('name-badge-hint');
+      const nameFormatHint = document.getElementById('name-format-hint');
+      const emailInput = document.getElementById('reg-email');
+      const noticeDiv = document.getElementById('postlogin-notice-text');
+      const submitBtnText = document.getElementById('btn-reg-text');
+      const emailHint = document.getElementById('email-format-hint');
+
+      if (role === 'industry') {
+        if (nameLabel) nameLabel.textContent = 'Organization';
+        if (nameInput) nameInput.placeholder = 'e.g. Himalaya Wellness Company, Dabur India, Patanjali Ayurved';
+        if (nameIcon) nameIcon.className = 'fa-solid fa-building';
+        if (nameBadge) nameBadge.innerHTML = '<i class="fa-solid fa-building"></i> Enterprise Entity';
+        if (nameFormatHint) nameFormatHint.textContent = 'Registered Corporate Entity';
+        if (emailInput) emailInput.placeholder = 'e.g. corporate.recruitment@himalayawellness.com';
+        if (noticeDiv) noticeDiv.innerHTML = '<strong>Enterprise Registration:</strong> Additional organization details (corporate CIN, GSTIN, and recruiting verification) can be completed in your dashboard after registration.';
+        if (submitBtnText) submitBtnText.textContent = 'Register Organization & Access Portal';
+        if (emailHint) emailHint.textContent = 'Corporate / Enterprise Domain';
+      } else if (role === 'academician') {
+        if (nameLabel) nameLabel.textContent = 'Faculty / Academician Name';
+        if (nameInput) nameInput.placeholder = 'e.g. Prof. Dr. V. S. Ramaswamy';
+        if (nameIcon) nameIcon.className = 'fa-solid fa-user-tie';
+        if (nameBadge) nameBadge.innerHTML = '<i class="fa-solid fa-building-columns"></i> Academic Faculty';
+        if (nameFormatHint) nameFormatHint.textContent = 'Institutional Faculty';
+        if (emailInput) emailInput.placeholder = 'e.g. vs.ramaswamy@nia.edu.in';
+        if (noticeDiv) noticeDiv.innerHTML = '<strong>Academic Faculty Registration:</strong> Additional academic credentials (institution affiliation, research electives, and department chair verification) can be completed in your dashboard after registration.';
+        if (submitBtnText) submitBtnText.textContent = 'Register Academic Account & Access Portal';
+        if (emailHint) emailHint.textContent = '.edu.in / University Domain';
+      } else {
+        if (nameLabel) nameLabel.textContent = 'Full Name';
+        if (nameInput) nameInput.placeholder = 'e.g. Ayush Sharma';
+        if (nameIcon) nameIcon.className = 'fa-solid fa-user';
+        if (nameBadge) nameBadge.innerHTML = '<i class="fa-solid fa-id-card"></i> Candidate Verification';
+        if (nameFormatHint) nameFormatHint.textContent = 'As per Records';
+        if (emailInput) emailInput.placeholder = 'e.g. ayush.sharma@ayush.edu.in';
+        if (noticeDiv) noticeDiv.innerHTML = '<strong>Streamlined Registration:</strong> Additional profile details (institution, degree, year of study, and verified competencies) can be completed in your dashboard after registration.';
+        if (submitBtnText) submitBtnText.textContent = 'Create Account & Access Dashboard';
+        if (emailHint) emailHint.textContent = '.edu.in / .gov.in / Scholar Domain';
+      }
+    };
+
+    window.toggleRegPasswordVisibility = function() {
+      const pwd = document.getElementById('reg-password');
+      const icon = document.getElementById('pwd-toggle-icon');
+      if (pwd) {
+        if (pwd.type === 'password') {
+          pwd.type = 'text';
+          if (icon) icon.className = 'fa-solid fa-eye-slash';
+        } else {
+          pwd.type = 'password';
+          if (icon) icon.className = 'fa-solid fa-eye';
+        }
+      }
+    };
+
+    // Google / GitHub Real OAuth Registration Handler
+    window.registerWithSocial = async function(provider) {
+      if (provider === 'google') {
+        openGoogleAuthModal({ role: selectedRole, mode: 'signup' });
+        return;
+      }
+
+      const btn = document.getElementById('btn-reg-github');
+      const originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Connecting...</span>`;
+      }
+      try {
+        await handleSocialAuth(provider, selectedRole);
+      } finally {
+        setTimeout(() => {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+          }
+        }, 2500);
+      }
+    };
+
+    // Support OAuth popup return message
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
+        const user = event.data.user;
+        setCurrentUser(user);
+        saveRegisteredUser(user);
+        localStorage.removeItem('ayush_oauth_just_logged_in');
+        sessionStorage.removeItem('ayush_just_logged_in');
+        sessionStorage.removeItem('ayush_oauth_in_progress');
+        const dest = user.redirect || (user.role === 'industry' ? '/industry/dashboard.html' : (user.role === 'academician' ? '/academician/dashboard.html' : '/student/dashboard.html'));
+        window.location.replace(dest);
+      }
+    });
+
+    // Support cross-tab / popup OAuth storage update
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
+        const cached = localStorage.getItem('ayush_current_user');
+        if (cached) {
+          try {
+            const user = JSON.parse(cached);
+            localStorage.removeItem('ayush_oauth_just_logged_in');
+            sessionStorage.removeItem('ayush_just_logged_in');
+            sessionStorage.removeItem('ayush_oauth_in_progress');
+            const dest = user.redirect || (user.role === 'industry' ? '/industry/dashboard.html' : (user.role === 'academician' ? '/academician/dashboard.html' : '/student/dashboard.html'));
+            window.location.replace(dest);
+          } catch(err) {}
+        }
+      }
+    });
+
+    // Form Submission: Name, Email, Password
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwd = document.getElementById('reg-password').value;
+      if (pwd.length < 6) {
+        alert('Password must be at least 6 characters long.');
+        return;
+      }
+
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+
+      const userData = {
+        name: name,
+        email: email,
+        password: pwd,
+        role: selectedRole,
+        is_new_registration: true,
+        onboarding_pending: true
+      };
+
+      const btn = document.getElementById('btn-reg-submit');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Registering with Supabase...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+      }
+
+      try {
+        const res = await handleRegistration(userData);
+        if (res?.success) {
+          const fallbackDest = selectedRole === 'student' 
+            ? '/student/dashboard.html' 
+            : `/pending-approval.html?status=pending&role=${selectedRole}&email=${encodeURIComponent(email)}`;
+          const targetDest = res?.user?.redirect || fallbackDest;
+          window.location.replace(targetDest);
+        }
+      } finally {
+        setTimeout(() => {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          }
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>

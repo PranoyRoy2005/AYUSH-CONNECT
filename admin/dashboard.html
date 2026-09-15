@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator Portal — AYUSH CONNECT</title>
+  <meta name="description" content="Central administration, KYC verification, assessment question bank management, and role governance.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div id="admin-sidebar-avatar" class="user-avatar-circle admin-sidebar-avatar" style="background: #1e3a8a; font-weight: 700;">AD</div>
+        <div style="overflow: hidden;">
+          <div id="admin-sidebar-name" class="admin-sidebar-name" style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Administrator</div>
+          <div id="admin-sidebar-role" class="admin-sidebar-role" style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">admin@ayushconnect.gov.in</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard.html" class="active"><span class="menu-icon"><i class="fa-solid fa-shield-halved"></i></span> Admin Overview</a></li>
+        <li><a href="/admin/approve-users.html"><span class="menu-icon"><i class="fa-solid fa-user-check"></i></span> Approve Users (<span class="admin-pending-count-num" id="adm-pending-badge-count">1</span>)</a></li>
+        <li><a href="/admin/manage-questions.html"><span class="menu-icon"><i class="fa-solid fa-book-open"></i></span> Question Bank</a></li>
+        <li><a href="/admin/manage-roles.html"><span class="menu-icon"><i class="fa-solid fa-user-shield"></i></span> Role Governance</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.adminLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('student');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/industry/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('industry');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Industry</a> &bull;
+          <a href="/academician/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('academician');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Academic</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary-subtle); padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-shield-halved" style="color: var(--secondary-teal);"></i> MINISTRY OF AYUSH &bull; NATIONAL NODAL DESK
+          </div>
+          <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">Platform Governance & Control</h1>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">Manage institutional compliance, corporate accreditation, and assessment question integrity.</p>
+        </div>
+        <div class="admin-header-actions" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <a href="/admin/approve-users.html" class="btn btn-accent" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; white-space: normal; text-align: center; line-height: 1.3;">
+            <i class="fa-solid fa-user-check"></i> Verify Registrations
+          </a>
+          <a href="/admin/manage-questions.html" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; white-space: normal; text-align: center; line-height: 1.3;">
+            <i class="fa-solid fa-circle-plus"></i> Add Question
+          </a>
+        </div>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="summary-cards-grid" style="margin-bottom: 2rem;">
+        <div class="metric-card">
+          <div class="metric-title">Total Enrolled Students</div>
+          <div class="metric-value" id="adm-total-students">--</div>
+          <div style="font-size: 0.8rem; color: var(--secondary-teal); margin-top: 0.5rem;">AYUSH Institutions</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Registered Industries</div>
+          <div class="metric-value" id="adm-total-industries">--</div>
+          <div style="font-size: 0.8rem; color: var(--primary-deep); margin-top: 0.5rem;">Pharma, CROs, Wellness</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Verified Academicians</div>
+          <div class="metric-value" id="adm-total-academicians">--</div>
+          <div style="font-size: 0.8rem; color: var(--secondary-teal); margin-top: 0.5rem;">Professors & Mentors</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Pending KYC Approvals</div>
+          <div class="metric-value" id="adm-pending-approvals" style="color: #b45309;">--</div>
+          <div style="font-size: 0.8rem; color: var(--accent-saffron); margin-top: 0.5rem;">Action Required</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Active Opportunities</div>
+          <div class="metric-value" id="adm-active-opps">--</div>
+          <div style="font-size: 0.8rem; color: #10b981; margin-top: 0.5rem;">Nationwide Coverage</div>
+        </div>
+      </div>
+
+      <!-- PENDING USER APPROVALS PREVIEW -->
+      <div class="ayush-card" style="margin-bottom: 2rem; padding: 0; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--border-color);">
+          <div>
+            <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">Pending Verification Queue</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">Industry recruiters and academic faculty awaiting KYC accreditation.</p>
+          </div>
+          <a href="/admin/approve-users.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            Review All (<span class="admin-pending-count-num">1</span>) <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="bordered-table" style="width: 100%; border: none;">
+            <thead>
+              <tr>
+                <th style="padding: 1.1rem 1.25rem;">Applicant / Organization</th>
+                <th style="padding: 1.1rem 1.25rem;">Requested Role</th>
+                <th style="padding: 1.1rem 1.25rem;">Entity / Institution</th>
+                <th style="padding: 1.1rem 1.25rem;">KYC Status</th>
+                <th style="padding: 1.1rem 1.25rem;">Fast Decision</th>
+              </tr>
+            </thead>
+            <tbody id="adm-pending-table-preview">
+              <!-- Rendered via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Platform Health & Integrations -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <div class="ayush-card" style="padding: 1.75rem;">
+          <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-heart-pulse" style="color: #10b981;"></i> System Operational Health
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+              <span style="color: var(--text-primary); font-weight: 500;">Assessment Engine (AI Proctored)</span>
+              <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Online</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+              <span style="color: var(--text-primary); font-weight: 500;">Cosine Skill Matrix Matching</span>
+              <span class="badge badge-success"><i class="fa-solid fa-bolt"></i> 18ms Latency</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+              <span style="color: var(--text-primary); font-weight: 500;">Database Synchronization</span>
+              <span class="badge badge-success"><i class="fa-solid fa-database"></i> Connected</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: var(--text-primary); font-weight: 500;">Role-Based Access Control (RBAC)</span>
+              <span class="badge badge-primary"><i class="fa-solid fa-lock"></i> Enforced</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ayush-card" style="padding: 1.75rem;">
+          <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-sliders" style="color: var(--secondary-teal);"></i> Governance Quick Actions
+          </h3>
+          <div class="governance-quick-actions" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="/admin/manage-questions.html" class="btn btn-secondary governance-action-btn" style="text-align: left; justify-content: flex-start; padding: 0.75rem 1rem; white-space: normal; line-height: 1.35; width: 100%; box-sizing: border-box; word-break: break-word;">
+              <i class="fa-solid fa-book-open" style="color: var(--secondary-teal); margin-right: 0.5rem; flex-shrink: 0;"></i> <span>Manage Standardized Assessment Bank</span>
+            </a>
+            <a href="/admin/manage-roles.html" class="btn btn-secondary governance-action-btn" style="text-align: left; justify-content: flex-start; padding: 0.75rem 1rem; white-space: normal; line-height: 1.35; width: 100%; box-sizing: border-box; word-break: break-word;">
+              <i class="fa-solid fa-user-shield" style="color: var(--accent-saffron); margin-right: 0.5rem; flex-shrink: 0;"></i> <span>Supervise User Roles & Permission Matrix</span>
+            </a>
+            <a href="/admin/approve-users.html" class="btn btn-secondary governance-action-btn" style="text-align: left; justify-content: flex-start; padding: 0.75rem 1rem; white-space: normal; line-height: 1.35; width: 100%; box-sizing: border-box; word-break: break-word;">
+              <i class="fa-solid fa-id-card" style="color: #6366f1; margin-right: 0.5rem; flex-shrink: 0;"></i> <span>Audit Entity Document Credentials (KYC)</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAdminDashboard } from '/js/admin.js';
+    import { handleLogout } from '/js/auth.js';
+
+    window.adminLogout = handleLogout;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAdminDashboard();
+    });
+  </script>
+</body>
+</html>

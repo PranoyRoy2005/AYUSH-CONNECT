@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host Event & Hackathon — AYUSH CONNECT</title>
+  <meta name="description" content="Host interdisciplinary hackathons, webinars, and campus hiring drives for AYUSH scholars.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/industry_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" style="background: var(--secondary-teal); font-weight: 700;">HW</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Himalaya Wellness</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Host Event</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/industry/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span> Dashboard</a></li>
+        <li><a href="/industry/post-opportunity.html"><span class="menu-icon"><i class="fa-solid fa-circle-plus"></i></span> Post Opportunity</a></li>
+        <li><a href="/industry/post-event.html" class="active"><span class="menu-icon"><i class="fa-solid fa-calendar-check"></i></span> Post Event / Hackathon</a></li>
+        <li><a href="/industry/applicants.html"><span class="menu-icon"><i class="fa-solid fa-users-viewfinder"></i></span> Review Applicants</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.industryLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/academician/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Academic</a> &bull;
+          <a href="/admin/dashboard.html" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="margin-bottom: 2rem;">
+        <a href="/industry/dashboard.html" style="font-size: 0.85rem; color: var(--secondary-teal); font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">Host an AYUSH Event or Hackathon</h1>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">
+          Launch interdisciplinary problem-solving hackathons, R&D technical seminars, or campus recruitment challenges across 200+ partner universities.
+        </p>
+      </div>
+
+      <div style="max-width: 900px;">
+        <form id="post-event-form">
+          
+          <!-- SECTION 1: Event Overview -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-trophy"></i></div>
+              <div>
+                <div class="form-section-title">Event Classification & Title</div>
+                <div class="form-section-desc">Define the event nomenclature, engagement model, and hosting category.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 2;">
+                <label class="form-label" for="event-title">Event Title *</label>
+                <input type="text" id="event-title" class="form-input" placeholder="e.g. National Botanical Bio-Informatics Hackathon 2026" value="National Botanical Bio-Informatics Hackathon 2026" required>
+              </div>
+              
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label" for="event-type">Event Category *</label>
+                <select id="event-type" class="form-input" required>
+                  <option value="Hackathon" selected>Interdisciplinary Hackathon</option>
+                  <option value="Workshop">Hands-on Laboratory Workshop</option>
+                  <option value="Webinar">Industry R&D Masterclass</option>
+                  <option value="Hiring Drive">Virtual Campus Hiring Drive</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: Problem Statement & Theme -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-lightbulb"></i></div>
+              <div>
+                <div class="form-section-title">Challenge Statement & Deliverables</div>
+                <div class="form-section-desc">Specify what student teams will build, analyze, or design.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="event-desc">Problem Statement & Assessment Criteria *</label>
+              <textarea id="event-desc" class="form-input" rows="5" placeholder="Describe the challenges students will solve, tools provided, and submission criteria..." required style="line-height: 1.6;">Develop computational workflows to map classical Sanskrit Ayurvedic pharmacological attributes (Rasa, Guna, Virya, Vipaka) into modern molecular targets and botanical chemo-informatics databases. Submissions must include validated Python code and literature citations.</textarea>
+            </div>
+          </div>
+
+          <!-- SECTION 3: Schedule, Mode & Rewards -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-gift"></i></div>
+              <div>
+                <div class="form-section-title">Schedule, Participation & Rewards</div>
+                <div class="form-section-desc">Set key deadlines, prize pool amounts, and career opportunities.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="event-date">Commencement / Start Date *</label>
+                <input type="date" id="event-date" class="form-input" value="2026-10-20" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="event-prizes">Prizes & Pre-Placement Interview (PPI) Offers *</label>
+                <input type="text" id="event-prizes" class="form-input" placeholder="e.g. ₹2,00,000 Prize Pool + Fast-track Interview" value="₹2,00,000 Cash Pool + Fast-Track PPI Offers" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 4: Eligible AYUSH Disciplines -->
+          <div class="form-section-card">
+            <div class="form-section-header">
+              <div class="form-section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div>
+                <div class="form-section-title">Targeted Academic Streams</div>
+                <div class="form-section-desc">Select the candidate backgrounds eligible to participate in this event.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; padding: 1.25rem; background: var(--bg-cream); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.9rem; cursor: pointer; color: var(--primary-deep); font-weight: 600;">
+                  <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--secondary-teal);">
+                  <span><i class="fa-solid fa-leaf" style="color: var(--secondary-teal); margin-right: 0.35rem;"></i> Ayurveda (BAMS / MD)</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.9rem; cursor: pointer; color: var(--primary-deep); font-weight: 600;">
+                  <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--secondary-teal);">
+                  <span><i class="fa-solid fa-person-praying" style="color: var(--accent-saffron); margin-right: 0.35rem;"></i> Yoga & Naturopathy (BNYS)</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.9rem; cursor: pointer; color: var(--primary-deep); font-weight: 600;">
+                  <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--secondary-teal);">
+                  <span><i class="fa-solid fa-flask-vial" style="color: var(--primary-deep); margin-right: 0.35rem;"></i> Unani / Siddha / Homoeopathy</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.9rem; cursor: pointer; color: var(--primary-deep); font-weight: 600;">
+                  <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--secondary-teal);">
+                  <span><i class="fa-solid fa-microchip" style="color: #6366f1; margin-right: 0.35rem;"></i> Bio-Informatics & AI Engineering</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="form-action-bar" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--border-color); margin-top: 1rem; flex-wrap: wrap;">
+            <a href="/industry/dashboard.html" class="btn btn-secondary" style="min-width: 120px; text-align: center; justify-content: center;">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-accent" style="padding: 0.75rem 1.75rem; font-size: 1rem; white-space: normal; text-align: center; justify-content: center; line-height: 1.35;">
+              <i class="fa-solid fa-bullhorn"></i> Publish Event & Broadcast to Colleges
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { showToast } from '/js/auth.js';
+    import { handleLogout } from '/js/auth.js';
+
+    window.industryLogout = handleLogout;
+
+    document.getElementById('post-event-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('event-title').value;
+      showToast(`Event "${title}" has been published and broadcast to partner colleges!`, 'success');
+      setTimeout(() => {
+        window.location.href = '/industry/dashboard.html';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

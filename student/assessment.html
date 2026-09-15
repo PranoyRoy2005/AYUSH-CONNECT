@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Assessment — AYUSH CONNECT</title>
+  <meta name="description" content="Take the adaptive AYUSH and clinical informatics assessment to certify your domain skills and unlock top tier opportunities.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display">AS</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);" id="sidebar-name-display">Ayush Sharma</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Assessment Mode</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/student/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard</a></li>
+        <li><a href="/student/skill-profile.html"><span class="menu-icon"><i class="fa-solid fa-leaf"></i></span> Skill Profile</a></li>
+        <li><a href="/student/assessment.html" class="active"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
+        <li><a href="/student/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio & Projects</a></li>
+        <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
+        <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
+        <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <!-- Breadcrumb & Header -->
+      <div style="margin-bottom: 1.5rem;">
+        <a href="/student/dashboard.html" style="font-size: 0.85rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.35rem;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 style="font-size: 1.75rem; color: var(--primary-deep); margin-top: 0.25rem;">Adaptive Skill Assessment</h1>
+      </div>
+
+      <!-- VIEW 1: EXAM READINESS / START EXAM SCREEN -->
+      <div id="exam-ready-screen" class="exam-ready-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge badge-teal" style="margin-bottom: 0.4rem;"><i class="fa-solid fa-shield-halved"></i> Proctored Evaluation</span>
+            <h2 style="font-size: 1.5rem; color: var(--primary-deep); margin: 0;">AYUSH Interdisciplinary Skill & Clinical Informatics Assessment</h2>
+          </div>
+          <span class="badge badge-saffron"><i class="fa-solid fa-clock"></i> 25 Minutes Allocation</span>
+        </div>
+
+        <!-- Meta Summary Badges -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <div style="background: var(--bg-cream); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Questions</div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary-deep);">20 MCQs</div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Duration</div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-saffron);">25:00 Mins</div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Passing Benchmark</div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: #10b981;">75% Score</div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Negative Marking</div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--secondary-dark);">None (0)</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-list-check" style="color: var(--secondary-teal); margin-right: 0.5rem;"></i> Instructions & Rules
+        </h3>
+        
+        <ul class="exam-instructions-list">
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <div><strong>Timer starts only when you click "Start the Exam":</strong> You have 25 continuous minutes to complete 20 objective questions.</div>
+          </li>
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <div><strong>Domains Assessed:</strong> Questions cover Herbal Pharmacopoeia QC, Clinical Data & Python, Biostatistics & SQL, Regulatory Pharmacovigilance, and ASU&H Clinical Problem Solving.</div>
+          </li>
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <div><strong>Profile Verification:</strong> Upon submission, your verified competency score and domain mastery breakdown are instantly written to your public candidate profile and matched against live industry job postings.</div>
+          </li>
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <div><strong>Navigation:</strong> You can navigate between questions using the Previous and Next buttons before final submission.</div>
+          </li>
+        </ul>
+
+        <!-- Readiness Checklist -->
+        <div style="background: var(--bg-muted); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin: 1.75rem 0;">
+          <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 0.75rem;">Candidate Readiness Confirmation</h4>
+          <label style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.6rem; cursor: pointer; font-size: 0.9rem;">
+            <input type="checkbox" id="check-ready-environment" checked>
+            <span>I am seated in a quiet environment with a stable internet connection.</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; font-size: 0.9rem;">
+            <input type="checkbox" id="check-ready-rules" checked>
+            <span>I agree to abide by the AYUSH Connect examination integrity rules.</span>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end; flex-wrap: wrap;">
+          <a href="/student/dashboard.html" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Return to Dashboard
+          </a>
+          <button class="btn btn-primary btn-lg" id="btn-start-exam-now">
+            <i class="fa-solid fa-play"></i> Start the Exam
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: ACTIVE EXAM IN-PROGRESS (Initially Hidden) -->
+      <div id="exam-in-progress-container" style="display: none;">
+        <!-- Assessment Meta Summary Banner -->
+        <div class="assessment-meta-banner">
+          <div class="meta-item">
+            <div class="meta-label">Total Questions</div>
+            <div class="meta-val">20 Questions</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Time Remaining</div>
+            <div class="meta-val" id="assessment-timer" style="color: var(--accent-saffron); font-family: monospace; font-size: 1.25rem;">25:00</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Difficulty</div>
+            <div class="meta-val">Intermediate — Advanced</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Proctored By</div>
+            <div class="meta-val">AYUSH Connect AI</div>
+          </div>
+        </div>
+
+        <!-- ACTIVE QUESTION CARD -->
+        <div class="question-container" id="question-ui-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="badge badge-teal" id="q-skill-badge">Herbal Pharmacopoeia (QC)</span>
+            <span style="font-weight: 700; color: var(--primary-deep); font-size: 0.9rem;" id="q-counter">Question 1 of 20</span>
+          </div>
+
+          <!-- Progress bar for assessment completion -->
+          <div class="progress-track" style="margin-bottom: 1.5rem;">
+            <div class="progress-fill" id="assessment-progress-fill" style="width: 5%;"></div>
+          </div>
+
+          <h3 id="q-text" style="font-size: 1.15rem; color: var(--text-primary); line-height: 1.5; margin-bottom: 1.5rem;">
+            Loading question text...
+          </h3>
+
+          <!-- Option selection list -->
+          <div class="options-grid" id="options-container"></div>
+
+          <!-- Bottom Controls -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <button class="btn btn-secondary" id="btn-prev-q" onclick="window.assessmentEngine.prevQuestion()">
+              <i class="fa-solid fa-arrow-left"></i> Previous
+            </button>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-primary" id="btn-next-q" onclick="window.assessmentEngine.nextQuestion()">
+                Next Question <i class="fa-solid fa-arrow-right"></i>
+              </button>
+              <button class="btn btn-accent" id="btn-submit-q" style="display: none;" onclick="window.assessmentEngine.submitAssessment()">
+                Submit Assessment <i class="fa-solid fa-check"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT CARD (Initially Hidden) -->
+      <div class="question-container" id="result-ui-card" style="display: none; text-align: center;">
+        <div style="font-size: 3rem; color: var(--secondary-teal); margin-bottom: 0.5rem;"><i class="fa-solid fa-award"></i></div>
+        <h2 style="color: var(--primary-deep); font-size: 1.85rem; margin-bottom: 0.5rem;">Assessment Completed!</h2>
+        <p id="res-score-desc" style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1.5rem;">
+          Your score has been verified and updated to your live candidate profile.
+        </p>
+
+        <!-- Big Score Circle -->
+        <div style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 140px; height: 140px; border-radius: 50%; background: var(--bg-cream); border: 6px solid var(--secondary-teal); margin-bottom: 2rem;">
+          <div id="res-score-val" style="font-size: 2.25rem; font-weight: 800; color: var(--primary-deep); font-family: var(--font-display);">85%</div>
+          <div style="font-size: 0.72rem; font-weight: 700; color: var(--secondary-teal); text-transform: uppercase;">Score Achieved</div>
+        </div>
+
+        <!-- Breakdown Section -->
+        <div style="text-align: left; max-width: 620px; margin: 0 auto 2rem; background: var(--bg-cream); border-radius: var(--radius-md); padding: 1.5rem; border: 1px solid var(--border-color);">
+          <h4 style="color: var(--primary-deep); font-size: 1.05rem; margin-bottom: 1rem;">Skill Mastery Breakdown</h4>
+          <div id="res-breakdown-list"></div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="/student/recommendations.html" class="btn btn-accent btn-lg">View Matched Opportunities <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="/student/skill-profile.html" class="btn btn-secondary btn-lg">Return to Skill Profile</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { AssessmentEngine } from '/js/assessment.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const engine = new AssessmentEngine();
+      engine.init();
+      window.assessmentEngine = engine;
+
+      // Update avatar if candidate photo exists in localStorage
+      const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+      const avatarEl = document.getElementById('sidebar-avatar-display');
+      if (savedPhoto && avatarEl) {
+        avatarEl.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    });
+  </script>
+</body>
+</html>

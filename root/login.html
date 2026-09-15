@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — AYUSH CONNECT</title>
+  <meta name="description" content="Sign in to your AYUSH Connect account to access personalized dashboards, skill profiles, and career opportunities.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <script type="module" src="/js/auth.js"></script>
+</head>
+<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <!-- Official Header -->
+  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 0.75rem;">
+    <a href="/index.html" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
+    </a>
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <a href="/index.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i class="fa-solid fa-arrow-left"></i> Home
+      </a>
+      <button type="button" class="mode-toggle-btn mode-dev" id="app-mode-toggle" onclick="window.toggleAppMode()" title="Toggle Development / Production Mode">
+        <i class="fa-solid fa-code" style="color: #ea580c;"></i>
+        <span>Dev Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Login Main Wrapper -->
+  <main class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Sign In to AYUSH Connect</h1>
+        <p style="font-size: 0.92rem; color: var(--text-secondary);">Connecting Skills, Opportunities &amp; Careers across the AYUSH ecosystem</p>
+      </div>
+
+      <!-- Role Selector Tabs -->
+      <div class="role-selector-tabs" id="login-role-tabs" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.25rem;">
+        <div class="role-tab active" data-role="student" onclick="window.selectLoginRole('student')">
+          <span class="role-icon"><i class="fa-solid fa-graduation-cap"></i></span> Student
+        </div>
+        <div class="role-tab" data-role="industry" onclick="window.selectLoginRole('industry')">
+          <span class="role-icon"><i class="fa-solid fa-building"></i></span> Organization
+        </div>
+        <div class="role-tab" data-role="academician" onclick="window.selectLoginRole('academician')">
+          <span class="role-icon"><i class="fa-solid fa-building-columns"></i></span> Academician
+        </div>
+      </div>
+
+      <!-- Social Quick Sign In -->
+      <div class="social-login-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <button type="button" class="social-btn" id="btn-login-google" onclick="window.loginWithSocial('google')">
+          <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.1rem;"></i>
+          <span>Sign in with Google</span>
+        </button>
+        <button type="button" class="social-btn" id="btn-login-github" onclick="window.loginWithSocial('github')">
+          <i class="fa-brands fa-github" style="color: #24292e; font-size: 1.15rem;"></i>
+          <span>Sign in with GitHub</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider" style="display: flex; align-items: center; text-align: center; margin: 1.25rem 0; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;">
+        <span style="flex: 1; border-bottom: 1px solid var(--border-color);"></span>
+        <span style="padding: 0 0.75rem;">OR WITH EMAIL &amp; PASSWORD</span>
+        <span style="flex: 1; border-bottom: 1px solid var(--border-color);"></span>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="login-form">
+        <!-- Email Section -->
+        <div class="gov-email-group" style="margin-bottom: 1.15rem;">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="login-email" id="login-email-label" style="margin: 0; font-weight: 600;">Email Address</label>
+            <span class="gov-domain-badge"><i class="fa-solid fa-shield-halved"></i> Institutional Verification</span>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email" id="login-email" class="gov-email-input" placeholder="e.g. scholar@ayush.edu.in" autocomplete="email" required>
+          </div>
+          <div class="gov-email-footer">
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official or registered account email</span>
+          </div>
+        </div>
+
+        <!-- Password Section with Visibility Toggle -->
+        <div class="gov-email-group" style="margin-bottom: 1.15rem;">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="login-password" style="margin: 0; font-weight: 600;">Password</label>
+            <span class="gov-domain-badge"><i class="fa-solid fa-lock"></i> Encrypted</span>
+          </div>
+          <div class="gov-email-wrapper" style="position: relative;">
+            <span class="gov-email-icon"><i class="fa-solid fa-key"></i></span>
+            <input type="password" id="login-password" class="gov-email-input" placeholder="••••••••" autocomplete="current-password" required style="padding-right: 2.75rem !important;">
+            <button type="button" onclick="window.toggleLoginPasswordVisibility()" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; z-index: 2;" title="Toggle Password Visibility" id="btn-toggle-pwd">
+              <i class="fa-solid fa-eye" id="pwd-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember / Forgot -->
+        <div id="remember-forgot-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.85rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="remember-me" checked>
+            <span>Remember my session</span>
+          </label>
+          <a href="#" onclick="window.handleForgotPassword(); return false;" style="color: var(--secondary-teal); font-weight: 600;">
+            Forgot Password?
+          </a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;" id="btn-login-submit">
+          <span id="btn-login-label">Sign In to Portal</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- Prominent link to Register -->
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+        Don't have an account yet? <a href="/register.html" style="color: var(--primary-deep); font-weight: 700; text-decoration: underline;">Create an Account</a>
+      </div>
+
+      <!-- Quick Demo Access Bar -->
+      <div class="demo-access-container" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--border-color); text-align: center;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--accent-saffron); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem;">
+          <i class="fa-solid fa-bolt"></i> One-Click Demo Access
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="window.fillDemo('student')"><i class="fa-solid fa-graduation-cap"></i> Student</button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="window.fillDemo('industry')"><i class="fa-solid fa-building"></i> Organization</button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="window.fillDemo('academician')"><i class="fa-solid fa-building-columns"></i> Academic</button>
+        </div>
+      </div>
+
+      <!-- Dedicated Admin Portal Access Link -->
+      <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <a href="/admin/login.html" style="font-size: 0.84rem; color: var(--primary-deep); font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--secondary-teal);"></i> Government &amp; Administrator Access Desk &rarr;
+        </a>
+      </div>
+
+      <!-- Supabase Cloud Connection Status -->
+      <div style="margin-top: 1rem; padding: 0.6rem 0.85rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: #166534;" id="supabase-status-badge">
+        <span style="display: flex; align-items: center; gap: 0.45rem;">
+          <i class="fa-solid fa-cloud" style="color: #059669;"></i>
+          <span><strong>Backend:</strong> Supabase (<code>ayush-connect</code>)</span>
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: #15803d;" id="supabase-status-pill">
+          <span style="width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block;"></span> Online
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India
+  </footer>
+
+  <script type="module">
+    import { handleLogin, handleSocialAuth, DEMO_USERS, switchDemoRole } from '/js/auth.js';
+
+    let currentRole = 'student';
+
+    // Role Tab Selector
+    window.selectLoginRole = function(role) {
+      currentRole = role;
+      document.querySelectorAll('.role-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.role === role);
+      });
+
+      const emailInput = document.getElementById('login-email');
+      const emailLabel = document.getElementById('login-email-label');
+
+      if (role === 'industry') {
+        if (emailInput && !emailInput.value) emailInput.placeholder = 'e.g. recruiter@himalayawellness.com';
+        if (emailLabel) emailLabel.textContent = 'Organization / Corporate Email';
+      } else if (role === 'academician') {
+        if (emailInput && !emailInput.value) emailInput.placeholder = 'e.g. vs.ramaswamy@nia.edu.in';
+        if (emailLabel) emailLabel.textContent = 'Institutional / Faculty Email';
+      } else {
+        if (emailInput && !emailInput.value) emailInput.placeholder = 'e.g. scholar@ayush.edu.in';
+        if (emailLabel) emailLabel.textContent = 'Student / Scholar Email';
+      }
+    };
+
+    // Toggle password visibility
+    window.toggleLoginPasswordVisibility = function() {
+      const pwd = document.getElementById('login-password');
+      const icon = document.getElementById('pwd-icon');
+      if (pwd) {
+        if (pwd.type === 'password') {
+          pwd.type = 'text';
+          if (icon) icon.className = 'fa-solid fa-eye-slash';
+        } else {
+          pwd.type = 'password';
+          if (icon) icon.className = 'fa-solid fa-eye';
+        }
+      }
+    };
+
+    // Forgot password handler
+    window.handleForgotPassword = function() {
+      const email = document.getElementById('login-email').value.trim();
+      if (!email) {
+        alert('Please enter your registered institutional email in the Email field above to request a reset link.');
+      } else {
+        alert(`A password reset link has been dispatched to ${email}. Please check your institutional inbox.`);
+      }
+    };
+
+    // One-Click Demo Access
+    window.fillDemo = function(role) {
+      window.selectLoginRole(role);
+      const demo = DEMO_USERS[role];
+      if (demo) {
+        document.getElementById('login-email').value = demo.email;
+        document.getElementById('login-password').value = demo.password;
+        switchDemoRole(role);
+      }
+    };
+
+    window.loginWithSocial = async function(provider) {
+      const btn = document.getElementById(provider === 'google' ? 'btn-login-google' : 'btn-login-github');
+      const originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Connecting...</span>`;
+      }
+      try {
+        await handleSocialAuth(provider, currentRole);
+      } finally {
+        setTimeout(() => {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+          }
+        }, 2500);
+      }
+    };
+
+    // Support OAuth popup return message
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
+        const user = event.data.user;
+        window.location.replace(user.redirect || '/student/dashboard.html');
+      }
+    });
+
+    // Default to student role tab (leaves fields clean for user entry)
+    window.selectLoginRole('student');
+
+    // Handle Sign In submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const submitBtn = document.getElementById('btn-login-submit');
+      const submitLabel = document.getElementById('btn-login-label');
+
+      submitBtn.disabled = true;
+      submitLabel.innerHTML = 'Authenticating with Supabase... <i class="fa-solid fa-spinner fa-spin"></i>';
+
+      try {
+        const res = await handleLogin(email, password, currentRole);
+        if (res?.success && res?.user?.redirect) {
+          window.location.replace(res.user.redirect);
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitLabel.innerHTML = 'Sign In to Portal <i class="fa-solid fa-arrow-right"></i>';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunities Marketplace — AYUSH CONNECT</title>
+  <meta name="description" content="Discover and apply for curated internships, jobs, research grants, and hackathons in the AYUSH ecosystem.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/student_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display">AS</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);">Ayush Sharma</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Marketplace</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/student/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard</a></li>
+        <li><a href="/student/skill-profile.html"><span class="menu-icon"><i class="fa-solid fa-leaf"></i></span> Skill Profile</a></li>
+        <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
+        <li><a href="/student/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio & Projects</a></li>
+        <li><a href="/student/opportunities.html" class="active"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
+        <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
+        <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.75rem; color: var(--primary-deep);">AYUSH Opportunity Discovery</h1>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Explore verified R&D internships, clinical trials, and corporate positions across India.</p>
+        </div>
+        <div class="badge badge-primary" id="opp-count-badge" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">
+          Loading opportunities...
+        </div>
+      </div>
+
+      <!-- Search & Filters Container -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+          <input type="text" id="opp-search-input" class="form-input" placeholder="Search by role title, company (Dabur, Himalaya), or skill keyword..." style="flex: 1; min-width: 260px;">
+          
+          <select id="filter-location-select" class="form-input" style="width: auto; min-width: 160px;" onchange="window.marketplace.filterByLocation(this.value)">
+            <option value="All">All Locations</option>
+            <option value="Bengaluru">Bengaluru</option>
+            <option value="Ghaziabad">Ghaziabad / Delhi NCR</option>
+            <option value="Haridwar">Haridwar</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+
+        <!-- Filter Pills by Type -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Type:</span>
+          <button class="type-filter-btn active" data-type="All">All Types</button>
+          <button class="type-filter-btn" data-type="Internship">Internships</button>
+          <button class="type-filter-btn" data-type="Job">Full-time Jobs</button>
+          <button class="type-filter-btn" data-type="Project">Research Projects</button>
+          <button class="type-filter-btn" data-type="Hackathon">Hackathons</button>
+        </div>
+      </div>
+
+      <!-- Opportunities Grid -->
+      <div class="opportunities-grid" id="opportunities-grid">
+        <!-- Populated via opportunities.js -->
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { OpportunitiesMarketplace } from '/js/opportunities.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const marketplace = new OpportunitiesMarketplace();
+      marketplace.init();
+      window.marketplace = marketplace;
+
+      const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+      const avatarEl = document.getElementById('sidebar-avatar-display');
+      if (savedPhoto && avatarEl) {
+        avatarEl.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    });
+  </script>
+</body>
+</html>

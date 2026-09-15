@@ -1,0 +1,43 @@
+{
+  "student": {
+    "id": "usr_student_01",
+    "name": "Ayush Sharma",
+    "email": "ayush.sharma@ayush.edu.in",
+    "role": "student",
+    "roleTitle": "Student / Scholar",
+    "institution": "All India Institute of Ayurveda (AIIA)",
+    "course": "BAMS Final Year &bull; Clinical Informatics",
+    "avatar": "AS",
+    "redirect": "/student/dashboard.html"
+  },
+  "industry": {
+    "id": "usr_ind_01",
+    "name": "Sunita Deshmukh",
+    "email": "s.deshmukh@himalayawellness.com",
+    "role": "industry",
+    "roleTitle": "Organization / Recruiter",
+    "institution": "Himalaya Wellness R&D Division",
+    "avatar": "SD",
+    "redirect": "/industry/dashboard.html"
+  },
+  "academician": {
+    "id": "usr_acad_01",
+    "name": "Dr. V. S. Ramaswamy",
+    "email": "vs.ramaswamy@nia.edu.in",
+    "role": "academician",
+    "roleTitle": "Academic Evaluator / Dean",
+    "institution": "National Institute of Ayurveda (NIA), Jaipur",
+    "avatar": "VR",
+    "redirect": "/academician/dashboard.html"
+  },
+  "admin": {
+    "id": "usr_admin_01",
+    "name": "Administrator",
+    "email": "admin@ayushconnect.gov.in",
+    "role": "admin",
+    "roleTitle": "Ministry Administrator",
+    "institution": "Ministry of AYUSH, Govt of India",
+    "avatar": "AD",
+    "redirect": "/admin/dashboard.html"
+  }
+}
