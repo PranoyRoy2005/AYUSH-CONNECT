@@ -770,7 +770,7 @@ export async function handleLogin(email, password, role = 'student') {
  * Uses real Supabase OAuth flow via signInWithOAuthProvider.
  * Seamlessly handles both new sign-ups and existing user logins without duplicate accounts.
  */
-export async function handleSocialAuth(provider, role = null) {
+export async function handleSocialAuth(provider, role = null, flowMode = 'login') {
   const providerKey = (provider || 'google').toLowerCase().trim();
   const providerDisplay = providerKey === 'google' ? 'Google' : 'GitHub';
 
@@ -779,8 +779,10 @@ export async function handleSocialAuth(provider, role = null) {
   if (role) {
     localStorage.setItem('ayush_oauth_pending_role', role);
   }
+  localStorage.setItem('ayush_oauth_flow_mode', flowMode);
+  sessionStorage.setItem('ayush_oauth_flow_mode', flowMode);
 
-  const result = await signInWithOAuthProvider(providerKey, role);
+  const result = await signInWithOAuthProvider(providerKey, role, flowMode);
   if (!result.success) {
     const errorMsg = result.error?.message || `Failed to initiate ${providerDisplay} authentication.`;
     console.error(`Supabase ${providerDisplay} OAuth initiation error:`, result.error);

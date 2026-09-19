@@ -147,7 +147,7 @@
         <div style="margin-bottom: 1.25rem;">
           <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer;">
             <input type="checkbox" id="terms-checkbox" required style="margin-top: 0.2rem;">
-            <span>I agree to the AYUSH Connect platform charter, privacy policy, and institutional integrity standards.</span>
+            <span>I agree to the AYUSH Connect platform charter, <a href="/privacy.html" target="_blank" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline;">privacy policy</a>, and institutional integrity standards.</span>
           </label>
         </div>
 
@@ -163,13 +163,16 @@
   </main>
 
   <!-- Footer -->
-  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
-    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; align-items: center;">
+    <div>&copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India</div>
+    <div>
+      <a href="/privacy.html" style="color: var(--primary-deep); text-decoration: underline;">Privacy Policy</a> &bull; 
+      <a href="/index.html" style="color: var(--text-muted); text-decoration: underline;">Home</a>
+    </div>
   </footer>
 
   <script type="module">
     import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser } from '/js/auth.js';
-    import { openGoogleAuthModal } from '/js/google-sso.js';
 
     let selectedRole = 'student';
 
@@ -238,19 +241,14 @@
 
     // Google / GitHub Real OAuth Registration Handler
     window.registerWithSocial = async function(provider) {
-      if (provider === 'google') {
-        openGoogleAuthModal({ role: selectedRole, mode: 'signup' });
-        return;
-      }
-
-      const btn = document.getElementById('btn-reg-github');
+      const btn = document.getElementById(provider === 'google' ? 'btn-reg-google' : 'btn-reg-github');
       const originalHtml = btn ? btn.innerHTML : '';
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Connecting...</span>`;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Redirecting to ${provider === 'google' ? 'Google' : 'GitHub'}...</span>`;
       }
       try {
-        await handleSocialAuth(provider, selectedRole);
+        await handleSocialAuth(provider, selectedRole, 'register');
       } finally {
         setTimeout(() => {
           if (btn) {
@@ -263,7 +261,11 @@
 
     // Support OAuth popup return message
     window.addEventListener('message', (event) => {
-      if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
+      if (event.data?.type === 'AYUSH_OAUTH_REGISTER_SUCCESS') {
+        const email = event.data.email || '';
+        const role = event.data.role || selectedRole || 'student';
+        window.location.replace(`/login.html?registered=true&role=${encodeURIComponent(role)}&email=${encodeURIComponent(email)}`);
+      } else if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
         const user = event.data.user;
         setCurrentUser(user);
         saveRegisteredUser(user);
@@ -277,7 +279,11 @@
 
     // Support cross-tab / popup OAuth storage update
     window.addEventListener('storage', (e) => {
-      if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
+      if (e.key === 'ayush_oauth_reg_completed' && e.newValue === 'true') {
+        localStorage.removeItem('ayush_oauth_reg_completed');
+        const pendingRole = localStorage.getItem('ayush_oauth_pending_role') || 'student';
+        window.location.replace(`/login.html?registered=true&role=${encodeURIComponent(pendingRole)}`);
+      } else if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
         const cached = localStorage.getItem('ayush_current_user');
         if (cached) {
           try {

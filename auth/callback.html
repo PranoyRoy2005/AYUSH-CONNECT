@@ -266,8 +266,59 @@
     }
 
     async function finishLoginAndRedirect(authUser) {
+      // Check if this OAuth flow was initiated from Registration or Login
+      const urlParams = new URLSearchParams(window.location.search);
+      const flowMode = urlParams.get('mode') 
+        || localStorage.getItem('ayush_oauth_flow_mode') 
+        || sessionStorage.getItem('ayush_oauth_flow_mode') 
+        || 'login';
+
       document.getElementById('state-complete-profile').style.display = 'none';
       document.getElementById('state-processing').style.display = 'block';
+
+      if (flowMode === 'register') {
+        // --- REGISTRATION FLOW ---
+        // Save account credentials/profile in storage and database
+        saveRegisteredUser(authUser);
+        localStorage.removeItem('ayush_oauth_flow_mode');
+        sessionStorage.removeItem('ayush_oauth_flow_mode');
+        localStorage.removeItem('ayush_oauth_pending_role');
+        sessionStorage.removeItem('ayush_oauth_in_progress');
+        localStorage.removeItem('ayush_oauth_in_progress');
+        localStorage.removeItem('ayush_oauth_just_logged_in');
+        sessionStorage.removeItem('ayush_just_logged_in');
+
+        // Signal cross-tab / popup registration complete
+        localStorage.setItem('ayush_oauth_reg_completed', 'true');
+
+        document.getElementById('processing-title').textContent = 'Registration Complete!';
+        document.getElementById('processing-desc').textContent = `Account verified for ${authUser.full_name}! Redirecting you to the login page to sign in...`;
+
+        const loginRedirect = `/login.html?registered=true&role=${encodeURIComponent(authUser.role)}&email=${encodeURIComponent(authUser.email || '')}`;
+
+        // If opened in a popup window by iframe, notify opener
+        if (window.opener && window.opener !== window) {
+          try {
+            window.opener.postMessage({
+              type: 'AYUSH_OAUTH_REGISTER_SUCCESS',
+              role: authUser.role,
+              email: authUser.email
+            }, '*');
+          } catch (e) {
+            console.warn('postMessage to opener skipped:', e);
+          }
+          setTimeout(() => {
+            try { window.close(); } catch (e) {}
+          }, 600);
+        }
+
+        setTimeout(() => {
+          window.location.replace(loginRedirect);
+        }, 700);
+        return;
+      }
+
+      // --- LOGIN FLOW ---
       document.getElementById('processing-title').textContent = 'Authentication Verified!';
       document.getElementById('processing-desc').textContent = `Welcome, ${authUser.full_name}! Launching your ${authUser.role.toUpperCase()} portal...`;
 
@@ -277,6 +328,8 @@
       localStorage.setItem('ayush_oauth_last_timestamp', String(Date.now()));
       sessionStorage.setItem('ayush_just_logged_in', 'true');
       localStorage.removeItem('ayush_oauth_pending_role');
+      localStorage.removeItem('ayush_oauth_flow_mode');
+      sessionStorage.removeItem('ayush_oauth_flow_mode');
       sessionStorage.removeItem('ayush_oauth_in_progress');
       localStorage.removeItem('ayush_oauth_in_progress');
 
@@ -494,8 +547,10 @@
         console.warn('Profile lookup error:', err);
       }
 
-      // Case A: Existing user with a confirmed role -> Directly sign in (no duplicate account, no role prompt)
-      if (existingProfile && existingProfile.role && ['student', 'industry', 'academician', 'admin'].includes(existingProfile.role)) {
+      // Case A: Existing user with a confirmed role and completed profile -> Directly route to their dashboard
+      const isProfileCompleted = existingProfile && (existingProfile.profile_completed === true || (existingProfile.profile_completed !== false && existingProfile.role));
+
+      if (existingProfile && existingProfile.role && ['student', 'industry', 'academician', 'admin'].includes(existingProfile.role) && isProfileCompleted) {
         // Enforce approval check for Industry & Academician
         if (existingProfile.role === 'industry' || existingProfile.role === 'academician') {
           const isApproved = existingProfile.is_approved === true || existingProfile.status === 'approved';
@@ -535,19 +590,30 @@
         return;
       }
 
-      // Case B: Resolve role from query param, pending registration storage, or default to student
-      const roleFromQuery = urlParams.get('role');
-      const pendingRole = localStorage.getItem('ayush_oauth_pending_role');
-      const candidateRole = (roleFromQuery && ['student', 'industry', 'academician', 'admin'].includes(roleFromQuery.toLowerCase().trim()))
-        ? roleFromQuery.toLowerCase().trim()
-        : ((pendingRole && ['student', 'industry', 'academician', 'admin'].includes(pendingRole.toLowerCase().trim()))
-          ? pendingRole.toLowerCase().trim()
-          : 'student');
+      // Case B: Profile row missing or profile not completed -> Redirect to /complete-profile.html
+      // if not completed or role is missing
+      if (!existingProfile || existingProfile.profile_completed === false || !existingProfile.role) {
+        // If query parameters or pending registration already contain role and mode, we can create or redirect
+        const roleFromQuery = urlParams.get('role');
+        const pendingRole = localStorage.getItem('ayush_oauth_pending_role');
+        const candidateRole = (roleFromQuery && ['student', 'industry', 'academician', 'admin'].includes(roleFromQuery.toLowerCase().trim()))
+          ? roleFromQuery.toLowerCase().trim()
+          : ((pendingRole && ['student', 'industry', 'academician', 'admin'].includes(pendingRole.toLowerCase().trim()))
+            ? pendingRole.toLowerCase().trim()
+            : null);
 
-      const defaultOrg = candidateRole === 'industry' 
-        ? 'AYUSH Enterprise Partner' 
-        : (candidateRole === 'academician' ? 'National Institute of Ayurveda' : 'National Institute of Ayurveda, Jaipur');
-      await createProfileAndFinish(user, candidateRole, defaultOrg);
+        // If no candidate role was selected yet, take user to /complete-profile.html
+        if (!candidateRole) {
+          window.location.replace('/complete-profile.html');
+          return;
+        }
+
+        const defaultOrg = candidateRole === 'industry' 
+          ? 'AYUSH Enterprise Partner' 
+          : (candidateRole === 'academician' ? 'National Institute of Ayurveda' : 'National Institute of Ayurveda, Jaipur');
+        await createProfileAndFinish(user, candidateRole, defaultOrg);
+        return;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

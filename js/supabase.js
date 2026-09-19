@@ -537,18 +537,20 @@ export async function signOutUserWithSupabase() {
  * Works symmetrically for both new registrations and existing user logins.
  * Follows official Supabase OAuth specification with redirectTo callback.
  */
-export async function signInWithOAuthProvider(provider, intendedRole = null) {
+export async function signInWithOAuthProvider(provider, intendedRole = null, flowMode = 'login') {
   try {
     const cleanProvider = provider.toLowerCase().trim(); // 'google' or 'github'
     const roleToUse = intendedRole || localStorage.getItem('ayush_oauth_pending_role') || 'student';
     
-    // Store intended role in localStorage
+    // Store intended role and flow mode ('register' vs 'login') in localStorage and sessionStorage
     localStorage.setItem('ayush_oauth_pending_role', roleToUse);
+    localStorage.setItem('ayush_oauth_flow_mode', flowMode);
+    sessionStorage.setItem('ayush_oauth_flow_mode', flowMode);
     sessionStorage.setItem('ayush_oauth_in_progress', 'true');
     localStorage.setItem('ayush_oauth_in_progress', 'true');
 
-    // Determine the exact callback URL based on current origin, embedding role query param
-    const callbackUrl = `${window.location.origin}/auth/callback.html?role=${encodeURIComponent(roleToUse)}`;
+    // Determine callback URL based on current origin, embedding role & mode in query params
+    const callbackUrl = `${window.location.origin}/auth/callback.html?role=${encodeURIComponent(roleToUse)}&mode=${encodeURIComponent(flowMode)}`;
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: cleanProvider,
@@ -556,7 +558,7 @@ export async function signInWithOAuthProvider(provider, intendedRole = null) {
         redirectTo: callbackUrl,
         queryParams: cleanProvider === 'google' ? {
           access_type: 'offline',
-          prompt: 'consent'
+          prompt: 'select_account'
         } : undefined
       }
     });
@@ -568,51 +570,41 @@ export async function signInWithOAuthProvider(provider, intendedRole = null) {
       return { success: false, error };
     }
 
-    // If data.url is returned, navigate to the OAuth authorization URL
+    // Direct redirection to the provider authorization URL (accounts.google.com)
     if (data?.url) {
-      // If running inside an iframe (like AI Studio preview), opening directly can be blocked by Google/GitHub's X-Frame-Options.
-      // We safely check if window is in an iframe and open in a popup window:
-      if (window.self !== window.top) {
-        const width = 580;
-        const height = 680;
-        const left = Math.max(0, Math.round((window.screen.width - width) / 2));
-        const top = Math.max(0, Math.round((window.screen.height - height) / 2));
-        const popup = window.open(
-          data.url,
-          'ayush_oauth_popup',
-          `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes,scrollbars=yes`
-        );
-
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-          // If popup blocker intervened, fallback to direct redirect
-          window.location.href = data.url;
-        } else {
-          // Monitor popup in background from opener window
-          const checkTimer = setInterval(async () => {
-            try {
-              const justLoggedIn = localStorage.getItem('ayush_oauth_just_logged_in') === 'true';
-              const cachedUserRaw = localStorage.getItem('ayush_current_user');
-              if (justLoggedIn || cachedUserRaw) {
-                clearInterval(checkTimer);
-                try { popup.close(); } catch (e) {}
-                const user = cachedUserRaw ? JSON.parse(cachedUserRaw) : null;
-                const roleDest = user?.redirect || (user?.role === 'industry' ? '/industry/dashboard.html' : (user?.role === 'academician' ? '/academician/dashboard.html' : '/student/dashboard.html'));
-                window.location.replace(roleDest);
-                return;
-              }
-              if (popup.closed) {
-                clearInterval(checkTimer);
-                const { data: sessData } = await supabase.auth.getSession();
-                if (sessData?.session?.user) {
-                  window.location.replace('/student/dashboard.html');
-                }
-              }
-            } catch (e) {}
-          }, 1000);
+      // If embedded in an iframe (e.g. AI Studio preview environment),
+      // Google and Supabase OAuth cannot be loaded inside an iframe due to X-Frame-Options: SAMEORIGIN.
+      // We open provider URL directly in a popup or navigate top window
+      const inIframe = window.self !== window.top;
+      
+      if (inIframe) {
+        // First attempt top-level navigation (cleanest redirect for user)
+        try {
+          if (window.top && window.top.location) {
+            window.top.location.href = data.url;
+            return { success: true, url: data.url };
+          }
+        } catch (crossOriginErr) {
+          // If cross-origin iframe security prevents accessing window.top.location,
+          // launch standard focused popup directly to Google OAuth provider URL
+          const width = 560;
+          const height = 680;
+          const left = Math.max(0, Math.round((window.screen.width - width) / 2));
+          const top = Math.max(0, Math.round((window.screen.height - height) / 2));
+          const popup = window.open(
+            data.url,
+            'ayush_oauth_popup',
+            `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes,scrollbars=yes`
+          );
+          if (popup) {
+            popup.focus();
+            return { success: true, url: data.url, isPopup: true };
+          }
         }
-      } else {
-        window.location.href = data.url;
       }
+
+      // Standard browser direct navigation
+      window.location.href = data.url;
       return { success: true, url: data.url };
     }
 

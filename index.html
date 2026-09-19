@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="kKu4mJ893PlWjRqTdtg14VZXdH6pbY8bxr-ffUIEf-Q" />
   <title>AYUSH CONNECT — Connecting Skills, Opportunities & Careers</title>
   <meta name="description" content="Empowering students to discover their skills, connect with industry, and build meaningful career opportunities in the AYUSH and health technology ecosystem.">
   <meta property="og:title" content="AYUSH CONNECT — Connecting Skills, Opportunities & Careers">
@@ -19,15 +18,18 @@
     if (window.location.hash.includes('access_token=') || 
         window.location.hash.includes('refresh_token=') || 
         (window.location.search.includes('code=') && !window.location.search.includes('error='))) {
-      window.location.replace('/auth/callback.html' + window.location.search + window.location.hash);
+      const modeParam = (localStorage.getItem('ayush_oauth_flow_mode') || sessionStorage.getItem('ayush_oauth_flow_mode'));
+      const pendingRole = localStorage.getItem('ayush_oauth_pending_role') || 'student';
+      const extraQuery = (modeParam ? `&mode=${encodeURIComponent(modeParam)}` : '') + `&role=${encodeURIComponent(pendingRole)}`;
+      window.location.replace('/auth/callback.html' + window.location.search + (window.location.search ? extraQuery : '?' + extraQuery.substring(1)) + window.location.hash);
     }
 
-    // 2. If OAuth login just succeeded in another tab or was completed, route straight to the user's dashboard
+    // 2. If OAuth login just succeeded in another tab or was completed, route straight to the user's dashboard (only if flow was login)
     const justLoggedIn = localStorage.getItem('ayush_oauth_just_logged_in') === 'true' || 
-                         sessionStorage.getItem('ayush_just_logged_in') === 'true' ||
-                         sessionStorage.getItem('ayush_oauth_in_progress') === 'true';
+                         sessionStorage.getItem('ayush_just_logged_in') === 'true';
+    const flowMode = localStorage.getItem('ayush_oauth_flow_mode') || sessionStorage.getItem('ayush_oauth_flow_mode');
     const cachedUser = localStorage.getItem('ayush_current_user');
-    if (justLoggedIn && cachedUser) {
+    if (justLoggedIn && cachedUser && flowMode !== 'register') {
       try {
         const u = JSON.parse(cachedUser);
         localStorage.removeItem('ayush_oauth_just_logged_in');
@@ -40,7 +42,11 @@
 
     // 3. Listen for postMessage from popup OAuth window
     window.addEventListener('message', (event) => {
-      if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
+      if (event.data?.type === 'AYUSH_OAUTH_REGISTER_SUCCESS') {
+        const role = event.data.role || 'student';
+        const email = event.data.email || '';
+        window.location.replace(`/login.html?registered=true&role=${encodeURIComponent(role)}&email=${encodeURIComponent(email)}`);
+      } else if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
         const u = event.data.user;
         localStorage.removeItem('ayush_oauth_just_logged_in');
         sessionStorage.removeItem('ayush_just_logged_in');
@@ -52,7 +58,10 @@
 
     // 4. Listen for storage events (cross-tab OAuth completion)
     window.addEventListener('storage', (e) => {
-      if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
+      if (e.key === 'ayush_oauth_reg_completed' && e.newValue === 'true') {
+        localStorage.removeItem('ayush_oauth_reg_completed');
+        window.location.replace('/login.html?registered=true');
+      } else if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
         const cached = localStorage.getItem('ayush_current_user');
         if (cached) {
           try {
@@ -508,9 +517,12 @@
       </div>
     </div>
 
-    <div style="max-width: 1240px; margin: 0 auto; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted);">
-      <div>&copy; 2026 AYUSH CONNECT. All rights reserved.</div>
-      <div>Connecting Skills, Opportunities & Careers</div>
+    <div style="max-width: 1240px; margin: 0 auto; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+      <div>&copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India. All rights reserved.</div>
+      <div>
+        <a href="/privacy.html" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline; margin-right: 1.25rem;">Privacy Policy</a>
+        <span>Connecting Skills, Opportunities &amp; Careers</span>
+      </div>
     </div>
   </footer>
 

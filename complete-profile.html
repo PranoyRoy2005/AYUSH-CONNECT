@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile — AYUSH CONNECT</title>
+  <meta name="description" content="Complete your profile to access your personalized AYUSH Connect portal.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <style>
+    .complete-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      max-width: 540px;
+      margin: 2rem auto;
+      padding: 2.25rem 2rem;
+      box-sizing: border-box;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .role-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+    .role-choice-card {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+    }
+    .role-choice-card:hover {
+      border-color: var(--primary-deep);
+      background: #ffffff;
+      transform: translateY(-2px);
+    }
+    .role-choice-card.selected {
+      border-color: var(--primary-deep);
+      background: rgba(27, 77, 62, 0.06);
+      box-shadow: 0 0 0 1px var(--primary-deep);
+    }
+  </style>
+</head>
+<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+    <a href="/index.html" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
+    </a>
+    <a href="/login.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Login
+    </a>
+  </header>
+
+  <main style="padding: 1rem; flex: 1; display: flex; align-items: center; justify-content: center;">
+    <div class="complete-card" id="complete-card">
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div id="user-avatar-preview" style="width: 58px; height: 58px; border-radius: 50%; background: var(--primary-deep); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+          AY
+        </div>
+        <h2 style="color: var(--primary-deep); font-size: 1.35rem; margin-bottom: 0.2rem;">Complete Your Profile</h2>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 0;" id="user-oauth-email-display">
+          Signed in via Google
+        </p>
+      </div>
+
+      <div style="background: rgba(27, 77, 62, 0.05); border: 1px solid rgba(27, 77, 62, 0.15); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.84rem; color: var(--primary-deep);">
+        <i class="fa-solid fa-circle-info" style="color: var(--secondary-teal); margin-right: 4px;"></i>
+        <strong>One last step!</strong> Please choose your role in the AYUSH ecosystem so we can take you to your dashboard.
+      </div>
+
+      <form id="form-complete-profile">
+        <label class="form-label" style="font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; display: block;">
+          Select Your Role in the AYUSH Ecosystem *
+        </label>
+        
+        <div class="role-choice-grid">
+          <div class="role-choice-card selected" data-role="student" onclick="window.selectCallbackRole('student')">
+            <div style="font-size: 1.3rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Student</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Scholar &amp; Intern</div>
+          </div>
+
+          <div class="role-choice-card" data-role="industry" onclick="window.selectCallbackRole('industry')">
+            <div style="font-size: 1.3rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Organization</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Enterprises &amp; R&amp;D</div>
+          </div>
+
+          <div class="role-choice-card" data-role="academician" onclick="window.selectCallbackRole('academician')">
+            <div style="font-size: 1.3rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Academician</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Faculty &amp; Deans</div>
+          </div>
+        </div>
+
+        <div class="gov-email-group" style="margin-bottom: 1.25rem;">
+          <div class="gov-email-label-row">
+            <label class="form-label" for="profile-org-input" id="profile-org-label" style="margin: 0; font-weight: 600; font-size: 0.86rem;">
+              College / Institution Name *
+            </label>
+          </div>
+          <div class="gov-email-wrapper">
+            <span class="gov-email-icon"><i class="fa-solid fa-school" id="profile-org-icon"></i></span>
+            <input type="text" id="profile-org-input" class="gov-email-input" placeholder="e.g. National Institute of Ayurveda, Jaipur" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" id="btn-save-profile">
+          <span>Save &amp; Enter Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India
+  </footer>
+
+  <script type="module">
+    import { supabase } from '/js/supabase.js';
+
+    let currentSessionUser = null;
+    let selectedRole = 'student';
+
+    window.selectCallbackRole = function(role) {
+      selectedRole = role;
+      document.querySelectorAll('.role-choice-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.role === role);
+      });
+
+      const label = document.getElementById('profile-org-label');
+      const input = document.getElementById('profile-org-input');
+      const icon = document.getElementById('profile-org-icon');
+
+      if (role === 'industry') {
+        label.textContent = 'Company / Organization Name *';
+        input.placeholder = 'e.g. Himalaya Wellness Company, Dabur R&D';
+        icon.className = 'fa-solid fa-building';
+      } else if (role === 'academician') {
+        label.textContent = 'University / Department *';
+        input.placeholder = 'e.g. All India Institute of Ayurveda, New Delhi';
+        icon.className = 'fa-solid fa-building-columns';
+      } else {
+        label.textContent = 'College / Institution Name *';
+        input.placeholder = 'e.g. National Institute of Ayurveda, Jaipur';
+        icon.className = 'fa-solid fa-school';
+      }
+    };
+
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !session.user) {
+        window.location.replace('/login.html');
+        return;
+      }
+      currentSessionUser = session.user;
+
+      const emailEl = document.getElementById('user-oauth-email-display');
+      if (emailEl && currentSessionUser.email) {
+        emailEl.textContent = `Signed in as: ${currentSessionUser.email}`;
+      }
+
+      const fullName = currentSessionUser.user_metadata?.full_name || currentSessionUser.user_metadata?.name || currentSessionUser.email?.split('@')[0] || 'User';
+      const avatarUrl = currentSessionUser.user_metadata?.avatar_url || currentSessionUser.user_metadata?.picture;
+      const avatarEl = document.getElementById('user-avatar-preview');
+      if (avatarUrl && avatarEl) {
+        avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${fullName}" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer">`;
+      } else if (avatarEl) {
+        avatarEl.textContent = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY';
+      }
+
+      document.getElementById('form-complete-profile').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btn-save-profile');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+        const orgName = document.getElementById('profile-org-input').value.trim();
+        const userId = currentSessionUser.id;
+
+        // Upsert profile with role and profile_completed = true
+        try {
+          await supabase.from('profiles').upsert({
+            id: userId,
+            role: selectedRole,
+            full_name: fullName,
+            email: currentSessionUser.email,
+            avatar_url: avatarUrl || null,
+            profile_completed: true,
+            status: selectedRole === 'student' ? 'active' : 'pending',
+            is_approved: selectedRole === 'student',
+            is_verified: selectedRole === 'student',
+            updated_at: new Date().toISOString()
+          });
+
+          if (selectedRole === 'student') {
+            await supabase.from('student_profiles').upsert({
+              profile_id: userId,
+              college_institution: orgName || 'National Institute of Ayurveda',
+              course: 'BAMS',
+              year: 'Final Year',
+              graduation_year: '2026',
+              career_stage: 'profile',
+              updated_at: new Date().toISOString()
+            });
+          } else if (selectedRole === 'industry') {
+            await supabase.from('industry_profiles').upsert({
+              profile_id: userId,
+              company_name: orgName || `${fullName} Organization`,
+              designation: 'Representative',
+              industry_sector: 'Ayurveda & HealthTech',
+              updated_at: new Date().toISOString()
+            });
+          } else if (selectedRole === 'academician') {
+            await supabase.from('academician_profiles').upsert({
+              profile_id: userId,
+              institution: orgName || 'National Institute of Ayurveda',
+              department: 'Ayurveda Medicine',
+              designation: 'Faculty Member',
+              updated_at: new Date().toISOString()
+            });
+          }
+        } catch (err) {
+          console.error('Error saving profile:', err);
+        }
+
+        const dest = selectedRole === 'student'
+          ? '/dashboard-student.html'
+          : (selectedRole === 'industry' ? '/dashboard-industry.html' : '/dashboard-academician.html');
+
+        window.location.replace(dest);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
