@@ -145,15 +145,288 @@ const DEFAULT_SEED_DATA = {
   },
 
   skills: [
-    { id: 'sk_01', name: 'Herbal Pharmacology (Dravyaguna)', category: 'Domain / Technical', level: 'Advanced', proficiency: 92 },
-    { id: 'sk_02', name: 'Clinical Data Analytics & Python', category: 'Domain / Technical', level: 'Intermediate', proficiency: 78 },
-    { id: 'sk_03', name: 'Ayurvedic Pharmacopoeia & QC', category: 'Domain / Technical', level: 'Advanced', proficiency: 88 },
-    { id: 'sk_04', name: 'Biostatistics & SQL', category: 'Technical Skills', level: 'Intermediate', proficiency: 65 },
-    { id: 'sk_05', name: 'Yoga Biomechanics & Posture AI', category: 'Domain / Technical', level: 'Intermediate', proficiency: 72 },
-    { id: 'sk_06', name: 'Pharmacovigilance (ASU Drugs)', category: 'Regulatory / Clinical', level: 'Intermediate', proficiency: 70 },
-    { id: 'sk_07', name: 'Clinical Communication & Patient Counseling', category: 'Soft Skills', level: 'Advanced', proficiency: 90 },
-    { id: 'sk_08', name: 'Research Methodology & Protocol Writing', category: 'Soft Skills', level: 'Advanced', proficiency: 85 }
+    { id: 'sk_01', name: 'Herbal Pharmacology (Dravyaguna)', category: 'Domain / Technical', domain: 'Ayurveda', level: 'Intermediate', description: 'Classical herbal pharmacology, Dravya properties, Rasa-Panchaka analysis, and modern phytochemistry.' },
+    { id: 'sk_02', name: 'Clinical Data Analytics & Python', category: 'Technical Skills', domain: 'Informatics', level: 'Intermediate', description: 'Python data science stack (Pandas, NumPy, Scikit-learn) for healthcare metrics and electronic medical record analytics.' },
+    { id: 'sk_03', name: 'Ayurvedic Pharmacopoeia & QC', category: 'Domain / Technical', domain: 'Ayurveda', level: 'Intermediate', description: 'HPTLC botanical fingerprinting, API monograph compliance, physicochemical analysis, and botanical quality control.' },
+    { id: 'sk_04', name: 'Biostatistics & SQL', category: 'Technical Skills', domain: 'Data Science', level: 'Intermediate', description: 'Relational clinical trial database querying, statistical hypothesis testing, cohort stratification, and epidemiology.' },
+    { id: 'sk_05', name: 'Yoga Biomechanics & Posture AI', category: 'Domain / Technical', domain: 'Yoga', level: 'Intermediate', description: 'Asana anatomical alignment analysis, motion kinematics, and computer vision pose estimation for rehabilitation.' },
+    { id: 'sk_06', name: 'Pharmacovigilance (ASU Drugs)', category: 'Regulatory / Clinical', domain: 'Regulatory', level: 'Intermediate', description: 'National Pharmacovigilance Programme protocols, ADR reporting, Schedule T GMP compliance, and safety monitoring.' },
+    { id: 'sk_07', name: 'Clinical Communication & Patient Counseling', category: 'Soft Skills', domain: 'Clinical', level: 'Intermediate', description: 'Prakriti-based lifestyle counseling, holistic patient consultation, clinical empathy, and therapeutic adherence.' },
+    { id: 'sk_08', name: 'Research Methodology & Protocol Writing', category: 'Soft Skills', domain: 'Research', level: 'Intermediate', description: 'GCP compliance, CTRI trial registration, clinical protocol design, and scientific publication standards.' }
   ],
+
+  assessment_questions: [
+    {
+      id: 'q_01',
+      skill_id: 'sk_03',
+      question_text: 'In Ayurvedic drug standardization, which chromatography technique is primary for creating fingerprint profiles of polyherbal formulations according to API standards?',
+      option_a: 'High-Performance Thin-Layer Chromatography (HPTLC)',
+      option_b: 'Gas Chromatography with Flame Ionization only',
+      option_c: 'Gel Permeation Chromatography',
+      option_d: 'Paper Partition Chromatography',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'HPTLC provides multi-wavelength fingerprinting suitable for complex botanical matrices mandated by the Ayurvedic Pharmacopoeia of India (API).'
+    },
+    {
+      id: 'q_02',
+      skill_id: 'sk_04',
+      question_text: 'You have a clinical trial table `patient_vitals` with columns `(patient_id, dosha_prakriti, bp_systolic)`. Which SQL query computes the average systolic blood pressure grouped by Prakriti?',
+      option_a: 'SELECT dosha_prakriti, AVG(bp_systolic) FROM patient_vitals GROUP BY dosha_prakriti;',
+      option_b: 'SELECT AVG(bp_systolic) FROM patient_vitals ORDER BY dosha_prakriti;',
+      option_c: 'SELECT dosha_prakriti, SUM(bp_systolic)/COUNT(*) FROM patient_vitals;',
+      option_d: 'GROUP BY dosha_prakriti SELECT bp_systolic FROM patient_vitals;',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Standard SQL aggregate function AVG() with GROUP BY accurately aggregates metrics per dosha category.'
+    },
+    {
+      id: 'q_03',
+      skill_id: 'sk_02',
+      question_text: 'Which Python library ecosystem is standard for managing tabular electronic health records, handling missing clinical values, and performing cohort filtering?',
+      option_a: 'Pandas and NumPy',
+      option_b: 'Pygame and Turtle',
+      option_c: 'Flask and Jinja',
+      option_d: 'Socket and Asyncio',
+      correct_option: 'A',
+      difficulty: 'Beginner',
+      explanation: 'Pandas DataFrames and NumPy arrays form the foundational stack for biomedical and epidemiological data manipulation.'
+    },
+    {
+      id: 'q_04',
+      skill_id: 'sk_06',
+      question_text: 'Under the National Pharmacovigilance Programme for ASU&H drugs in India, what constitutes a "Serious Adverse Drug Reaction"?',
+      option_a: 'Any reaction that causes patient annoyance',
+      option_b: 'Reaction resulting in death, inpatient hospitalization, persistent disability, or congenital anomaly',
+      option_c: 'A reaction with mild transient headache only',
+      option_d: 'Any unexpected taste alteration during herbal tea ingestion',
+      correct_option: 'B',
+      difficulty: 'Intermediate',
+      explanation: 'WHO-UMC and Ministry of AYUSH regulatory frameworks define Serious ADRs by criteria of mortality, hospitalization, or permanent incapacity.'
+    },
+    {
+      id: 'q_05',
+      skill_id: 'sk_08',
+      question_text: 'When conducting an observational trial on Ashwagandha (Withania somnifera) for stress resilience, which validated psychometric scale is globally accepted as a primary clinical endpoint?',
+      option_a: 'Perceived Stress Scale (PSS-10) and Serum Cortisol biomarkers',
+      option_b: 'Richter Magnitude Scale',
+      option_c: 'Mohs Hardness Scale',
+      option_d: 'Body Mass Index alone',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'The PSS-10 scale combined with objective morning serum cortisol levels provides dual psychological and biochemical validation.'
+    },
+    {
+      id: 'q_06',
+      skill_id: 'sk_04',
+      question_text: 'Which statistical hypothesis test is most appropriate to compare mean blood glucose reduction between an Ayurvedic herb group and a placebo control group?',
+      option_a: 'Independent Two-Sample Student t-test',
+      option_b: 'Simple Chi-Square test of independence only',
+      option_c: 'Linear Regression with R-squared = 0',
+      option_d: 'Cronbach Alpha coefficient',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'The independent two-sample t-test compares the continuous outcome means between two parallel treatment arms.'
+    },
+    {
+      id: 'q_07',
+      skill_id: 'sk_02',
+      question_text: 'What is the primary role of Natural Language Processing (NLP) when parsing classical Sanskrit Ayurvedic treatises (e.g., Charaka Samhita) into digital clinical ontologies?',
+      option_a: 'Named Entity Recognition (NER) to extract medicinal plants, disease terms, and formulation recipes',
+      option_b: 'Rendering 3D video game animations',
+      option_c: 'Compressing audio files into MP3 format',
+      option_d: 'Generating random password strings',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Biomedical NLP utilizes specialized NER to structure botanical and therapeutic entities for the AYUSH National Morbidity Codes.'
+    },
+    {
+      id: 'q_08',
+      skill_id: 'sk_03',
+      question_text: 'Heavy metal toxicity testing in Ayurvedic preparations is strictly enforced. Which instrument delivers the lowest detection limits for Lead (Pb), Arsenic (As), and Mercury (Hg)?',
+      option_a: 'Inductively Coupled Plasma Mass Spectrometry (ICP-MS)',
+      option_b: 'Standard UV-Visible Spectrophotometer',
+      option_c: 'Simple Glass Hydrometer',
+      option_d: 'Compound Optical Microscope',
+      correct_option: 'A',
+      difficulty: 'Advanced',
+      explanation: 'ICP-MS can detect trace elemental contaminants at parts-per-billion (ppb) levels, meeting international pharmacopoeial safety norms.'
+    },
+    {
+      id: 'q_09',
+      skill_id: 'sk_06',
+      question_text: 'Where should a registered AYUSH practitioner in India submit suspected adverse drug reaction reporting forms?',
+      option_a: 'To designated Intermediary / Peripheral Pharmacovigilance Centres (PPvC/IPvC) under AIIA / NPvCC',
+      option_b: 'To local municipality sanitation offices',
+      option_c: 'To the local post office only',
+      option_d: 'Directly to social media platforms',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Reporting flows from peripheral centres to national coordination centers like AIIA New Delhi for causality assessment.'
+    },
+    {
+      id: 'q_10',
+      skill_id: 'sk_01',
+      question_text: 'During batch stability testing, a liquid herbal Arishta formulation exhibits increased microbial colony counts after 30 days. What is the immediate correct regulatory step?',
+      option_a: 'Quarantine the batch, initiate Out-of-Specification (OOS) investigation, and review aseptic fermentation parameters',
+      option_b: 'Add artificial sugar and immediately bottle for market distribution',
+      option_c: 'Ignore test since natural products inherently have high microbial loads',
+      option_d: 'Sell the product at a 50% discount',
+      correct_option: 'A',
+      difficulty: 'Advanced',
+      explanation: 'Good Manufacturing Practices (Schedule T) require systematic OOS protocols and quarantine upon microbiological failure.'
+    },
+    {
+      id: 'q_11',
+      skill_id: 'sk_04',
+      question_text: 'In SQL, which clause is used to filter aggregated group results (for instance, showing only clinics with count of enrolled patients > 50)?',
+      option_a: 'HAVING',
+      option_b: 'WHERE',
+      option_c: 'ORDER BY',
+      option_d: 'LIMIT',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'HAVING filters results after aggregation, while WHERE filters row-level records before grouping.'
+    },
+    {
+      id: 'q_12',
+      skill_id: 'sk_02',
+      question_text: 'Which metric is best suited to evaluate an AI model predicting whether a patient belongs to Vata, Pitta, or Kapha dominant Prakriti with imbalanced class distribution?',
+      option_a: 'Macro-averaged F1-Score and Confusion Matrix',
+      option_b: 'Raw Accuracy score alone',
+      option_c: 'Mean Squared Error (MSE)',
+      option_d: 'Total line count in source code',
+      correct_option: 'A',
+      difficulty: 'Advanced',
+      explanation: 'Macro F1-score balances precision and recall equally across multi-class distributions regardless of class imbalances.'
+    },
+    {
+      id: 'q_13',
+      skill_id: 'sk_03',
+      question_text: 'What does "Total Ash Value" indicate when analyzing raw Ayurvedic crude herbs?',
+      option_a: 'Total amount of inorganic material and earthy adulterants remaining after complete incineration',
+      option_b: 'The moisture content percentage of the leaf',
+      option_c: 'The water-soluble extractive percentage',
+      option_d: 'The pesticide residue level',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Ash value determination measures non-volatile inorganic salts and silica residues.'
+    },
+    {
+      id: 'q_14',
+      skill_id: 'sk_08',
+      question_text: 'What is the primary requirement for conducting human clinical trials of proprietary AYUSH drugs under Indian GCP guidelines?',
+      option_a: 'Institutional Ethics Committee (IEC) approval and prospective CTRI registration',
+      option_b: 'A verbal consent from the investigator only',
+      option_c: 'Publishing the trial results before starting',
+      option_d: 'A patent filing receipt only',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Prospective registration with the Clinical Trials Registry - India (CTRI) and ethical clearance are statutory requirements.'
+    },
+    {
+      id: 'q_15',
+      skill_id: 'sk_06',
+      question_text: 'Which Schedule of the Drugs and Cosmetics Act governs Good Manufacturing Practices (GMP) for Ayurvedic, Siddha, and Unani medicines in India?',
+      option_a: 'Schedule T',
+      option_b: 'Schedule M',
+      option_c: 'Schedule H',
+      option_d: 'Schedule X',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'Schedule T specifies factory premises, hygiene, machinery, and quality control requirements for ASU drugs.'
+    },
+    {
+      id: 'q_16',
+      skill_id: 'sk_04',
+      question_text: 'What does a p-value < 0.05 signify in an AYUSH randomized controlled clinical trial comparing an herbal formulation with baseline?',
+      option_a: 'Statistically significant difference; probability of observing results by random chance is less than 5%',
+      option_b: 'The drug is 95% ineffective',
+      option_c: 'The sample size was too small to calculate anything',
+      option_d: 'The trial must be cancelled immediately',
+      correct_option: 'A',
+      difficulty: 'Beginner',
+      explanation: 'A p-value under 0.05 denotes standard rejection of the null hypothesis.'
+    },
+    {
+      id: 'q_17',
+      skill_id: 'sk_02',
+      question_text: 'When preparing electronic health record data for machine learning, which technique handles categorical data like Prakriti = {Vata, Pitta, Kapha} without imposing artificial ordinal ranks?',
+      option_a: 'One-Hot Encoding (pd.get_dummies)',
+      option_b: 'Arbitrary random integer assignment',
+      option_c: 'Deleting the column completely',
+      option_d: 'Linear interpolation',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'One-hot encoding creates binary orthogonal vectors representing nominal categorical variables.'
+    },
+    {
+      id: 'q_18',
+      skill_id: 'sk_03',
+      question_text: 'What is the objective of "Aflatoxin testing" in medicinal plant raw materials stored in humid warehouse conditions?',
+      option_a: 'Detecting carcinogenic mycotoxins produced by Aspergillus fungi',
+      option_b: 'Measuring total chlorophyll concentration',
+      option_c: 'Calculating essential oil yield',
+      option_d: 'Assessing leaf thickness',
+      correct_option: 'A',
+      difficulty: 'Advanced',
+      explanation: 'Aflatoxins B1, B2, G1, and G2 are dangerous fungal metabolites regulated strictly for human consumption.'
+    },
+    {
+      id: 'q_19',
+      skill_id: 'sk_01',
+      question_text: 'An industry sponsor wants to develop a standardized herbal extract for cognitive enhancement. Which critical phase must precede phase I human trials?',
+      option_a: 'In-vitro biological screening and preclinical acute/sub-acute animal toxicity profiling',
+      option_b: 'Television commercial advertising campaign',
+      option_c: 'Commercial mass packaging and export shipping',
+      option_d: 'Direct retail sales to consumers',
+      correct_option: 'A',
+      difficulty: 'Advanced',
+      explanation: 'Preclinical safety, LD50 toxicity testing, and active phytochemical characterization are mandatory safety milestones.'
+    },
+    {
+      id: 'q_20',
+      skill_id: 'sk_06',
+      question_text: 'Under the AYUSH National Morbidity Codes (NAMASTE portal), how are traditional diagnoses systematically mapped for global statistical reporting?',
+      option_a: 'Bridged with WHO International Classification of Diseases (ICD-11 Traditional Medicine Chapter 2)',
+      option_b: 'Stored as unstructured handwritten paper records only',
+      option_c: 'Translated into Greek mythology characters',
+      option_d: 'No standardized mapping exists',
+      correct_option: 'A',
+      difficulty: 'Intermediate',
+      explanation: 'NAMASTE codes are harmonized with WHO ICD-11 Chapter 2 for traditional medicine integration.'
+    }
+  ],
+
+  opportunity_requirements: [
+    { id: 'req_01_1', opportunity_id: 'opp_01', skill_id: 'sk_01', skill_name: 'Herbal Pharmacology (Dravyaguna)', importance: 'required' },
+    { id: 'req_01_2', opportunity_id: 'opp_01', skill_id: 'sk_02', skill_name: 'Clinical Data Analytics & Python', importance: 'required' },
+    { id: 'req_01_3', opportunity_id: 'opp_01', skill_id: 'sk_04', skill_name: 'Biostatistics & SQL', importance: 'preferred' },
+
+    { id: 'req_02_1', opportunity_id: 'opp_02', skill_id: 'sk_03', skill_name: 'Ayurvedic Pharmacopoeia & QC', importance: 'required' },
+    { id: 'req_02_2', opportunity_id: 'opp_02', skill_id: 'sk_08', skill_name: 'Research Methodology & Protocol Writing', importance: 'required' },
+    { id: 'req_02_3', opportunity_id: 'opp_02', skill_id: 'sk_06', skill_name: 'Pharmacovigilance (ASU Drugs)', importance: 'preferred' },
+
+    { id: 'req_03_1', opportunity_id: 'opp_03', skill_id: 'sk_05', skill_name: 'Yoga Biomechanics & Posture AI', importance: 'required' },
+    { id: 'req_03_2', opportunity_id: 'opp_03', skill_id: 'sk_02', skill_name: 'Clinical Data Analytics & Python', importance: 'required' },
+    { id: 'req_03_3', opportunity_id: 'opp_03', skill_id: 'sk_04', skill_name: 'Biostatistics & SQL', importance: 'preferred' },
+
+    { id: 'req_04_1', opportunity_id: 'opp_04', skill_id: 'sk_02', skill_name: 'Clinical Data Analytics & Python', importance: 'required' },
+    { id: 'req_04_2', opportunity_id: 'opp_04', skill_id: 'sk_04', skill_name: 'Biostatistics & SQL', importance: 'required' },
+    { id: 'req_04_3', opportunity_id: 'opp_04', skill_id: 'sk_08', skill_name: 'Research Methodology & Protocol Writing', importance: 'preferred' },
+
+    { id: 'req_05_1', opportunity_id: 'opp_05', skill_id: 'sk_06', skill_name: 'Pharmacovigilance (ASU Drugs)', importance: 'required' },
+    { id: 'req_05_2', opportunity_id: 'opp_05', skill_id: 'sk_03', skill_name: 'Ayurvedic Pharmacopoeia & QC', importance: 'required' },
+    { id: 'req_05_3', opportunity_id: 'opp_05', skill_id: 'sk_07', skill_name: 'Clinical Communication & Patient Counseling', importance: 'preferred' },
+
+    { id: 'req_06_1', opportunity_id: 'opp_06', skill_id: 'sk_08', skill_name: 'Research Methodology & Protocol Writing', importance: 'required' },
+    { id: 'req_06_2', opportunity_id: 'opp_06', skill_id: 'sk_01', skill_name: 'Herbal Pharmacology (Dravyaguna)', importance: 'required' },
+    { id: 'req_06_3', opportunity_id: 'opp_06', skill_id: 'sk_07', skill_name: 'Clinical Communication & Patient Counseling', importance: 'preferred' }
+  ],
+
+  student_skills: [],
+  match_results: [],
+  applications: [],
 
   opportunities: [
     {
@@ -260,49 +533,6 @@ const DEFAULT_SEED_DATA = {
     }
   ],
 
-  applications: [
-    {
-      id: 'app_01',
-      opportunity_id: 'opp_01',
-      student_id: 'usr_student_01',
-      student_name: 'Ayush Sharma',
-      college: 'AIIA, New Delhi',
-      position: 'Ayurvedic Clinical Informatics Intern',
-      company: 'Dabur India R&D Centre',
-      applied_date: '2026-09-05',
-      status: 'Interview',
-      match_pct: 92,
-      assessment_score: 84,
-      interview_date: '2026-09-22 at 11:00 AM IST'
-    },
-    {
-      id: 'app_02',
-      opportunity_id: 'opp_02',
-      student_id: 'usr_student_01',
-      student_name: 'Ayush Sharma',
-      college: 'AIIA, New Delhi',
-      position: 'Herbal Formulation Quality Analyst',
-      company: 'Himalaya Wellness Company',
-      applied_date: '2026-09-08',
-      status: 'Shortlisted',
-      match_pct: 88,
-      assessment_score: 84
-    },
-    {
-      id: 'app_03',
-      opportunity_id: 'opp_04',
-      student_id: 'usr_student_01',
-      student_name: 'Ayush Sharma',
-      college: 'AIIA, New Delhi',
-      position: 'National AYUSH Hackathon & Clinical Datathon',
-      company: 'Ministry of AYUSH & AICTE',
-      applied_date: '2026-09-11',
-      status: 'Applied',
-      match_pct: 95,
-      assessment_score: 84
-    }
-  ],
-
   projects: [
     {
       id: 'proj_01',
@@ -332,12 +562,20 @@ function loadLocalDatabase() {
     const saved = localStorage.getItem(LOCAL_DB_STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
+      // Strip out any legacy hardcoded mock applications
+      const rawApps = Array.isArray(parsed.applications) ? parsed.applications : [];
+      const cleanApps = rawApps.filter(a => a && !['app_01', 'app_02', 'app_03'].includes(a.id));
+
       return {
         profiles: parsed.profiles || DEFAULT_SEED_DATA.profiles,
         student_profiles: parsed.student_profiles || DEFAULT_SEED_DATA.student_profiles,
-        skills: parsed.skills || DEFAULT_SEED_DATA.skills,
+        skills: DEFAULT_SEED_DATA.skills,
+        assessment_questions: DEFAULT_SEED_DATA.assessment_questions,
+        opportunity_requirements: DEFAULT_SEED_DATA.opportunity_requirements,
+        student_skills: Array.isArray(parsed.student_skills) ? parsed.student_skills : [],
+        match_results: Array.isArray(parsed.match_results) ? parsed.match_results : [],
         opportunities: parsed.opportunities || DEFAULT_SEED_DATA.opportunities,
-        applications: parsed.applications || DEFAULT_SEED_DATA.applications,
+        applications: cleanApps,
         projects: parsed.projects || DEFAULT_SEED_DATA.projects
       };
     }
@@ -627,144 +865,778 @@ export async function signInWithOAuthProvider(provider, intendedRole = null, flo
  * Fetch Student Dashboard Metrics
  */
 export async function fetchStudentDashboardMetrics(userId) {
-  if (isDemoMode()) {
-    return {
-      profileCompletion: 78,
-      skillScore: 82,
-      applicationsCount: 6,
-      recommendationsCount: 12,
-      rankText: 'Top 15% across AIIA',
-      interviewAppsText: '2 in Interview Stage',
-      matchScoreText: '90%+ Skill Alignment'
-    };
+  let effectiveUserId = userId;
+  const cur = getCurrentUser();
+  if (!effectiveUserId) {
+    effectiveUserId = cur?.id || 'usr_student_01';
   }
 
-  try {
-    const [profileRes, studentProfileRes, skillsRes, appsRes, oppsRes] = await Promise.all([
-      userId ? supabase.from('profiles').select('*').eq('id', userId).maybeSingle() : Promise.resolve({ data: null }),
-      userId ? supabase.from('student_profiles').select('*').eq('profile_id', userId).maybeSingle() : Promise.resolve({ data: null }),
-      userId ? supabase.from('student_skills').select('*').eq('student_id', userId) : Promise.resolve({ data: [] }),
-      userId ? supabase.from('applications').select('*').eq('student_id', userId) : Promise.resolve({ data: [] }),
-      supabase.from('opportunities').select('id, required_skills')
-    ]);
+  const isRealUUID = effectiveUserId && !String(effectiveUserId).startsWith('usr_') && !isDemoMode();
 
-    const profile = profileRes?.data || null;
-    const studentProfile = studentProfileRes?.data || null;
-    const skills = Array.isArray(skillsRes?.data) ? skillsRes.data : [];
-    const apps = Array.isArray(appsRes?.data) ? appsRes.data : [];
-    const opps = Array.isArray(oppsRes?.data) ? oppsRes.data : [];
+  let profile = null;
+  let studentProfile = null;
+  let skills = [];
+  let apps = [];
+  let opps = [];
 
-    // Calculate real completion pct based on fields
-    let filledCount = 0;
-    const totalFields = 6;
-    if (profile?.full_name) filledCount++;
-    if (profile?.email) filledCount++;
-    if (studentProfile?.college_institution) filledCount++;
-    if (studentProfile?.course) filledCount++;
-    if (studentProfile?.bio) filledCount++;
-    if (skills.length > 0) filledCount++;
-    const profileCompletion = studentProfile?.profile_completion_pct 
-      || (filledCount > 0 ? Math.round((filledCount / totalFields) * 100) : 0);
-
-    let skillScore = 0;
-    if (studentProfile?.overall_skill_score) {
-      skillScore = studentProfile.overall_skill_score;
-    } else if (skills.length > 0) {
-      const sum = skills.reduce((acc, s) => acc + (s.proficiency_pct || 0), 0);
-      skillScore = Math.round(sum / skills.length);
+  if (isRealUUID) {
+    try {
+      const [profileRes, studentProfileRes, skillsRes, appsRes, oppsRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', effectiveUserId).maybeSingle(),
+        supabase.from('student_profiles').select('*').eq('profile_id', effectiveUserId).maybeSingle(),
+        supabase.from('student_skills').select('*').eq('student_id', effectiveUserId),
+        supabase.from('applications').select('*').eq('student_id', effectiveUserId),
+        supabase.from('opportunities').select('id, required_skills')
+      ]);
+      profile = profileRes?.data || null;
+      studentProfile = studentProfileRes?.data || null;
+      skills = Array.isArray(skillsRes?.data) ? skillsRes.data : [];
+      apps = Array.isArray(appsRes?.data) ? appsRes.data : [];
+      opps = Array.isArray(oppsRes?.data) ? oppsRes.data : [];
+    } catch (err) {
+      console.warn('Error querying Supabase for student dashboard metrics:', err);
     }
+  }
 
-    const applicationsCount = apps.length;
-    const interviewApps = apps.filter(a => (a.status || '').toLowerCase() === 'interview').length;
+  // Fallback to local DB cache
+  if (!profile) {
+    profile = (MOCK_DB.profiles || []).find(p => p.id === effectiveUserId) || cur || null;
+  }
+  if (!studentProfile) {
+    studentProfile = (MOCK_DB.student_profiles || []).find(sp => sp.profile_id === effectiveUserId || sp.id === effectiveUserId) || null;
+  }
+  if (skills.length === 0) {
+    skills = (MOCK_DB.student_skills || []).filter(s => s.student_id === effectiveUserId);
+  }
+  if (apps.length === 0) {
+    apps = (MOCK_DB.applications || []).filter(a => a.student_id === effectiveUserId);
+  }
+  if (opps.length === 0) {
+    opps = MOCK_DB.opportunities || DEFAULT_SEED_DATA.opportunities || [];
+  }
 
-    let recommendationsCount = 0;
-    if (skills.length > 0 && opps.length > 0) {
-      const studentSkillNames = skills.map(s => (s.name || '').toLowerCase());
+  // Calculate real completion pct based on actual filled fields
+  let filledWeight = 0;
+  if (profile?.full_name) filledWeight += 15;
+  if (profile?.email) filledWeight += 10;
+  if (profile?.phone) filledWeight += 10;
+  if (profile?.avatar_url || localStorage.getItem('ayush_candidate_photo')) filledWeight += 10;
+  if (studentProfile?.college_institution || profile?.institution) filledWeight += 15;
+  if (studentProfile?.course || profile?.course) filledWeight += 15;
+  if (studentProfile?.year || profile?.year) filledWeight += 5;
+  if (profile?.address_city || profile?.address_state || profile?.address_street) filledWeight += 10;
+  if (skills.length > 0 || (Array.isArray(studentProfile?.skills) && studentProfile.skills.length > 0)) filledWeight += 10;
+  if (studentProfile?.resume_url || studentProfile?.verification_documents || localStorage.getItem('ayush_documents_' + effectiveUserId)) filledWeight += 10;
+
+  const isProfileCompleted = Boolean(
+    profile?.profile_completed || 
+    localStorage.getItem('ayush_profile_completed') === 'true' ||
+    studentProfile?.profile_completion_pct === 100
+  );
+
+  let profileCompletion = isProfileCompleted 
+    ? Math.max(85, filledWeight)
+    : Math.min(100, filledWeight);
+
+  // Real verified skill score: Σ(proficiency_score) / N
+  let skillScore = 0;
+  if (skills.length > 0) {
+    const sum = skills.reduce((acc, s) => acc + (Number(s.proficiency_score ?? s.proficiency_pct ?? s.proficiency) || 0), 0);
+    skillScore = Math.round(sum / skills.length);
+  } else if (studentProfile?.overall_skill_score) {
+    skillScore = Number(studentProfile.overall_skill_score) || 0;
+  }
+
+  const applicationsCount = apps.length;
+  const interviewApps = apps.filter(a => (a.status || '').toLowerCase() === 'interview').length;
+
+  // Real recommendations count: opportunities with matching skills
+  let recommendationsCount = 0;
+  if (opps.length > 0) {
+    if (skills.length > 0) {
+      const studentSkillIds = new Set(skills.map(s => s.skill_id).filter(Boolean));
+      const studentSkillNames = skills.map(s => (s.name || s.skill_name || '').toLowerCase());
+      
       recommendationsCount = opps.filter(opp => {
-        const reqs = Array.isArray(opp.required_skills) ? opp.required_skills : [];
-        return reqs.some(r => studentSkillNames.includes(r.toLowerCase()));
+        const reqs = (MOCK_DB.opportunity_requirements || DEFAULT_SEED_DATA.opportunity_requirements || [])
+          .filter(r => r.opportunity_id === opp.id);
+        if (reqs.length > 0) {
+          return reqs.some(r => studentSkillIds.has(r.skill_id) || studentSkillNames.includes(r.skill_name?.toLowerCase()));
+        }
+        const oppReqSkills = Array.isArray(opp.required_skills) ? opp.required_skills : [];
+        return oppReqSkills.some(r => studentSkillNames.includes(r.toLowerCase()));
       }).length;
     }
+  }
 
-    return {
-      profileCompletion,
-      skillScore,
-      applicationsCount,
-      recommendationsCount,
-      rankText: skillScore > 0 ? `Verified Score: ${skillScore}/100` : 'No assessments completed yet',
-      interviewAppsText: applicationsCount > 0 ? `${interviewApps} in Interview Stage` : '0 active applications',
-      matchScoreText: recommendationsCount > 0 ? `${recommendationsCount} matching positions` : 'Log skills to see matches'
-    };
-  } catch (err) {
-    console.warn('Error fetching live student metrics from Supabase:', err);
-    return {
-      profileCompletion: 0,
-      skillScore: 0,
-      applicationsCount: 0,
-      recommendationsCount: 0,
-      rankText: 'No assessments completed yet',
-      interviewAppsText: '0 active applications',
-      matchScoreText: 'Log skills to see matches'
+  return {
+    profileCompletion,
+    skillScore,
+    skillsCount: skills.length,
+    applicationsCount,
+    recommendationsCount,
+    rankText: skillScore > 0 ? `Verified Score: ${skillScore}/100` : 'No assessments completed yet',
+    interviewAppsText: applicationsCount > 0 ? `${interviewApps} in Interview Stage` : '0 active submissions',
+    matchScoreText: recommendationsCount > 0 ? `${recommendationsCount} matched roles` : (skills.length === 0 ? 'Log skills to see matches' : '0 matching positions')
+  };
+}
+
+/**
+ * Save candidate profile photo to Supabase & localStorage
+ */
+export async function saveCandidatePhotoToSupabase(userId, photoDataUrl) {
+  if (photoDataUrl) {
+    localStorage.setItem('ayush_candidate_photo', photoDataUrl);
+  } else {
+    localStorage.removeItem('ayush_candidate_photo');
+  }
+
+  const cur = getCurrentUser();
+  if (cur) {
+    cur.avatar_url = photoDataUrl || null;
+    setCurrentUser(cur);
+  }
+
+  let effectiveUserId = userId;
+  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    } catch (e) {}
+  }
+
+  if (effectiveUserId && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          avatar_url: photoDataUrl || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', effectiveUserId);
+      if (error) {
+        console.warn('[Supabase] Candidate photo update warning:', error.message);
+      }
+    } catch (e) {
+      console.warn('[Supabase] Photo update network error:', e);
+    }
+  }
+}
+
+/**
+ * Documents (CV & Certificates) Management Layer
+ */
+export async function fetchStudentDocuments(userId) {
+  const uid = userId || getCurrentUser()?.id || 'default';
+  
+  // 1. Check local storage cache first
+  let localDocs = null;
+  try {
+    const raw = localStorage.getItem('ayush_documents_' + uid);
+    if (raw) localDocs = JSON.parse(raw);
+  } catch (e) {}
+
+  if (isDemoMode()) {
+    return localDocs || {
+      cv: {
+        name: 'Ayush_Sharma_Verified_Curriculum_Vitae_2026.pdf',
+        upload_date: '2026-02-15',
+        verified: true,
+        size: '1.4 MB',
+        data_url: null
+      },
+      certificates: []
     };
   }
+
+  // In production mode: fetch real student_profiles record from Supabase
+  let cv = localDocs?.cv || null;
+  let certificates = localDocs?.certificates || [];
+
+  if (uid && !String(uid).startsWith('usr_')) {
+    try {
+      const { data } = await supabase
+        .from('student_profiles')
+        .select('resume_url, verification_documents')
+        .eq('profile_id', uid)
+        .maybeSingle();
+
+      if (data) {
+        if (data.resume_url && !cv) {
+          cv = {
+            name: 'Uploaded_Candidate_Resume.pdf',
+            upload_date: new Date().toISOString().split('T')[0],
+            data_url: data.resume_url,
+            verified: true,
+            size: 'Verified File'
+          };
+        }
+        if (data.verification_documents) {
+          try {
+            const parsed = JSON.parse(data.verification_documents);
+            if (Array.isArray(parsed)) {
+              certificates = parsed;
+            }
+          } catch (pe) {}
+        }
+      }
+    } catch (e) {
+      console.warn('Error fetching student documents from Supabase:', e);
+    }
+  }
+
+  return { cv, certificates };
+}
+
+export async function saveStudentCV(userId, cvObject) {
+  const uid = userId || getCurrentUser()?.id || 'default';
+  const docs = await fetchStudentDocuments(uid);
+  docs.cv = cvObject;
+  localStorage.setItem('ayush_documents_' + uid, JSON.stringify(docs));
+
+  if (uid && !String(uid).startsWith('usr_')) {
+    try {
+      await supabase.from('student_profiles').update({
+        resume_url: cvObject.data_url || cvObject.name,
+        updated_at: new Date().toISOString()
+      }).eq('profile_id', uid);
+    } catch (e) {
+      console.warn('Error updating CV in DB:', e);
+    }
+  }
+  return docs.cv;
+}
+
+export async function saveStudentCertificate(userId, certObject) {
+  const uid = userId || getCurrentUser()?.id || 'default';
+  const docs = await fetchStudentDocuments(uid);
+  if (!docs.certificates) docs.certificates = [];
+  
+  const newCert = {
+    id: 'cert_' + Date.now(),
+    title: certObject.title,
+    issuer: certObject.issuer,
+    credential_id: certObject.credential_id || ('AYUSH-CERT-' + Date.now().toString().slice(-4)),
+    issue_date: certObject.issue_date || new Date().toISOString().split('T')[0],
+    data_url: certObject.data_url || null,
+    file_name: certObject.file_name || null,
+    verified: true
+  };
+
+  docs.certificates.unshift(newCert);
+  localStorage.setItem('ayush_documents_' + uid, JSON.stringify(docs));
+
+  if (uid && !String(uid).startsWith('usr_')) {
+    try {
+      await supabase.from('student_profiles').update({
+        verification_documents: JSON.stringify(docs.certificates),
+        updated_at: new Date().toISOString()
+      }).eq('profile_id', uid);
+    } catch (e) {
+      console.warn('Error updating certificates in DB:', e);
+    }
+  }
+  return newCert;
+}
+
+export async function deleteStudentCertificate(userId, certId) {
+  const uid = userId || getCurrentUser()?.id || 'default';
+  const docs = await fetchStudentDocuments(uid);
+  if (docs.certificates) {
+    docs.certificates = docs.certificates.filter(c => c.id !== certId);
+    localStorage.setItem('ayush_documents_' + uid, JSON.stringify(docs));
+
+    if (uid && !String(uid).startsWith('usr_')) {
+      try {
+        await supabase.from('student_profiles').update({
+          verification_documents: JSON.stringify(docs.certificates),
+          updated_at: new Date().toISOString()
+        }).eq('profile_id', uid);
+      } catch (e) {
+        console.warn('Error deleting certificate in DB:', e);
+      }
+    }
+  }
+  return true;
+}
+
+/**
+ * Fetch Master Skills List
+ */
+export async function fetchSkills() {
+  if (!isDemoMode()) {
+    try {
+      const { data, error } = await supabase.from('skills').select('*').order('name');
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch (e) {
+      console.warn('Error fetching skills from Supabase:', e);
+    }
+  }
+  return MOCK_DB.skills || DEFAULT_SEED_DATA.skills || [];
+}
+
+/**
+ * Fetch Assessment Questions from assessment_questions table
+ */
+export async function fetchAssessmentQuestions() {
+  if (!isDemoMode()) {
+    try {
+      const { data, error } = await supabase
+        .from('assessment_questions')
+        .select('*, skills(id, name, category)');
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data.map(q => ({
+          id: q.id,
+          skill_id: q.skill_id,
+          skill: q.skills?.name || 'AYUSH Competency',
+          text: q.question_text || q.text,
+          options: [q.option_a, q.option_b, q.option_c, q.option_d],
+          correct: q.correct_option === 'A' ? 0 : q.correct_option === 'B' ? 1 : q.correct_option === 'C' ? 2 : q.correct_option === 'D' ? 3 : (typeof q.correct === 'number' ? q.correct : 0),
+          explanation: q.explanation || '',
+          difficulty: q.difficulty || 'Intermediate'
+        }));
+      }
+    } catch (e) {
+      console.warn('Error fetching assessment questions from Supabase:', e);
+    }
+  }
+
+  const list = MOCK_DB.assessment_questions || DEFAULT_SEED_DATA.assessment_questions || [];
+  const masterSkills = MOCK_DB.skills || DEFAULT_SEED_DATA.skills || [];
+  return list.map(q => {
+    const s = masterSkills.find(item => item.id === q.skill_id);
+    return {
+      id: q.id,
+      skill_id: q.skill_id,
+      skill: s ? s.name : (q.skill || 'AYUSH Competency'),
+      text: q.question_text || q.text,
+      options: [q.option_a, q.option_b, q.option_c, q.option_d],
+      correct: q.correct_option === 'A' ? 0 : q.correct_option === 'B' ? 1 : q.correct_option === 'C' ? 2 : q.correct_option === 'D' ? 3 : (typeof q.correct === 'number' ? q.correct : 0),
+      explanation: q.explanation || '',
+      difficulty: q.difficulty || 'Intermediate'
+    };
+  });
 }
 
 /**
  * Fetch Student Verified Skills & Recommendations
  */
 export async function fetchStudentSkillsData(userId) {
-  if (isDemoMode()) {
+  const user = getCurrentUser();
+  const effectiveUserId = userId || user?.id || 'usr_student_01';
+
+  let skills = [];
+
+  // 1. Try Supabase if live and real UUID
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data, error } = await supabase
+        .from('student_skills')
+        .select('id, skill_id, proficiency_score, last_updated, skills(id, name, category, domain)')
+        .eq('student_id', effectiveUserId);
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        skills = data.map(item => {
+          const score = Number(item.proficiency_score) || 0;
+          return {
+            id: item.id,
+            skill_id: item.skill_id,
+            name: item.skills?.name || 'AYUSH Competency',
+            category: item.skills?.category || 'Domain / Technical',
+            domain: item.skills?.domain || 'Ayurveda',
+            level: score >= 80 ? 'Advanced' : score >= 60 ? 'Intermediate' : 'Beginner',
+            pct: score
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('Error fetching live student skills:', e);
+    }
+  }
+
+  // 2. Query local DB
+  if (skills.length === 0) {
+    const local = (MOCK_DB.student_skills || []).filter(s => s.student_id === effectiveUserId);
+    const masterSkills = MOCK_DB.skills || DEFAULT_SEED_DATA.skills || [];
+    skills = local.map(item => {
+      const masterSkill = masterSkills.find(s => s.id === item.skill_id || s.name === item.name);
+      const score = Number(item.proficiency_score ?? item.proficiency_pct ?? item.pct) || 0;
+      return {
+        id: item.id,
+        skill_id: item.skill_id || masterSkill?.id,
+        name: masterSkill?.name || item.name || 'AYUSH Competency',
+        category: masterSkill?.category || item.category || 'Domain / Technical',
+        domain: masterSkill?.domain || 'Ayurveda',
+        level: item.level || (score >= 80 ? 'Advanced' : score >= 60 ? 'Intermediate' : 'Beginner'),
+        pct: score
+      };
+    });
+  }
+
+  // 3. Compute real targeted skills to improve based on opportunity requirements
+  const skillsToImprove = await fetchTargetedSkillsToImprove(effectiveUserId, skills);
+
+  return { skills, skillsToImprove };
+}
+
+/**
+ * Fetch Targeted Skills to Improve based on real opportunity requirements
+ */
+export async function fetchTargetedSkillsToImprove(studentId, studentSkillsList = null) {
+  let studentSkills = studentSkillsList;
+  if (!studentSkills) {
+    const res = await fetchStudentSkillsData(studentId);
+    studentSkills = res.skills;
+  }
+
+  const opps = MOCK_DB.opportunities || DEFAULT_SEED_DATA.opportunities || [];
+  const reqs = MOCK_DB.opportunity_requirements || DEFAULT_SEED_DATA.opportunity_requirements || [];
+  const masterSkills = MOCK_DB.skills || DEFAULT_SEED_DATA.skills || [];
+
+  // Map of student's scores: skill_id -> score, and normalized name -> score
+  const scoreBySkillId = new Map();
+  const scoreByName = new Map();
+
+  studentSkills.forEach(s => {
+    if (s.skill_id) scoreBySkillId.set(s.skill_id, s.pct);
+    if (s.name) scoreByName.set(s.name.toLowerCase(), s.pct);
+  });
+
+  const gapMap = new Map();
+
+  reqs.forEach(req => {
+    const skill = masterSkills.find(s => s.id === req.skill_id);
+    const skillName = skill?.name || req.skill_name || 'AYUSH Competency';
+    const skillKey = (req.skill_id || skillName).toLowerCase();
+
+    let studentScore = 0;
+    if (req.skill_id && scoreBySkillId.has(req.skill_id)) {
+      studentScore = scoreBySkillId.get(req.skill_id);
+    } else if (scoreByName.has(skillName.toLowerCase())) {
+      studentScore = scoreByName.get(skillName.toLowerCase());
+    }
+
+    // A gap exists if proficiency is below 75%
+    if (studentScore < 75) {
+      const opp = opps.find(o => o.id === req.opportunity_id);
+      const oppTitle = opp?.title || 'AYUSH Opportunity';
+      const company = opp?.company_name || 'Enterprise Partner';
+
+      if (!gapMap.has(skillKey)) {
+        const isNovice = studentScore === 0;
+        const currentLabel = isNovice ? 'Not Logged (0%)' : studentScore < 60 ? `Beginner (${studentScore}%)` : `Intermediate (${studentScore}%)`;
+        const targetLabel = req.importance === 'required' ? 'Advanced (85%+)' : 'Intermediate (70%+)';
+        const reason = req.importance === 'required' 
+          ? `Required prerequisite for ${oppTitle} at ${company}.`
+          : `Preferred credential for ${oppTitle} at ${company}.`;
+
+        gapMap.set(skillKey, {
+          name: skillName,
+          current: currentLabel,
+          target: targetLabel,
+          reason,
+          importance: req.importance,
+          currentScore: studentScore
+        });
+      }
+    }
+  });
+
+  // Sort: required first, then by lowest current score
+  const result = Array.from(gapMap.values()).sort((a, b) => {
+    if (a.importance === 'required' && b.importance !== 'required') return -1;
+    if (b.importance === 'required' && a.importance !== 'required') return 1;
+    return a.currentScore - b.currentScore;
+  });
+
+  return result.slice(0, 4);
+}
+
+/**
+ * Calculate Real Match Percentage between a student and an opportunity
+ * Formula:
+ * Weight: 2 for "required", 1 for "preferred"
+ * match_percentage = ( Σ(proficiency_score × weight) / Σ(100 × weight) ) × 100
+ * Constraint: If a "required" skill is missing/0, cap match_percentage at 50!
+ */
+export async function calculateMatch(studentId, opportunityId) {
+  const user = getCurrentUser();
+  const effectiveUserId = studentId || user?.id || 'usr_student_01';
+
+  // 1. Fetch requirements
+  let reqs = [];
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data, error } = await supabase
+        .from('opportunity_requirements')
+        .select('*, skills(id, name, category)')
+        .eq('opportunity_id', opportunityId);
+      if (!error && Array.isArray(data) && data.length > 0) {
+        reqs = data;
+      }
+    } catch (e) {}
+  }
+  if (reqs.length === 0) {
+    reqs = (MOCK_DB.opportunity_requirements || DEFAULT_SEED_DATA.opportunity_requirements || [])
+      .filter(r => r.opportunity_id === opportunityId);
+  }
+
+  // 2. Fetch student skills
+  const { skills } = await fetchStudentSkillsData(effectiveUserId);
+  const masterSkills = MOCK_DB.skills || DEFAULT_SEED_DATA.skills || [];
+
+  const scoreBySkillId = new Map();
+  const scoreByName = new Map();
+
+  skills.forEach(s => {
+    if (s.skill_id) scoreBySkillId.set(s.skill_id, s.pct);
+    if (s.name) scoreByName.set(s.name.toLowerCase(), s.pct);
+  });
+
+  // If opportunity has no specific requirements listed
+  if (reqs.length === 0) {
+    const avgScore = skills.length > 0 ? Math.round(skills.reduce((a, b) => a + b.pct, 0) / skills.length) : 0;
     return {
-      skills: [
-        { id: 'sk_01', name: 'Herbal Pharmacology (Dravyaguna)', category: 'Domain / Technical', level: 'Advanced', pct: 92 },
-        { id: 'sk_02', name: 'Ayurvedic Pharmacopoeia & QC', category: 'Domain / Technical', level: 'Advanced', pct: 88 },
-        { id: 'sk_03', name: 'Clinical Data Analytics & Python', category: 'Technical Skills', level: 'Intermediate', pct: 78 },
-        { id: 'sk_04', name: 'Yoga Biomechanics & Posture AI', category: 'Technical Skills', level: 'Intermediate', pct: 72 },
-        { id: 'sk_05', name: 'Biostatistics & SQL', category: 'Technical Skills', level: 'Intermediate', pct: 65 },
-        { id: 'sk_06', name: 'Pharmacovigilance (ASU Drugs)', category: 'Regulatory / Clinical', level: 'Intermediate', pct: 70 },
-        { id: 'sk_07', name: 'Clinical Communication & Patient Counseling', category: 'Soft Skills', level: 'Advanced', pct: 90 },
-        { id: 'sk_08', name: 'Research Methodology & Protocol Writing', category: 'Soft Skills', level: 'Advanced', pct: 85 }
-      ],
-      skillsToImprove: [
-        { name: 'Biostatistics & SQL', current: 'Intermediate (65%)', target: 'Advanced (85%+)', reason: 'Crucial for clinical trial EDC data management at Dabur & CCRAS' },
-        { name: 'Regulatory Affairs (USFDA Botanical Guidance)', current: 'Beginner (45%)', target: 'Intermediate', reason: 'High demand in export-oriented AYUSH manufacturers like Himalaya' },
-        { name: 'Bioinformatics & Molecular Docking', current: 'Novice (30%)', target: 'Intermediate', reason: 'Required for advanced herbal phytocompound target prediction' }
-      ]
+      match_percentage: avgScore,
+      matched: skills.map(s => s.name),
+      missing: [],
+      requirements: [],
+      suggestedAction: skills.length === 0 ? 'Take the skill assessment to establish your verified match baseline.' : 'Your profile meets baseline criteria for this position.'
     };
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('student_skills')
-      .select('id, level, proficiency_pct, verified_by_assessment, skills(id, name, category)')
-      .eq('student_id', userId);
+  let totalWeightedScore = 0;
+  let totalMaxWeightedScore = 0;
+  let hasMissingRequired = false;
 
-    if (error || !Array.isArray(data) || data.length === 0) {
-      return { skills: [], skillsToImprove: [] };
+  const matched = [];
+  const missing = [];
+
+  reqs.forEach(req => {
+    const weight = req.importance === 'required' ? 2 : 1;
+    totalMaxWeightedScore += 100 * weight;
+
+    const skill = masterSkills.find(s => s.id === req.skill_id);
+    const skillName = skill?.name || req.skill_name || 'Competency';
+
+    let score = 0;
+    if (req.skill_id && scoreBySkillId.has(req.skill_id)) {
+      score = scoreBySkillId.get(req.skill_id);
+    } else if (scoreByName.has(skillName.toLowerCase())) {
+      score = scoreByName.get(skillName.toLowerCase());
     }
 
-    const mappedSkills = data.map(item => ({
-      id: item.id,
-      name: item.skills?.name || 'AYUSH Skill',
-      category: item.skills?.category || 'Domain Skill',
-      level: item.level || 'Intermediate',
-      pct: item.proficiency_pct || 50
-    }));
+    totalWeightedScore += score * weight;
 
-    const toImprove = mappedSkills
-      .filter(s => s.pct < 75)
-      .map(s => ({
-        name: s.name,
-        current: `${s.level} (${s.pct}%)`,
-        target: 'Advanced (85%+)',
-        reason: 'Recommended for higher match ranking in AYUSH enterprise roles.'
-      }));
+    if (score >= 60) {
+      matched.push({ name: skillName, score, importance: req.importance });
+    } else {
+      missing.push({ name: skillName, score, importance: req.importance });
+      if (req.importance === 'required' && score === 0) {
+        hasMissingRequired = true;
+      }
+    }
+  });
 
-    return { skills: mappedSkills, skillsToImprove: toImprove };
-  } catch (e) {
-    console.warn('Error fetching live student skills:', e);
-    return { skills: [], skillsToImprove: [] };
+  let matchPercentage = totalMaxWeightedScore > 0 
+    ? Math.round((totalWeightedScore / totalMaxWeightedScore) * 100) 
+    : 0;
+
+  // Constraint: If a "required" skill is missing/0, cap match_percentage at 50!
+  if (hasMissingRequired && matchPercentage > 50) {
+    matchPercentage = 50;
   }
+
+  // Save to match_results
+  const matchRecord = {
+    id: `mr_${effectiveUserId}_${opportunityId}`,
+    student_id: effectiveUserId,
+    opportunity_id: opportunityId,
+    match_percentage: matchPercentage,
+    calculated_at: new Date().toISOString()
+  };
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    supabase.from('match_results')
+      .upsert(matchRecord, { onConflict: 'student_id,opportunity_id' })
+      .then(() => {})
+      .catch(() => {});
+  }
+
+  if (!MOCK_DB.match_results) MOCK_DB.match_results = [];
+  const existingIdx = MOCK_DB.match_results.findIndex(m => m.student_id === effectiveUserId && m.opportunity_id === opportunityId);
+  if (existingIdx >= 0) {
+    MOCK_DB.match_results[existingIdx] = matchRecord;
+  } else {
+    MOCK_DB.match_results.push(matchRecord);
+  }
+
+  const suggestedAction = missing.length > 0
+    ? `Bridge ${missing[0].name} (${missing[0].importance}) to elevate your match score.`
+    : 'Your competencies align with all prerequisites for this position.';
+
+  return {
+    match_percentage: matchPercentage,
+    matched,
+    missing,
+    requirements: reqs,
+    suggestedAction
+  };
+}
+
+/**
+ * Recalculate and persist all opportunity matches for a student
+ */
+export async function recalculateAllMatchesForStudent(studentId) {
+  const user = getCurrentUser();
+  const effectiveUserId = studentId || user?.id || 'usr_student_01';
+
+  const opps = MOCK_DB.opportunities || DEFAULT_SEED_DATA.opportunities || [];
+  const results = [];
+
+  for (const opp of opps) {
+    const res = await calculateMatch(effectiveUserId, opp.id);
+    results.push({
+      opportunity_id: opp.id,
+      ...res
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Save assessment submission to student_skills table & recalculate matches
+ */
+export async function saveAssessmentSubmission(studentId, skillScores, overallScore) {
+  const user = getCurrentUser();
+  const effectiveUserId = studentId || user?.id || 'usr_student_01';
+
+  const masterSkills = await fetchSkills();
+  const now = new Date().toISOString();
+
+  if (!MOCK_DB.student_skills) MOCK_DB.student_skills = [];
+
+  for (const [skillName, score] of Object.entries(skillScores)) {
+    const matchedMaster = masterSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase() || skillName.toLowerCase().includes(s.name.toLowerCase()));
+    const skillId = matchedMaster ? matchedMaster.id : 'sk_' + skillName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+    const skillRecord = {
+      id: `ss_${effectiveUserId}_${skillId}`,
+      student_id: effectiveUserId,
+      skill_id: skillId,
+      proficiency_score: score,
+      last_updated: now
+    };
+
+    // Update Supabase if live
+    if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+      try {
+        await supabase.from('student_skills').upsert(skillRecord, { onConflict: 'student_id,skill_id' });
+      } catch (e) {
+        console.warn('Error saving student skill to Supabase:', e);
+      }
+    }
+
+    // Update local DB
+    const existingIdx = MOCK_DB.student_skills.findIndex(s => s.student_id === effectiveUserId && s.skill_id === skillId);
+    if (existingIdx >= 0) {
+      MOCK_DB.student_skills[existingIdx] = {
+        ...MOCK_DB.student_skills[existingIdx],
+        ...skillRecord,
+        name: skillName,
+        proficiency_score: score,
+        pct: score
+      };
+    } else {
+      MOCK_DB.student_skills.push({
+        ...skillRecord,
+        name: skillName,
+        proficiency_score: score,
+        pct: score
+      });
+    }
+  }
+
+  saveLocalDatabase();
+
+  // Recalculate matches across all opportunities
+  await recalculateAllMatchesForStudent(effectiveUserId);
+
+  // Dispatch event so any open student dashboard tab updates immediately
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('ayush:skills-updated', {
+      detail: { studentId: effectiveUserId, skillScores, overallScore }
+    }));
+  }
+
+  return true;
+}
+
+/**
+ * Real Apply for Opportunity Function
+ */
+export async function applyForOpportunity(studentId, opportunityId, customMatchPct = null) {
+  const user = getCurrentUser();
+  const effectiveUserId = studentId || user?.id || 'usr_student_01';
+
+  let matchPct = customMatchPct;
+  if (matchPct === null || matchPct === undefined) {
+    const matchRes = await calculateMatch(effectiveUserId, opportunityId);
+    matchPct = matchRes.match_percentage;
+  }
+
+  const opp = (MOCK_DB.opportunities || DEFAULT_SEED_DATA.opportunities || []).find(o => o.id === opportunityId);
+  const now = new Date().toISOString();
+
+  const newApp = {
+    id: `app_${Date.now()}`,
+    student_id: effectiveUserId,
+    opportunity_id: opportunityId,
+    status: 'Applied',
+    match_pct: matchPct,
+    applied_at: now,
+    applied_date: now.split('T')[0],
+    position: opp?.title || 'AYUSH Role',
+    company: opp?.company_name || 'Enterprise Partner'
+  };
+
+  // 1. Supabase insert
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      await supabase.from('applications').insert({
+        id: newApp.id,
+        student_id: newApp.student_id,
+        opportunity_id: newApp.opportunity_id,
+        status: newApp.status,
+        match_pct: newApp.match_pct,
+        applied_at: newApp.applied_at
+      });
+    } catch (e) {
+      console.warn('Error saving application to Supabase:', e);
+    }
+  }
+
+  // 2. Local DB insert
+  if (!MOCK_DB.applications) MOCK_DB.applications = [];
+  // Check if already applied
+  const existing = MOCK_DB.applications.find(a => a.student_id === effectiveUserId && a.opportunity_id === opportunityId);
+  if (existing) {
+    return { success: false, message: 'You have already submitted an application for this role.', application: existing };
+  }
+
+  MOCK_DB.applications.unshift(newApp);
+  saveLocalDatabase();
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('ayush:application-submitted', {
+      detail: newApp
+    }));
+  }
+
+  return { success: true, message: `Application submitted successfully for ${newApp.position}!`, application: newApp };
 }
 
 /**
@@ -859,44 +1731,65 @@ export async function saveSkillToSupabase(skill) {
  * Fetch Student Applications
  */
 export async function fetchStudentApplicationsData(userId, statusFilter = 'All') {
-  if (isDemoMode()) {
-    const apps = MOCK_DB.applications;
-    return statusFilter === 'All' 
-      ? apps 
-      : apps.filter(a => a.status.toLowerCase() === statusFilter.toLowerCase());
+  const user = getCurrentUser();
+  const effectiveUserId = userId || user?.id || 'usr_student_01';
+
+  let apps = [];
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      let query = supabase
+        .from('applications')
+        .select('*, opportunities(*)')
+        .eq('student_id', effectiveUserId)
+        .order('applied_at', { ascending: false });
+
+      if (statusFilter !== 'All') {
+        query = query.eq('status', statusFilter);
+      }
+
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        apps = data.map(app => ({
+          id: app.id,
+          opportunity_id: app.opportunity_id,
+          student_id: app.student_id,
+          position: app.opportunities?.title || 'AYUSH Role',
+          company: app.opportunities?.company_name || 'Enterprise Partner',
+          applied_date: app.applied_at ? new Date(app.applied_at).toISOString().split('T')[0] : 'Recently',
+          status: app.status || 'Applied',
+          match_pct: app.match_pct || 0,
+          interview_date: app.interview_date ? new Date(app.interview_date).toLocaleString('en-IN') : null
+        }));
+        return apps;
+      }
+    } catch (e) {
+      console.warn('Error fetching live applications:', e);
+    }
   }
 
-  try {
-    let query = supabase
-      .from('applications')
-      .select('*, opportunities(*)')
-      .eq('student_id', userId)
-      .order('applied_at', { ascending: false });
+  // Filter local applications by effectiveUserId
+  const localApps = (MOCK_DB.applications || []).filter(a => a.student_id === effectiveUserId);
+  const opps = MOCK_DB.opportunities || DEFAULT_SEED_DATA.opportunities || [];
 
-    if (statusFilter !== 'All') {
-      query = query.eq('status', statusFilter);
-    }
-
-    const { data, error } = await query;
-    if (error || !Array.isArray(data)) {
-      return [];
-    }
-
-    return data.map(app => ({
+  const mapped = localApps.map(app => {
+    const opp = opps.find(o => o.id === app.opportunity_id);
+    return {
       id: app.id,
       opportunity_id: app.opportunity_id,
       student_id: app.student_id,
-      position: app.opportunities?.title || 'AYUSH Role',
-      company: app.opportunities?.company_name || 'Enterprise Partner',
-      applied_date: app.applied_at ? new Date(app.applied_at).toISOString().split('T')[0] : 'Recently',
+      position: app.position || opp?.title || 'AYUSH Role',
+      company: app.company || opp?.company_name || 'Enterprise Partner',
+      applied_date: app.applied_date || (app.applied_at ? new Date(app.applied_at).toISOString().split('T')[0] : 'Recently'),
       status: app.status || 'Applied',
-      match_pct: app.match_pct || 85,
-      interview_date: app.interview_date ? new Date(app.interview_date).toLocaleString('en-IN') : null
-    }));
-  } catch (e) {
-    console.warn('Error fetching live applications:', e);
-    return [];
-  }
+      match_pct: app.match_pct || 0,
+      interview_date: app.interview_date || null
+    };
+  });
+
+  return statusFilter === 'All'
+    ? mapped
+    : mapped.filter(a => (a.status || '').toLowerCase() === statusFilter.toLowerCase());
 }
 
 /**
@@ -1186,10 +2079,10 @@ export async function fetchAcademicianDashboardMetrics(institutionName) {
           action: 'Upgrade Central Dravyaguna Laboratory'
         },
         {
-          title: 'Mandatory Good Clinical Practice (GCP) & Pharmacovigilance Certification',
-          rationale: 'Students with verified GCP micro-credentials achieve a 92% interview conversion rate for clinical coordinator roles.',
+          title: 'National AYUSH Research Methodology & Pharmacovigilance Module',
+          rationale: 'Students with verified research micro-credentials achieve high interview conversion rates for research coordinator roles.',
           urgency: 'High Priority',
-          action: 'Integrate Pre-internship Certification Module'
+          action: 'Integrate Pre-internship Research Module'
         }
       ],
       studentCohorts: [
@@ -1832,6 +2725,88 @@ export async function updateUserRoleInSupabase(userId, role) {
   }
 }
 
+/**
+ * Fetch Gemini-Powered Skill Improvement Recommendation
+ * Calls server-side Supabase Edge Function /api proxy.
+ * NEVER calls Gemini API directly from the client.
+ */
+export async function fetchSkillImprovementRecommendation({ studentSkills = [], course = 'BAMS', interests = [], targetRole = '', studentName = 'Scholar' } = {}) {
+  const payload = { studentSkills, course, interests, targetRole, studentName };
+  
+  // 1. Try Supabase Edge Function invocation
+  try {
+    if (supabase?.functions?.invoke) {
+      const { data, error } = await supabase.functions.invoke('generate-skill-recommendation', {
+        body: payload
+      });
+      if (!error && data?.recommendation) {
+        return { success: true, recommendation: data.recommendation, source: 'edge-function' };
+      }
+    }
+  } catch (edgeErr) {
+    console.info('[AI Recommendation] Supabase edge function invoke attempted, falling back to server API:', edgeErr);
+  }
+
+  // 2. Fallback to server route /api/generate-skill-recommendation
+  try {
+    const res = await fetch('/api/generate-skill-recommendation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.recommendation) {
+        return { success: true, recommendation: json.recommendation, source: 'server-api' };
+      }
+    }
+  } catch (apiErr) {
+    console.warn('[AI Recommendation] Server API route warning:', apiErr);
+  }
+
+  // 3. Resilient fallback payload
+  return {
+    success: true,
+    source: 'fallback',
+    recommendation: {
+      readiness_score: 85,
+      executive_summary: `Your ${course} foundation is solid. Completing NABH accreditation modules and standardization protocols will qualify you for top AYUSH enterprise opportunities.`,
+      top_skill_gaps: [
+        {
+          skill: 'NABH AYUSH Hospital Safety & Documentation Standards',
+          importance: 'Critical',
+          why_needed: 'Required by all accredited clinical institutes and research hospitals.'
+        },
+        {
+          skill: 'ASU Pharmacovigilance Protocol',
+          importance: 'Critical',
+          why_needed: 'High demand for AYUSH research fellowship eligibility.'
+        }
+      ],
+      learning_path: [
+        {
+          milestone: 'Phase 1',
+          action: 'Complete clinical documentation e-course',
+          expected_outcome: 'Portfolio verification badge'
+        },
+        {
+          milestone: 'Phase 2',
+          action: 'Join hospital observation trial',
+          expected_outcome: 'Interview readiness'
+        }
+      ],
+      recommended_certifications: [
+        'NABH AYUSH Hospital Accreditation Training',
+        'WHO-GCTM Traditional Medicine Documentation Protocol'
+      ],
+      high_demand_careers: [
+        'Clinical Research Associate (ASU Drugs)',
+        'AYUSH Wellness & Spa Center Consultant'
+      ]
+    }
+  };
+}
+
 // Aliases for seamless cross-module interoperability
 export const fetchAcademicianData = fetchAcademicianDashboardMetrics;
 export const fetchAdminDashboardStats = fetchAdminDashboardMetrics;
@@ -1852,6 +2827,11 @@ export default {
   saveProjectToSupabase,
   saveSkillToSupabase,
   fetchStudentDashboardMetrics,
+  saveCandidatePhotoToSupabase,
+  fetchStudentDocuments,
+  saveStudentCV,
+  saveStudentCertificate,
+  deleteStudentCertificate,
   fetchStudentSkillsData,
   fetchStudentProjectsData,
   fetchStudentApplicationsData,

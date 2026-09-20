@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register — AYUSH CONNECT</title>
-  <meta name="description" content="Create your AYUSH Connect account to unlock personalized career opportunities, skill assessments, and industry connections.">
+  <meta name="description" content="Create your AYUSH CONNECT account to unlock personalized career opportunities, skill assessments, and industry connections.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/register.css">
@@ -31,7 +31,7 @@
   <main class="register-wrapper">
     <div class="register-card" style="max-width: 540px;">
       <div class="register-header" style="text-align: center; margin-bottom: 1.5rem;">
-        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Join AYUSH Connect</h1>
+        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Join AYUSH CONNECT</h1>
         <p style="font-size: 0.92rem; color: var(--text-secondary);">Connecting Skills, Opportunities &amp; Careers across the AYUSH ecosystem</p>
       </div>
 
@@ -67,13 +67,20 @@
 
       <!-- Social Registration Options: Google & GitHub -->
       <div class="social-login-grid">
-        <button type="button" class="social-btn" id="btn-reg-google" onclick="window.registerWithSocial('google')">
-          <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.1rem;"></i>
-          <span>Sign up with Google</span>
+        <button type="button" class="social-btn social-btn-google" id="btn-reg-google" onclick="window.registerWithSocial('google')" title="Sign up with Google">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 0 0 0 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
+            <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.9246 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.656 3.5795 9 3.5795z" fill="#EA4335"/>
+          </svg>
+          <span>Continue with Google</span>
         </button>
-        <button type="button" class="social-btn" id="btn-reg-github" onclick="window.registerWithSocial('github')">
-          <i class="fa-brands fa-github" style="color: #24292e; font-size: 1.15rem;"></i>
-          <span>Sign up with GitHub</span>
+        <button type="button" class="social-btn social-btn-github" id="btn-reg-github" onclick="window.registerWithSocial('github')" title="Sign up with GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>Continue with GitHub</span>
         </button>
       </div>
 
@@ -147,7 +154,7 @@
         <div style="margin-bottom: 1.25rem;">
           <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer;">
             <input type="checkbox" id="terms-checkbox" required style="margin-top: 0.2rem;">
-            <span>I agree to the AYUSH Connect platform charter, <a href="/privacy.html" target="_blank" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline;">privacy policy</a>, and institutional integrity standards.</span>
+            <span>I agree to the AYUSH CONNECT platform charter, <a href="/privacy.html" target="_blank" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline;">privacy policy</a>, and institutional integrity standards.</span>
           </label>
         </div>
 
@@ -172,7 +179,7 @@
   </footer>
 
   <script type="module">
-    import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser } from '/js/auth.js';
+    import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser, routeUserAfterAuth } from '/js/auth.js';
 
     let selectedRole = 'student';
 
@@ -260,41 +267,32 @@
     };
 
     // Support OAuth popup return message
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'AYUSH_OAUTH_REGISTER_SUCCESS') {
+    window.addEventListener('message', async (event) => {
+      if (event.data?.type === 'AYUSH_NAVIGATE' && event.data?.destination) {
+        window.location.replace(event.data.destination);
+      } else if (event.data?.type === 'AYUSH_OAUTH_REGISTER_SUCCESS') {
         const email = event.data.email || '';
         const role = event.data.role || selectedRole || 'student';
         window.location.replace(`/login.html?registered=true&role=${encodeURIComponent(role)}&email=${encodeURIComponent(email)}`);
-      } else if (event.data?.type === 'AYUSH_OAUTH_SUCCESS' && event.data?.user) {
-        const user = event.data.user;
-        setCurrentUser(user);
-        saveRegisteredUser(user);
+      } else if (event.data?.type === 'AYUSH_OAUTH_SUCCESS') {
         localStorage.removeItem('ayush_oauth_just_logged_in');
         sessionStorage.removeItem('ayush_just_logged_in');
         sessionStorage.removeItem('ayush_oauth_in_progress');
-        const dest = user.redirect || (user.role === 'industry' ? '/industry/dashboard.html' : (user.role === 'academician' ? '/academician/dashboard.html' : '/student/dashboard.html'));
-        window.location.replace(dest);
+        await routeUserAfterAuth();
       }
     });
 
     // Support cross-tab / popup OAuth storage update
-    window.addEventListener('storage', (e) => {
+    window.addEventListener('storage', async (e) => {
       if (e.key === 'ayush_oauth_reg_completed' && e.newValue === 'true') {
         localStorage.removeItem('ayush_oauth_reg_completed');
         const pendingRole = localStorage.getItem('ayush_oauth_pending_role') || 'student';
         window.location.replace(`/login.html?registered=true&role=${encodeURIComponent(pendingRole)}`);
       } else if (e.key === 'ayush_oauth_just_logged_in' && e.newValue === 'true') {
-        const cached = localStorage.getItem('ayush_current_user');
-        if (cached) {
-          try {
-            const user = JSON.parse(cached);
-            localStorage.removeItem('ayush_oauth_just_logged_in');
-            sessionStorage.removeItem('ayush_just_logged_in');
-            sessionStorage.removeItem('ayush_oauth_in_progress');
-            const dest = user.redirect || (user.role === 'industry' ? '/industry/dashboard.html' : (user.role === 'academician' ? '/academician/dashboard.html' : '/student/dashboard.html'));
-            window.location.replace(dest);
-          } catch(err) {}
-        }
+        localStorage.removeItem('ayush_oauth_just_logged_in');
+        sessionStorage.removeItem('ayush_just_logged_in');
+        sessionStorage.removeItem('ayush_oauth_in_progress');
+        await routeUserAfterAuth();
       }
     });
 
@@ -323,17 +321,13 @@
       const originalText = btn ? btn.innerHTML : '';
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>Registering with Supabase...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+        btn.innerHTML = '<span>Creating Secure Account...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
       }
 
       try {
         const res = await handleRegistration(userData);
         if (res?.success) {
-          const fallbackDest = selectedRole === 'student' 
-            ? '/student/dashboard.html' 
-            : `/pending-approval.html?status=pending&role=${selectedRole}&email=${encodeURIComponent(email)}`;
-          const targetDest = res?.user?.redirect || fallbackDest;
-          window.location.replace(targetDest);
+          await routeUserAfterAuth();
         }
       } finally {
         setTimeout(() => {

@@ -113,7 +113,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">Your Active Job & Internship Postings</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Currently published across the AYUSH Connect university talent network.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Currently published across the AYUSH CONNECT university talent network.</p>
           </div>
           <a href="/industry/post-opportunity.html" class="btn btn-sm btn-primary">
             <i class="fa-solid fa-plus"></i> Create New Posting
@@ -160,14 +160,18 @@
   </div>
 
   <script type="module">
+    import { guardDashboardPage, handleLogout } from '/js/auth.js';
     import { initIndustryDashboard } from '/js/industry.js';
-    import { handleLogout } from '/js/auth.js';
 
     window.industryLogout = handleLogout;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // TASK 3: Add a check at the very top of each dashboard's script running before anything else
+    (async () => {
+      const isAuthorized = await guardDashboardPage('industry');
+      if (!isAuthorized) return;
+
       initIndustryDashboard();
-    });
+    })();
   </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In — AYUSH CONNECT</title>
-  <meta name="description" content="Sign in to your AYUSH Connect account to access personalized dashboards, skill profiles, and career opportunities.">
+  <meta name="description" content="Sign in to your AYUSH CONNECT account to access personalized dashboards, skill profiles, and career opportunities.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/login.css">
@@ -32,7 +32,7 @@
   <main class="login-wrapper">
     <div class="login-card">
       <div class="login-header">
-        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Sign In to AYUSH Connect</h1>
+        <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin-bottom: 0.35rem;">Sign In to AYUSH CONNECT</h1>
         <p style="font-size: 0.92rem; color: var(--text-secondary);">Connecting Skills, Opportunities &amp; Careers across the AYUSH ecosystem</p>
       </div>
 
@@ -140,14 +140,14 @@
         </a>
       </div>
 
-      <!-- Supabase Cloud Connection Status -->
-      <div style="margin-top: 1rem; padding: 0.6rem 0.85rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: #166534;" id="supabase-status-badge">
+      <!-- Gateway Status -->
+      <div style="margin-top: 1rem; padding: 0.6rem 0.85rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: #166534;" id="backend-status-badge">
         <span style="display: flex; align-items: center; gap: 0.45rem;">
-          <i class="fa-solid fa-cloud" style="color: #059669;"></i>
-          <span><strong>Backend:</strong> Supabase (<code>ayush-connect</code>)</span>
+          <i class="fa-solid fa-shield-halved" style="color: #059669;"></i>
+          <span><strong>Gateway:</strong> AYUSH National Core (<code>Encrypted</code>)</span>
         </span>
-        <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: #15803d;" id="supabase-status-pill">
-          <span style="width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block;"></span> Online
+        <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: #15803d;" id="backend-status-pill">
+          <span style="width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block;"></span> Connected
         </span>
       </div>
     </div>
@@ -260,7 +260,7 @@
       const submitLabel = document.getElementById('btn-login-label');
 
       submitBtn.disabled = true;
-      submitLabel.innerHTML = 'Authenticating with Supabase... <i class="fa-solid fa-spinner fa-spin"></i>';
+      submitLabel.innerHTML = 'Authenticating securely... <i class="fa-solid fa-spinner fa-spin"></i>';
 
       try {
         const res = await handleLogin(email, password, currentRole);

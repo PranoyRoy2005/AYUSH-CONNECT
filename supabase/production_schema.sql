@@ -27,12 +27,38 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   full_name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   phone TEXT,
+  alternate_phone TEXT,
+  date_of_birth DATE,
+  gender TEXT,
   avatar_url TEXT,
+  address_street TEXT,
+  address_city TEXT,
+  address_state TEXT,
+  address_pincode TEXT,
+  address_country TEXT,
+  linkedin_url TEXT,
+  candidate_id TEXT UNIQUE,
+  profile_completed BOOLEAN DEFAULT FALSE NOT NULL,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'approved', 'rejected', 'suspended')),
   is_verified BOOLEAN DEFAULT FALSE,
+  is_approved BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+
+-- Ensure column exists if table was previously created
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS candidate_id TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS profile_completed BOOLEAN DEFAULT FALSE NOT NULL;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS alternate_phone TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS date_of_birth DATE;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS gender TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS address_street TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS address_city TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS address_state TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS address_pincode TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS address_country TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_approved BOOLEAN DEFAULT FALSE;
 
 COMMENT ON TABLE public.profiles IS 'Central identity table synchronized with Supabase Auth users.';
 
@@ -435,14 +461,15 @@ BEGIN
   user_role := COALESCE(NEW.raw_user_meta_data->>'role', 'student');
   user_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1));
 
-  INSERT INTO public.profiles (id, role, full_name, email, is_verified, status)
+  INSERT INTO public.profiles (id, role, full_name, email, is_verified, status, profile_completed)
   VALUES (
     NEW.id,
     user_role,
     user_name,
     NEW.email,
     CASE WHEN user_role = 'student' THEN TRUE ELSE FALSE END,
-    CASE WHEN user_role = 'student' THEN 'active' ELSE 'pending' END
+    CASE WHEN user_role = 'student' THEN 'active' ELSE 'pending' END,
+    FALSE
   )
   ON CONFLICT (id) DO UPDATE
   SET email = EXCLUDED.email,

@@ -3,7 +3,8 @@
  * SIH 2026: Adaptive Skill Assessment Engine
  */
 
-import { showToast } from './auth.js';
+import { getCurrentUser, showToast } from './auth.js';
+import { fetchAssessmentQuestions, saveAssessmentSubmission } from './supabase.js';
 
 export const ASSESSMENT_DATA = {
   meta: {
@@ -274,20 +275,41 @@ export class AssessmentEngine {
     this.timeRemainingSeconds = 25 * 60;
     this.timerInterval = null;
     this.isSubmitted = false;
+    this.questions = [];
   }
 
-  init() {
+  async loadQuestions() {
+    try {
+      const qList = await fetchAssessmentQuestions();
+      if (Array.isArray(qList) && qList.length > 0) {
+        this.questions = qList;
+      } else {
+        this.questions = ASSESSMENT_DATA.questions;
+      }
+    } catch (e) {
+      console.warn('Error loading questions:', e);
+      this.questions = ASSESSMENT_DATA.questions;
+    }
+  }
+
+  async init() {
+    await this.loadQuestions();
+
     const readyScreen = document.getElementById('exam-ready-screen');
     const inProgressContainer = document.getElementById('exam-in-progress-container');
     const startBtn = document.getElementById('btn-start-exam-now');
 
     if (startBtn && readyScreen && inProgressContainer) {
-      startBtn.addEventListener('click', () => {
+      startBtn.addEventListener('click', async () => {
         const envCheck = document.getElementById('check-ready-environment');
         const rulesCheck = document.getElementById('check-ready-rules');
         if ((envCheck && !envCheck.checked) || (rulesCheck && !rulesCheck.checked)) {
           showToast('Please confirm all candidate readiness checkboxes before proceeding.', 'error');
           return;
+        }
+
+        if (this.questions.length === 0) {
+          await this.loadQuestions();
         }
 
         readyScreen.style.display = 'none';
@@ -324,19 +346,22 @@ export class AssessmentEngine {
   }
 
   renderQuestion() {
-    const q = ASSESSMENT_DATA.questions[this.currentIndex];
+    const list = this.questions && this.questions.length > 0 ? this.questions : ASSESSMENT_DATA.questions;
+    const q = list[this.currentIndex];
+    if (!q) return;
+
     const qNumEl = document.getElementById('q-counter');
     const qTextEl = document.getElementById('q-text');
     const qSkillEl = document.getElementById('q-skill-badge');
     const optionsContainer = document.getElementById('options-container');
     const progressEl = document.getElementById('assessment-progress-fill');
 
-    if (qNumEl) qNumEl.textContent = `Question ${this.currentIndex + 1} of ${ASSESSMENT_DATA.questions.length}`;
+    if (qNumEl) qNumEl.textContent = `Question ${this.currentIndex + 1} of ${list.length}`;
     if (qTextEl) qTextEl.textContent = q.text;
-    if (qSkillEl) qSkillEl.textContent = q.skill;
+    if (qSkillEl) qSkillEl.textContent = q.skill || 'AYUSH Skill';
 
     if (progressEl) {
-      const pct = Math.round(((this.currentIndex + 1) / ASSESSMENT_DATA.questions.length) * 100);
+      const pct = Math.round(((this.currentIndex + 1) / list.length) * 100);
       progressEl.style.width = `${pct}%`;
     }
 
@@ -359,18 +384,21 @@ export class AssessmentEngine {
     const submitBtn = document.getElementById('btn-submit-q');
 
     if (prevBtn) prevBtn.style.visibility = this.currentIndex === 0 ? 'hidden' : 'visible';
-    if (nextBtn) nextBtn.style.display = this.currentIndex === ASSESSMENT_DATA.questions.length - 1 ? 'none' : 'inline-flex';
-    if (submitBtn) submitBtn.style.display = this.currentIndex === ASSESSMENT_DATA.questions.length - 1 ? 'inline-flex' : 'none';
+    if (nextBtn) nextBtn.style.display = this.currentIndex === list.length - 1 ? 'none' : 'inline-flex';
+    if (submitBtn) submitBtn.style.display = this.currentIndex === list.length - 1 ? 'inline-flex' : 'none';
   }
 
   selectOption(optIndex) {
-    const q = ASSESSMENT_DATA.questions[this.currentIndex];
+    const list = this.questions && this.questions.length > 0 ? this.questions : ASSESSMENT_DATA.questions;
+    const q = list[this.currentIndex];
+    if (!q) return;
     this.answers[q.id] = optIndex;
     this.renderQuestion();
   }
 
   nextQuestion() {
-    if (this.currentIndex < ASSESSMENT_DATA.questions.length - 1) {
+    const list = this.questions && this.questions.length > 0 ? this.questions : ASSESSMENT_DATA.questions;
+    if (this.currentIndex < list.length - 1) {
       this.currentIndex++;
       this.renderQuestion();
     }
@@ -383,22 +411,18 @@ export class AssessmentEngine {
     }
   }
 
-  submitAssessment() {
+  async submitAssessment() {
     if (this.timerInterval) clearInterval(this.timerInterval);
     this.isSubmitted = true;
 
+    const list = this.questions && this.questions.length > 0 ? this.questions : ASSESSMENT_DATA.questions;
+
     // Calculate score
     let correctCount = 0;
-    const skillBreakdown = {
-      'Herbal Pharmacopoeia (QC)': { total: 0, correct: 0 },
-      'Clinical Data & Python': { total: 0, correct: 0 },
-      'Biostatistics & SQL': { total: 0, correct: 0 },
-      'Regulatory Pharmacovigilance': { total: 0, correct: 0 },
-      'Clinical Problem Solving': { total: 0, correct: 0 }
-    };
+    const skillBreakdown = {};
 
-    ASSESSMENT_DATA.questions.forEach(q => {
-      const skillName = q.skill;
+    list.forEach(q => {
+      const skillName = q.skill || 'AYUSH Competency';
       if (!skillBreakdown[skillName]) {
         skillBreakdown[skillName] = { total: 0, correct: 0 };
       }
@@ -410,7 +434,17 @@ export class AssessmentEngine {
       }
     });
 
-    const scorePct = Math.round((correctCount / ASSESSMENT_DATA.questions.length) * 100);
+    const scorePct = Math.round((correctCount / list.length) * 100);
+
+    // Prepare per-skill proficiency scores
+    const skillScores = {};
+    for (const [skillName, data] of Object.entries(skillBreakdown)) {
+      skillScores[skillName] = Math.round((data.correct / (data.total || 1)) * 100);
+    }
+
+    // Save to real database table student_skills & recalculate matches
+    const user = getCurrentUser();
+    await saveAssessmentSubmission(user?.id, skillScores, scorePct);
 
     // Hide Question UI and render Result Panel
     const questionCard = document.getElementById('question-ui-card');
@@ -418,26 +452,26 @@ export class AssessmentEngine {
     if (questionCard) questionCard.style.display = 'none';
     if (resultCard) {
       resultCard.style.display = 'block';
-      this.renderResults(scorePct, correctCount, skillBreakdown);
+      this.renderResults(scorePct, correctCount, skillBreakdown, list.length);
     }
 
-    showToast(`Assessment submitted! Score: ${scorePct}%`, 'success');
+    showToast(`Assessment submitted! Score: ${scorePct}% saved to your verified profile.`, 'success');
   }
 
-  renderResults(scorePct, correctCount, breakdown) {
+  renderResults(scorePct, correctCount, breakdown, totalQCount = 20) {
     const scoreValEl = document.getElementById('res-score-val');
     const scoreDescEl = document.getElementById('res-score-desc');
     const breakdownListEl = document.getElementById('res-breakdown-list');
 
     if (scoreValEl) scoreValEl.textContent = `${scorePct}%`;
     if (scoreDescEl) {
-      scoreDescEl.textContent = `You correctly answered ${correctCount} out of ${ASSESSMENT_DATA.questions.length} questions.`;
+      scoreDescEl.textContent = `You correctly answered ${correctCount} out of ${totalQCount} questions. Your competency ratings have been saved to your student profile.`;
     }
 
     if (breakdownListEl) {
       breakdownListEl.innerHTML = Object.entries(breakdown).map(([skill, data]) => {
         const pct = Math.round((data.correct / (data.total || 1)) * 100);
-        const isStrong = pct >= 80;
+        const isStrong = pct >= 75;
         return `
           <div style="margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.35rem;">

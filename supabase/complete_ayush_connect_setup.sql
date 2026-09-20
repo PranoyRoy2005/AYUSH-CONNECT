@@ -247,6 +247,26 @@ CREATE TABLE IF NOT EXISTS public.opportunity_skills (
   PRIMARY KEY (opportunity_id, skill_id)
 );
 
+-- Real Opportunity Requirements with explicit weighting (required vs preferred)
+CREATE TABLE IF NOT EXISTS public.opportunity_requirements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  opportunity_id UUID NOT NULL REFERENCES public.opportunities(id) ON DELETE CASCADE,
+  skill_id UUID NOT NULL REFERENCES public.skills(id) ON DELETE CASCADE,
+  importance TEXT NOT NULL DEFAULT 'required' CHECK (importance IN ('required', 'preferred')),
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  UNIQUE(opportunity_id, skill_id)
+);
+
+-- Real Match Results Table
+CREATE TABLE IF NOT EXISTS public.match_results (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  opportunity_id UUID NOT NULL REFERENCES public.opportunities(id) ON DELETE CASCADE,
+  match_percentage INT NOT NULL CHECK (match_percentage BETWEEN 0 AND 100),
+  calculated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  UNIQUE(student_id, opportunity_id)
+);
+
 -- ------------------------------------------------------------------------------
 -- 8. STUDENT APPLICATIONS PIPELINE
 -- ------------------------------------------------------------------------------

@@ -8,7 +8,8 @@ import {
   isDemoMode,
   fetchOpportunitiesData,
   fetchStudentApplicationsData,
-  saveApplicationToSupabase 
+  calculateMatch,
+  applyForOpportunity 
 } from './supabase.js';
 import { showToast, getCurrentUser } from './auth.js';
 
@@ -251,35 +252,23 @@ export class OpportunitiesMarketplace {
     modal.classList.add('active');
   }
 
-  applyForOpportunity(oppId) {
+  async applyForOpportunity(oppId) {
     const opp = this.opportunities.find(o => o.id === oppId);
     if (!opp) return;
 
-    // Check if already applied
-    const existing = MOCK_DB.applications.find(a => a.opportunity_id === oppId);
-    if (existing) {
-      showToast('You have already applied for this position.', 'info');
-      return;
-    }
-
     const user = getCurrentUser();
-    const newApp = {
-      id: 'app_' + Date.now(),
-      opportunity_id: opp.id,
-      student_id: user.id || 'usr_student_01',
-      student_name: user.full_name || 'Ayush Sharma',
-      college: user.institution || 'All India Institute of Ayurveda (AIIA)',
-      position: opp.title,
-      company: opp.company_name,
-      applied_date: new Date().toISOString().split('T')[0],
-      status: 'Applied',
-      match_pct: 94,
-      assessment_score: 84
-    };
+    const matchRes = await calculateMatch(user?.id, opp.id);
+    const res = await applyForOpportunity(user?.id, opp.id, matchRes.match_percentage);
 
-    saveApplicationToSupabase(newApp);
-    showToast(`Application submitted successfully for ${opp.title} at ${opp.company_name}!`, 'success');
-    this.renderOpportunityList();
+    if (res.success) {
+      if (!this.appliedIds.includes(opp.id)) {
+        this.appliedIds.push(opp.id);
+      }
+      showToast(res.message, 'success');
+      this.renderOpportunityList();
+    } else {
+      showToast(res.message, 'info');
+    }
   }
 }
 

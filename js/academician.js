@@ -33,10 +33,10 @@ export const ACADEMIC_STATE = {
       action: 'Upgrade Central Dravyaguna Laboratory'
     },
     {
-      title: 'Mandatory Good Clinical Practice (GCP) & Pharmacovigilance Certification',
-      rationale: 'Students with verified GCP micro-credentials achieve a 92% interview conversion rate for clinical coordinator roles.',
+      title: 'National AYUSH Research Methodology & Pharmacovigilance Module',
+      rationale: 'Students with verified research micro-credentials achieve high interview conversion rates for research coordinator roles.',
       urgency: 'High Priority',
-      action: 'Integrate Pre-internship Certification Module'
+      action: 'Integrate Pre-internship Research Module'
     }
   ],
   studentCohorts: [

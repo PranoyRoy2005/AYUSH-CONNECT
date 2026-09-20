@@ -71,7 +71,7 @@
             <input type="email" id="adm-email" class="gov-email-input" placeholder="e.g. nodal.officer@ayush.gov.in" autocomplete="email" required>
           </div>
           <div class="gov-email-footer">
-            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Validated against Supabase database (role: admin)</span>
+            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Validated against AYUSH National Registry (role: admin)</span>
           </div>
         </div>
 
@@ -154,11 +154,11 @@
       }
 
       submitBtn.disabled = true;
-      submitLabel.textContent = 'Verifying with Supabase...';
+      submitLabel.textContent = 'Verifying credentials...';
       submitIcon.className = 'fa-solid fa-spinner fa-spin';
 
       try {
-        // 1. Real Supabase Authentication
+        // 1. Real Database Authentication
         const { data: authData, error: authError } = await signInUserWithSupabase(email, password);
 
         if (authError || !authData?.user) {
@@ -181,7 +181,7 @@
 
         if (profileError) {
           console.error('[Admin Login] Failed to fetch profile:', profileError);
-          showError('Database Error', 'Unable to retrieve administrator profile from Supabase database.');
+          showError('Database Error', 'Unable to retrieve administrator profile from secure database.');
           await signOutUserWithSupabase();
           return;
         }
@@ -223,7 +223,7 @@
 
       } catch (err) {
         console.error('[Admin Login] Unexpected error:', err);
-        showError('Unexpected Error', err.message || 'An unexpected error occurred while connecting to Supabase.');
+        showError('Unexpected Error', err.message || 'An unexpected error occurred while connecting to the secure gateway.');
       } finally {
         submitBtn.disabled = false;
         submitLabel.textContent = 'Authenticate & Enter Admin Console';

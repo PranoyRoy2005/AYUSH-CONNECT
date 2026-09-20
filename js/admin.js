@@ -193,7 +193,7 @@ export async function renderPendingUsersSummary() {
   const container = document.getElementById('adm-pending-table-preview');
   if (!container) return;
 
-  container.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Loading pending verifications from Supabase...</td></tr>`;
+  container.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Loading pending verifications...</td></tr>`;
 
   const pendingUsers = await fetchAdminPendingUsers();
   ADMIN_STATE.cachedPendingUsers = pendingUsers || [];
@@ -255,7 +255,7 @@ export async function renderFullApprovalsTable() {
   const container = document.getElementById('adm-full-approvals-table');
   if (!container) return;
 
-  container.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2.5rem; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Loading verification queue from Supabase...</td></tr>`;
+  container.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2.5rem; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Loading verification queue...</td></tr>`;
 
   const pendingUsers = await fetchAdminPendingUsers();
   ADMIN_STATE.cachedPendingUsers = pendingUsers || [];
@@ -486,7 +486,7 @@ export function renderKycModal(user, { isDossierView = false } = {}) {
 
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.35rem;">
           <span style="color: var(--text-secondary); font-weight: 500;">Authentication Layer:</span>
-          <span style="color: var(--text-primary); font-weight: 600;">Supabase 256-Bit Encrypted Security Profile</span>
+          <span style="color: var(--text-primary); font-weight: 600;">AYUSH National 256-Bit Encrypted Security Profile</span>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.35rem;">
@@ -742,7 +742,7 @@ export async function renderRolesTable() {
 
 window.changeUserRole = async function(userId, newRole) {
   await updateUserRoleInSupabase(userId, newRole);
-  showToast(`Role updated to ${newRole.toUpperCase()} in Supabase`, 'success');
+  showToast(`Role updated to ${newRole.toUpperCase()} successfully`, 'success');
   renderRolesTable();
 };
 

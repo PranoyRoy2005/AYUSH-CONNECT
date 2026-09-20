@@ -3,7 +3,7 @@
  * SIH 2026: Career Pathway, Skill Taxonomy & Application Tracker
  */
 
-import { getCurrentUser, showToast } from './auth.js';
+import { getCurrentUser, showToast, computeUserInitials } from './auth.js';
 import { 
   MOCK_DB, 
   isDemoMode, 
@@ -12,6 +12,7 @@ import {
   fetchStudentProjectsData, 
   fetchStudentApplicationsData,
   fetchOpportunitiesData,
+  calculateMatch,
   saveProjectToSupabase,
   saveSkillToSupabase
 } from './supabase.js';
@@ -56,7 +57,13 @@ export async function initStudentDashboard() {
   }
   const userAvatarSide = document.getElementById('user-avatar');
   if (userAvatarSide) {
-    userAvatarSide.textContent = user?.avatar || (isDemoMode() ? 'AS' : 'ST');
+    const initials = computeUserInitials(user?.full_name, user?.role);
+    const savedPhoto = localStorage.getItem('ayush_candidate_photo') || user?.avatar_url;
+    if (savedPhoto && (savedPhoto.startsWith('data:image') || savedPhoto.startsWith('http://') || savedPhoto.startsWith('https://'))) {
+      userAvatarSide.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    } else {
+      userAvatarSide.textContent = initials;
+    }
   }
 
   // Fetch metrics: from live Supabase in production, or isolated mock in demo mode
@@ -98,6 +105,26 @@ export async function initStudentDashboard() {
 
   // Render Journey Steps
   renderStudentJourneySteps(metrics);
+
+  // Live listeners for automatic dashboard refresh
+  if (typeof window !== 'undefined' && !window._ayushDashboardListenersBound) {
+    window._ayushDashboardListenersBound = true;
+    const refreshDashboard = async () => {
+      const u = getCurrentUser();
+      const updatedMetrics = await fetchStudentDashboardMetrics(u?.id);
+      setMetric('metric-profile-completion', `${updatedMetrics.profileCompletion}%`);
+      setMetric('metric-skill-score', `${updatedMetrics.skillScore}/100`);
+      setMetric('metric-applications', `${updatedMetrics.applicationsCount}`);
+      setMetric('metric-recommendations', `${updatedMetrics.recommendationsCount}`);
+      renderStudentJourneySteps(updatedMetrics);
+      await renderStudentTopOpps(u?.id);
+      await renderStudentRecentPipeline(u?.id);
+      await renderStudentSkillsToImprove(u?.id);
+    };
+
+    window.addEventListener('ayush:skills-updated', refreshDashboard);
+    window.addEventListener('ayush:application-submitted', refreshDashboard);
+  }
 }
 
 /**
@@ -114,32 +141,52 @@ export async function renderStudentTopOpps(userId) {
       <div style="padding: 1.75rem; text-align: center; color: var(--text-muted); background: var(--bg-cream); border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
         <i class="fa-solid fa-compass" style="font-size: 1.75rem; color: var(--secondary-teal); margin-bottom: 0.5rem; display: block;"></i>
         <strong style="color: var(--primary-deep); font-size: 0.95rem; display: block;">No Opportunity Matches Found</strong>
-        <p style="font-size: 0.82rem; margin: 0.25rem 0 0.75rem;">Log more skills or update your profile to unlock automated industry matches.</p>
+        <p style="font-size: 0.82rem; margin: 0.25rem 0 0.75rem;">Log more skills or take the assessment to unlock automated industry matches.</p>
         <a href="/student/skill-profile.html" class="btn btn-sm btn-primary">Update Skills</a>
       </div>
     `;
     return;
   }
 
+  // Calculate real match percentages for each opportunity
+  const scoredOpps = [];
+  for (const opp of opps) {
+    const matchRes = await calculateMatch(userId, opp.id);
+    scoredOpps.push({
+      ...opp,
+      matchPct: matchRes.match_percentage,
+      matchedSkills: matchRes.matched
+    });
+  }
+
+  // Sort by match percentage descending
+  scoredOpps.sort((a, b) => b.matchPct - a.matchPct);
+
   // Take top 2 opportunities
-  container.innerHTML = opps.slice(0, 2).map((opp, idx) => `
-    <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: ${idx === 0 ? '0.85rem' : '0'}; background: var(--bg-cream);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <span class="badge ${idx === 0 ? 'badge-teal' : 'badge-primary'}">${opp.company_name || 'AYUSH Enterprise'}</span>
-          <h4 style="color: var(--primary-dark); font-size: 1.05rem; margin-top: 0.25rem;">${opp.title}</h4>
-          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
-            <i class="fa-solid fa-location-dot"></i> ${opp.location || 'Pan-India'} &bull; ${opp.stipend || 'Competitive'}
+  container.innerHTML = scoredOpps.slice(0, 2).map((opp, idx) => {
+    const skillsText = opp.matchedSkills && opp.matchedSkills.length > 0
+      ? opp.matchedSkills.slice(0, 2).map(s => typeof s === 'string' ? s : s.name).join(' • ')
+      : ((opp.required_skills || []).slice(0, 2).join(' • ') || 'Core Competencies');
+
+    return `
+      <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: ${idx === 0 ? '0.85rem' : '0'}; background: var(--bg-cream);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <span class="badge ${idx === 0 ? 'badge-teal' : 'badge-primary'}">${opp.company_name || 'AYUSH Enterprise'}</span>
+            <h4 style="color: var(--primary-dark); font-size: 1.05rem; margin-top: 0.25rem;">${opp.title}</h4>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              <i class="fa-solid fa-location-dot"></i> ${opp.location || 'Pan-India'} &bull; ${opp.stipend || 'Competitive'}
+            </div>
           </div>
+          <span class="match-score-badge"><i class="fa-solid fa-star"></i> ${opp.matchPct}% Match</span>
         </div>
-        <span class="match-score-badge"><i class="fa-solid fa-star"></i> ${94 - (idx * 6)}% Match</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; font-size: 0.8rem;">
+          <span style="color: #166534; font-weight: 600;"><i class="fa-solid fa-check"></i> ${skillsText}</span>
+          <a href="/student/recommendations.html" class="btn btn-sm btn-accent">Apply (${opp.matchPct}%)</a>
+        </div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; font-size: 0.8rem;">
-        <span style="color: #166534; font-weight: 600;"><i class="fa-solid fa-check"></i> ${(opp.required_skills || []).slice(0, 2).join(' • ') || 'Core Competencies'}</span>
-        <a href="/student/opportunities.html" class="btn btn-sm btn-accent">Apply</a>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 /**
@@ -233,21 +280,52 @@ export function renderStudentJourneySteps(metrics) {
   const subAssessment = document.getElementById('journey-sub-assessment');
   const subApps = document.getElementById('journey-sub-apps');
 
+  const profileDone = (metrics.profileCompletion || 0) >= 70;
+  const skillsDone = (metrics.skillScore || 0) > 0 || (metrics.skillsCount || 0) > 0;
+  const assessDone = (metrics.skillScore || 0) > 0;
+  const appsDone = (metrics.applicationsCount || 0) > 0;
+
   if (subProfile) {
-    subProfile.textContent = (metrics.profileCompletion || 0) >= 70 ? 'Verified' : `${metrics.profileCompletion || 0}%`;
+    subProfile.textContent = profileDone ? 'Verified' : `${metrics.profileCompletion || 0}%`;
   }
   if (subSkills) {
-    subSkills.textContent = (metrics.skillScore || 0) > 0 ? 'Logged' : 'Pending';
+    subSkills.textContent = skillsDone ? 'Logged' : 'Pending';
   }
   if (subAssessment) {
-    subAssessment.textContent = (metrics.skillScore || 0) > 0 ? `Score: ${metrics.skillScore}/100` : 'Take Quiz';
+    subAssessment.textContent = assessDone ? `Score: ${metrics.skillScore}/100` : 'Take Quiz';
   }
   if (subApps) {
     subApps.textContent = `${metrics.applicationsCount || 0} Active`;
   }
+
+  let stage = 1;
+  if (profileDone) stage = 2;
+  if (skillsDone) stage = 3;
+  if (assessDone) stage = 4;
+  if (appsDone) stage = 5;
+
   if (stageBadge) {
-    const stage = (metrics.applicationsCount || 0) > 0 ? 5 : ((metrics.skillScore || 0) > 0 ? 4 : 2);
     stageBadge.textContent = `Stage ${stage} of 6`;
+  }
+
+  const container = document.getElementById('journey-steps-container');
+  if (container) {
+    const stepEls = container.querySelectorAll('.journey-step');
+    stepEls.forEach((el, idx) => {
+      const stepNum = idx + 1;
+      el.classList.remove('done', 'active', 'pending');
+      const circle = el.querySelector('.journey-step-circle');
+      if (stepNum < stage) {
+        el.classList.add('done');
+        if (circle) circle.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else if (stepNum === stage) {
+        el.classList.add('active');
+        if (circle) circle.textContent = `${stepNum}`;
+      } else {
+        el.classList.add('pending');
+        if (circle) circle.textContent = `${stepNum}`;
+      }
+    });
   }
 }
 
@@ -266,7 +344,12 @@ export function initCandidatePhoto(user) {
     candidateCardName.textContent = user.full_name;
   }
 
-  const savedPhoto = localStorage.getItem('ayush_candidate_photo');
+  const initials = computeUserInitials(user?.full_name, user?.role);
+  if (initialsFallback) {
+    initialsFallback.textContent = initials;
+  }
+
+  const savedPhoto = localStorage.getItem('ayush_candidate_photo') || user?.avatar_url;
   if (savedPhoto) {
     if (photoImg) {
       photoImg.src = savedPhoto;
@@ -277,6 +360,11 @@ export function initCandidatePhoto(user) {
       userAvatarSide.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
     }
     if (removeBtn) removeBtn.style.display = 'inline-flex';
+  } else {
+    if (initialsFallback) initialsFallback.style.display = 'block';
+    if (userAvatarSide) {
+      userAvatarSide.textContent = initials;
+    }
   }
 
   if (fileInput) {
@@ -318,9 +406,12 @@ export function initCandidatePhoto(user) {
       photoImg.src = '';
       photoImg.style.display = 'none';
     }
-    if (initialsFallback) initialsFallback.style.display = 'block';
+    if (initialsFallback) {
+      initialsFallback.textContent = initials;
+      initialsFallback.style.display = 'block';
+    }
     if (userAvatarSide) {
-      userAvatarSide.textContent = 'AS';
+      userAvatarSide.textContent = initials;
     }
     if (removeBtn) removeBtn.style.display = 'none';
     showToast('Candidate photo removed.', 'info');
@@ -435,40 +526,59 @@ window.addSkillPrompt = async function() {
     name: skillName,
     category: 'Domain Skill',
     level: level || 'Intermediate',
-    proficiency_pct: pct
+    proficiency_pct: pct,
+    proficiency_score: pct
   };
 
-  if (isDemoMode()) {
-    STUDENT_STATE.skills.push({
-      ...newSkill,
-      pct: pct
-    });
-  } else {
-    await saveSkillToSupabase(newSkill);
-  }
-
-  renderSkillProfile();
+  await saveSkillToSupabase(newSkill);
+  await renderSkillProfile();
   showToast(`Added skill: "${skillName}"`, 'success');
 };
 
-window.editSkillPrompt = function(name, currentPct) {
+window.editSkillPrompt = async function(name, currentPct) {
   const newPct = prompt(`Update proficiency percentage for ${name} (0-100):`, currentPct);
   if (newPct !== null) {
     const parsed = Math.min(100, Math.max(10, parseInt(newPct) || currentPct));
-    const item = STUDENT_STATE.skills.find(s => s.name === name);
-    if (item) {
-      item.pct = parsed;
-      item.level = parsed >= 85 ? 'Advanced' : parsed >= 60 ? 'Intermediate' : 'Beginner';
-      renderSkillProfile();
-      showToast(`Updated ${name} to ${parsed}% (${item.level})`, 'success');
-    }
+    const level = parsed >= 85 ? 'Advanced' : parsed >= 60 ? 'Intermediate' : 'Beginner';
+    const user = getCurrentUser();
+
+    await saveSkillToSupabase({
+      student_id: user?.id || 'usr_student_01',
+      name: name,
+      category: 'Domain Skill',
+      level: level,
+      proficiency_pct: parsed,
+      proficiency_score: parsed
+    });
+
+    await renderSkillProfile();
+    showToast(`Updated ${name} to ${parsed}% (${level})`, 'success');
   }
 };
 
-window.removeSkill = function(id) {
+window.removeSkill = async function(id) {
   if (confirm('Are you sure you want to remove this skill from your profile?')) {
-    STUDENT_STATE.skills = STUDENT_STATE.skills.filter(s => s.id !== id);
-    renderSkillProfile();
+    const user = getCurrentUser();
+    const effectiveUserId = user?.id || 'usr_student_01';
+
+    if (MOCK_DB.student_skills) {
+      MOCK_DB.student_skills = MOCK_DB.student_skills.filter(s => s.id !== id && s.skill_id !== id);
+    }
+
+    if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+      try {
+        const { supabase } = await import('./supabase.js');
+        await supabase.from('student_skills').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ayush:skills-updated', {
+        detail: { studentId: effectiveUserId }
+      }));
+    }
+
+    await renderSkillProfile();
     showToast('Skill removed', 'info');
   }
 };

@@ -4,252 +4,3237 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Complete Your Profile — AYUSH CONNECT</title>
-  <meta name="description" content="Complete your profile to access your personalized AYUSH Connect portal.">
+  <meta name="description" content="Complete your profile to unlock customized opportunities and features across the AYUSH ecosystem.">
+  
+  <!-- Font Awesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    .complete-card {
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      max-width: 540px;
-      margin: 2rem auto;
-      padding: 2.25rem 2rem;
-      box-sizing: border-box;
-      animation: fadeIn 0.3s ease-out;
+    /* =========================================================
+       CSS VARIABLES & THEME SETUP
+       Brand palette: Soft Teal, Slate Blue, and Warm Orange/Amber
+       ========================================================= */
+    :root {
+      --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      
+      /* Primary Colors (Teal / AYUSH Wellness) */
+      --color-primary: #0d9488;          /* Teal 600 */
+      --color-primary-dark: #0f766e;     /* Teal 700 */
+      --color-primary-light: #ccfbf1;    /* Teal 100 */
+      --color-primary-surface: #f0fdfa;  /* Teal 50 */
+      
+      /* Secondary Accents (Calm Slate Blue) */
+      --color-blue: #0284c7;             /* Sky/Blue 600 */
+      --color-blue-dark: #0369a1;        /* Blue 700 */
+      --color-blue-light: #e0f2fe;       /* Blue 100 */
+
+      /* Warm Accent (Saffron / Orange) */
+      --color-accent: #f97316;           /* Orange 500 */
+      --color-accent-hover: #ea580c;     /* Orange 600 */
+      --color-accent-light: #ffedd5;     /* Orange 100 */
+      
+      /* Status & Neutrals */
+      --color-success: #10b981;
+      --color-danger: #ef4444;
+      --color-danger-bg: #fef2f2;
+      --color-warning: #f59e0b;
+      
+      --color-bg: #f8fafc;              /* Slate 50 */
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f1f5f9;  /* Slate 100 */
+      
+      --color-text-main: #0f172a;       /* Slate 900 */
+      --color-text-muted: #64748b;      /* Slate 500 */
+      --color-text-light: #94a3b8;      /* Slate 400 */
+      
+      --color-border: #e2e8f0;          /* Slate 200 */
+      --color-border-focus: #0d9488;
+      
+      /* Radii & Shadows */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+      --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+      
+      --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    /* =========================================================
+       GLOBAL RESET & BASE STYLES
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Background aesthetic subtle pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(13, 148, 136, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(249, 115, 22, 0.03) 0%, transparent 45%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: var(--transition-base);
+    }
+
+    /* =========================================================
+       HEADER & NAVIGATION
+       ========================================================= */
+    .app-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 0.875rem 1.5rem;
+    }
+
+    .header-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .brand-icon-shield {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .brand-title span {
+      color: var(--color-accent);
+    }
+
+    .header-user-status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      border: 1px solid rgba(13, 148, 136, 0.2);
+    }
+
+    .role-badge.industry {
+      background: var(--color-blue-light);
+      color: var(--color-blue-dark);
+      border-color: rgba(2, 132, 199, 0.2);
+    }
+
+    .role-badge.academician {
+      background: var(--color-accent-light);
+      color: var(--color-accent-hover);
+      border-color: rgba(249, 115, 22, 0.2);
+    }
+
+    /* Role switcher toggle (for review / testing convenience) */
+    .role-switcher-dropdown {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: white;
+      color: var(--color-text-main);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       MAIN LAYOUT & CARD CONTAINER
+       ========================================================= */
+    .main-wrapper {
+      flex: 1;
+      padding: 2rem 1.25rem 3.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .profile-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 820px;
+      overflow: hidden;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card Top Banner */
+    .card-banner {
+      background: linear-gradient(135deg, var(--color-primary-surface) 0%, #ffffff 100%);
+      border-bottom: 1px solid var(--color-border);
+      padding: 2rem 2.25rem 1.75rem;
+      position: relative;
+    }
+
+    .banner-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .banner-welcome {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .banner-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--color-text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .banner-subtitle {
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    /* =========================================================
+       STEP PROGRESS INDICATOR
+       ========================================================= */
+    .progress-bar-container {
+      padding: 1.25rem 2.25rem;
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .steps-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .steps-track {
+      position: absolute;
+      top: 16px;
+      left: 15%;
+      right: 15%;
+      height: 3px;
+      background: var(--color-border);
+      z-index: 1;
+    }
+
+    .steps-track-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--color-primary);
+      transition: width 0.35s ease;
+    }
+
+    .step-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-base);
+    }
+
+    .step-item.active .step-circle {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+
+    .step-item.completed .step-circle {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      transition: var(--transition-base);
+      white-space: nowrap;
+    }
+
+    .step-item.active .step-label {
+      color: var(--color-primary-dark);
+      font-weight: 700;
+    }
+
+    /* =========================================================
+       FORM SECTIONS & CONTAINERS
+       ========================================================= */
+    .card-body {
+      padding: 2.25rem;
+    }
+
+    .step-section {
+      display: none;
+    }
+
+    .step-section.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .role-choice-grid {
+
+    .section-heading-row {
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: var(--color-primary);
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* =========================================================
+       GRID SYSTEM & FORM CONTROLS
+       ========================================================= */
+    .form-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin: 1.5rem 0;
-      text-align: left;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem 1.5rem;
     }
-    .role-choice-card {
-      border: 2px solid var(--border-color);
-      border-radius: 10px;
-      padding: 1rem 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #fafafa;
+
+    .col-full {
+      grid-column: 1 / -1;
     }
-    .role-choice-card:hover {
-      border-color: var(--primary-deep);
+
+    .col-3 {
+      grid-column: span 1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+    }
+
+    .form-label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label .required-star {
+      color: var(--color-danger);
+      margin-left: 2px;
+    }
+
+    .form-label .helper-badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--color-text-light);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 0.875rem;
+      color: var(--color-text-light);
+      font-size: 0.95rem;
+      pointer-events: none;
+      transition: var(--transition-base);
+    }
+
+    .form-control {
+      width: 100%;
+      height: 44px;
+      padding: 0.55rem 0.875rem 0.55rem 2.6rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--color-text-main);
       background: #ffffff;
-      transform: translateY(-2px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+      outline: none;
     }
-    .role-choice-card.selected {
-      border-color: var(--primary-deep);
-      background: rgba(27, 77, 62, 0.06);
-      box-shadow: 0 0 0 1px var(--primary-deep);
+
+    .form-control.no-icon {
+      padding-left: 0.875rem;
+    }
+
+    .form-control:hover {
+      border-color: #cbd5e1;
+    }
+
+    .form-control:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+      background: white;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+      color: var(--color-primary);
+    }
+
+    .form-control.error {
+      border-color: var(--color-danger);
+      background-color: var(--color-danger-bg);
+    }
+
+    .form-control.error:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    .field-error-msg {
+      font-size: 0.75rem;
+      color: var(--color-danger);
+      margin-top: 0.15rem;
+      display: none;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .field-error-msg.visible {
+      display: flex;
+    }
+
+    select.form-control {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      background-size: 1.1rem;
+      padding-right: 2.25rem;
+    }
+
+    /* "Other" dynamic reveal field */
+    .other-specify-wrapper {
+      display: none;
+      margin-top: 0.6rem;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .other-specify-wrapper.visible {
+      display: block;
+    }
+
+    /* =========================================================
+       PROFILE PHOTO UPLOAD & AVATAR PREVIEW
+       ========================================================= */
+    .photo-upload-container {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem;
+      background: var(--color-surface-subtle);
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .photo-avatar-preview {
+      width: 76px;
+      height: 76px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      overflow: hidden;
+      border: 2px solid white;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .photo-avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .photo-btn-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-upload-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.875rem;
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--color-text-main);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .btn-upload-trigger:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .btn-remove-photo {
+      display: none;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.45rem 0.65rem;
+      background: transparent;
+      border: none;
+      font-size: 0.8rem;
+      color: var(--color-danger);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .photo-hint {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    /* =========================================================
+       TAG INPUT COMPONENT (Skills, Interests, Subjects)
+       ========================================================= */
+    .tag-input-box {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.5rem;
+      background: white;
+      min-height: 44px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition-base);
+      cursor: text;
+    }
+
+    .tag-input-box:focus-within {
+      border-color: var(--color-border-focus);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--color-primary-surface);
+      color: var(--color-primary-dark);
+      border: 1px solid rgba(13, 148, 136, 0.25);
+      border-radius: var(--radius-full);
+      padding: 0.22rem 0.6rem 0.22rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      animation: popIn 0.15s ease-out;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .tag-pill-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: var(--radius-full);
+      background: rgba(13, 148, 136, 0.15);
+      color: var(--color-primary-dark);
+      border: none;
+      cursor: pointer;
+      font-size: 0.65rem;
+      transition: var(--transition-base);
+    }
+
+    .tag-pill-remove:hover {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .tag-input-field {
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      flex: 1;
+      min-width: 120px;
+      padding: 0.3rem 0.4rem;
+      color: var(--color-text-main);
+    }
+
+    .tag-helper-notes {
+      font-size: 0.74rem;
+      color: var(--color-text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+    }
+
+    /* Popular predefined chips to quickly tap */
+    .chip-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.4rem;
+    }
+
+    .suggest-chip {
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      padding: 0.2rem 0.6rem;
+      font-size: 0.74rem;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .suggest-chip:hover {
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      border-color: var(--color-primary);
+    }
+
+    /* =========================================================
+       FILE UPLOAD (Resume PDF / Documents)
+       ========================================================= */
+    .file-upload-dropzone {
+      border: 1.5px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+      background: #fafafa;
+      cursor: pointer;
+      transition: var(--transition-base);
+      position: relative;
+    }
+
+    .file-upload-dropzone:hover, .file-upload-dropzone.dragover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-surface);
+    }
+
+    .file-upload-icon {
+      font-size: 1.75rem;
+      color: var(--color-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .file-upload-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+
+    .file-upload-sub {
+      font-size: 0.74rem;
+      color: var(--color-text-muted);
+    }
+
+    .file-attached-pill {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.85rem;
+      margin-top: 0.6rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .file-attached-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--color-text-main);
+      font-weight: 600;
+    }
+
+    .file-attached-info i {
+      color: #ef4444; /* PDF red */
+      font-size: 1.15rem;
+    }
+
+    .file-attached-size {
+      font-weight: 400;
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      margin-left: 0.25rem;
+    }
+
+    .file-remove-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: var(--transition-base);
+    }
+
+    .file-remove-btn:hover {
+      color: var(--color-danger);
+    }
+
+    /* =========================================================
+       COLLAPSIBLE PREFERENCES SECTION
+       ========================================================= */
+    .collapsible-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: #fafafa;
+      margin-top: 1.5rem;
+      overflow: hidden;
+      transition: var(--transition-base);
+    }
+
+    .collapsible-header {
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      background: white;
+    }
+
+    .collapsible-header:hover {
+      background: #f8fafc;
+    }
+
+    .collapsible-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .collapsible-title i {
+      color: var(--color-blue);
+    }
+
+    .collapsible-chevron {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      transition: transform 0.25s ease;
+    }
+
+    .collapsible-card.open .collapsible-chevron {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      display: none;
+      padding: 1.25rem;
+      background: white;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .collapsible-card.open .collapsible-body {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--color-text-main);
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       CARD FOOTER & ACTION BUTTONS
+       ========================================================= */
+    .card-footer {
+      padding: 1.5rem 2.25rem;
+      background: var(--color-surface-subtle);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition-base);
+    }
+
+    .btn-secondary {
+      background: white;
+      border-color: var(--color-border);
+      color: var(--color-text-main);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-surface-subtle);
+      border-color: #cbd5e1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* =========================================================
+       SUBMISSION CONFIRMATION MODAL
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-dialog {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 580px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      padding: 2.25rem 2rem;
+      position: relative;
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-full);
+      background: #dcfce7;
+      color: #16a34a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-text-main);
+      margin-bottom: 0.35rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .json-code-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.78rem;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      text-align: left;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+    .app-footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--color-border);
+      background: white;
+      margin-top: auto;
+    }
+
+    /* =========================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================= */
+    @media (max-width: 768px) {
+      .card-banner {
+        padding: 1.5rem 1.25rem;
+      }
+      .card-body {
+        padding: 1.5rem 1.25rem;
+      }
+      .card-footer {
+        padding: 1.25rem;
+        flex-direction: column-reverse;
+      }
+      .card-footer .btn {
+        width: 100%;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.15rem;
+      }
+      .col-3 {
+        grid-column: span 1;
+      }
+      .photo-upload-container {
+        flex-direction: column;
+        text-align: center;
+      }
+      .photo-actions {
+        align-items: center;
+      }
+      .header-user-status {
+        gap: 0.4rem;
+      }
     }
   </style>
 </head>
-<body class="ayush-bg-pattern" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+<body>
 
-  <header style="padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
-    <a href="/index.html" style="display: flex; align-items: center; text-decoration: none;">
-      <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 38px;">
-    </a>
-    <a href="/login.html" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-      <i class="fa-solid fa-arrow-left"></i> Back to Login
-    </a>
+  <!-- Top Application Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="/index.html" class="brand-logo-wrap">
+        <div class="brand-icon-shield">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="brand-title">
+          AYUSH<span>CONNECT</span>
+        </div>
+      </a>
+
+      <div class="header-user-status">
+        <div class="role-badge student" id="display-role-badge">
+          <i class="fa-solid fa-graduation-cap" id="display-role-icon"></i>
+          <span id="display-role-text">Student</span>
+        </div>
+
+        <!-- Testing / preview convenience switcher -->
+        <select class="role-switcher-dropdown" id="role-preview-switcher" title="Switch role for previewing different sections">
+          <option value="student">Preview: Student</option>
+          <option value="industry">Preview: Industry</option>
+          <option value="academician">Preview: Academician</option>
+        </select>
+      </div>
+    </div>
   </header>
 
-  <main style="padding: 1rem; flex: 1; display: flex; align-items: center; justify-content: center;">
-    <div class="complete-card" id="complete-card">
-      <div style="text-align: center; margin-bottom: 1.25rem;">
-        <div id="user-avatar-preview" style="width: 58px; height: 58px; border-radius: 50%; background: var(--primary-deep); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-          AY
+  <!-- Main Content Area -->
+  <main class="main-wrapper">
+    <div class="profile-card">
+      
+      <!-- Card Top Banner -->
+      <div class="card-banner">
+        <div class="banner-content">
+          <div class="banner-welcome">
+            <i class="fa-solid fa-circle-check"></i> Account Authenticated
+          </div>
+          <h1 class="banner-title" id="welcome-user-heading">Complete Your Profile</h1>
+          <p class="banner-subtitle" id="welcome-user-sub">
+            Welcome to AYUSH CONNECT! Provide your details below to tailor your career and collaboration opportunities.
+          </p>
         </div>
-        <h2 style="color: var(--primary-deep); font-size: 1.35rem; margin-bottom: 0.2rem;">Complete Your Profile</h2>
-        <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 0;" id="user-oauth-email-display">
-          Signed in via Google
-        </p>
       </div>
 
-      <div style="background: rgba(27, 77, 62, 0.05); border: 1px solid rgba(27, 77, 62, 0.15); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.84rem; color: var(--primary-deep);">
-        <i class="fa-solid fa-circle-info" style="color: var(--secondary-teal); margin-right: 4px;"></i>
-        <strong>One last step!</strong> Please choose your role in the AYUSH ecosystem so we can take you to your dashboard.
+      <!-- Step Progress Indicator -->
+      <div class="progress-bar-container">
+        <div class="steps-indicator">
+          <div class="steps-track">
+            <div class="steps-track-fill" id="progress-fill"></div>
+          </div>
+
+          <!-- Step 1 Indicator -->
+          <div class="step-item active" id="step-indicator-1" onclick="navigateToStep(1)">
+            <div class="step-circle" id="step-circle-1">1</div>
+            <div class="step-label">Common Details</div>
+          </div>
+
+          <!-- Step 2 Indicator -->
+          <div class="step-item" id="step-indicator-2" onclick="navigateToStep(2)">
+            <div class="step-circle" id="step-circle-2">2</div>
+            <div class="step-label" id="step-label-2">Role Specifics</div>
+          </div>
+        </div>
       </div>
 
-      <form id="form-complete-profile">
-        <label class="form-label" style="font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; display: block;">
-          Select Your Role in the AYUSH Ecosystem *
-        </label>
+      <!-- Card Body: Multi-Step Interactive Sections (NO default form tag) -->
+      <div class="card-body">
         
-        <div class="role-choice-grid">
-          <div class="role-choice-card selected" data-role="student" onclick="window.selectCallbackRole('student')">
-            <div style="font-size: 1.3rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-graduation-cap"></i>
-            </div>
-            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Student</div>
-            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Scholar &amp; Intern</div>
-          </div>
-
-          <div class="role-choice-card" data-role="industry" onclick="window.selectCallbackRole('industry')">
-            <div style="font-size: 1.3rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-building"></i>
-            </div>
-            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Organization</div>
-            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Enterprises &amp; R&amp;D</div>
-          </div>
-
-          <div class="role-choice-card" data-role="academician" onclick="window.selectCallbackRole('academician')">
-            <div style="font-size: 1.3rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-building-columns"></i>
-            </div>
-            <div style="font-weight: 700; font-size: 0.86rem; color: var(--primary-deep);">Academician</div>
-            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">Faculty &amp; Deans</div>
+        <!-- Submission Error Alert Banner -->
+        <div id="profile-submission-error-alert" style="display: none; background: #fee2e2; border: 1px solid #f87171; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #991b1b; font-size: 0.92rem; align-items: flex-start; gap: 0.75rem;">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.25rem; margin-top: 2px; color: #dc2626;"></i>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; margin-bottom: 0.25rem;">Unable to Save Profile</div>
+            <div id="profile-submission-error-text">An error occurred while saving your details. Please check your inputs and try again.</div>
           </div>
         </div>
 
-        <div class="gov-email-group" style="margin-bottom: 1.25rem;">
-          <div class="gov-email-label-row">
-            <label class="form-label" for="profile-org-input" id="profile-org-label" style="margin: 0; font-weight: 600; font-size: 0.86rem;">
-              College / Institution Name *
-            </label>
+        <!-- =========================================================
+             STEP 1: COMMON DETAILS (Shown for all roles)
+             ========================================================= -->
+        <section class="step-section active" id="step-section-1">
+          <div class="section-heading-row">
+            <div>
+              <h2 class="section-title">
+                <i class="fa-regular fa-id-badge"></i> Personal &amp; Contact Details
+              </h2>
+              <p class="section-desc">Basic contact information to establish your verified identity across the ministry portal.</p>
+            </div>
           </div>
-          <div class="gov-email-wrapper">
-            <span class="gov-email-icon"><i class="fa-solid fa-school" id="profile-org-icon"></i></span>
-            <input type="text" id="profile-org-input" class="gov-email-input" placeholder="e.g. National Institute of Ayurveda, Jaipur" required>
-          </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" id="btn-save-profile">
-          <span>Save &amp; Enter Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
+          <div class="form-grid">
+
+            <!-- Profile Photo Upload -->
+            <div class="form-group col-full">
+              <label class="form-label">
+                <span>Profile Photo <span class="required-star">*</span></span>
+                <span class="helper-badge">JPG, PNG or WebP (Max 3MB)</span>
+              </label>
+
+              <div class="photo-upload-container">
+                <div class="photo-avatar-preview" id="avatar-preview-box">
+                  <span id="avatar-preview-text">AY</span>
+                </div>
+                <div class="photo-actions">
+                  <div class="photo-btn-row">
+                    <label class="btn-upload-trigger">
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      <span>Upload Photo</span>
+                      <input type="file" id="input-profile-photo" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                    </label>
+                    <button type="button" class="btn-remove-photo" id="btn-remove-photo" onclick="removeSelectedPhoto()">
+                      <i class="fa-solid fa-trash-can"></i> Remove
+                    </button>
+                  </div>
+                  <p class="photo-hint">A clear portrait photo helps institutions and recruiters recognize your profile.</p>
+                </div>
+              </div>
+              <span class="field-error-msg" id="error-photo"><i class="fa-solid fa-circle-exclamation"></i> Please upload a valid image file.</span>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group">
+              <label class="form-label" for="input-phone">
+                <span>Phone Number <span class="required-star">*</span></span>
+                <span class="helper-badge">10-digit mobile</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="input-phone" class="form-control" placeholder="9876543210" maxlength="14" autocomplete="tel">
+              </div>
+              <span class="field-error-msg" id="error-phone"><i class="fa-solid fa-circle-exclamation"></i> Enter a valid 10-digit phone number.</span>
+            </div>
+
+            <!-- Alternate Contact (Optional) -->
+            <div class="form-group">
+              <label class="form-label" for="input-alt-phone">
+                <span>Alternate Contact <span class="helper-badge">(Optional)</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone-volume input-icon"></i>
+                <input type="tel" id="input-alt-phone" class="form-control" placeholder="Optional phone number" maxlength="14">
+              </div>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="form-group">
+              <label class="form-label" for="input-dob">
+                <span>Date of Birth <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-calendar-day input-icon"></i>
+                <input type="date" id="input-dob" class="form-control" max="2010-12-31">
+              </div>
+              <span class="field-error-msg" id="error-dob"><i class="fa-solid fa-circle-exclamation"></i> Please select your date of birth.</span>
+            </div>
+
+            <!-- Gender Dropdown -->
+            <div class="form-group">
+              <label class="form-label" for="select-gender">
+                <span>Gender <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-venus-mars input-icon"></i>
+                <select id="select-gender" class="form-control">
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+              <span class="field-error-msg" id="error-gender"><i class="fa-solid fa-circle-exclamation"></i> Please choose your gender.</span>
+            </div>
+
+            <!-- Street Address -->
+            <div class="form-group col-full">
+              <label class="form-label" for="input-street">
+                <span>Street Address <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-map-location-dot input-icon"></i>
+                <input type="text" id="input-street" class="form-control" placeholder="House/Flat No, Street, Landmark">
+              </div>
+              <span class="field-error-msg" id="error-street"><i class="fa-solid fa-circle-exclamation"></i> Street address is required.</span>
+            </div>
+
+            <!-- City -->
+            <div class="form-group">
+              <label class="form-label" for="input-city">
+                <span>City <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-city input-icon"></i>
+                <input type="text" id="input-city" class="form-control" placeholder="e.g. New Delhi, Jaipur, Kochi">
+              </div>
+              <span class="field-error-msg" id="error-city"><i class="fa-solid fa-circle-exclamation"></i> City is required.</span>
+            </div>
+
+            <!-- State -->
+            <div class="form-group">
+              <label class="form-label" for="input-state">
+                <span>State / UT <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-landmark input-icon"></i>
+                <select id="input-state" class="form-control">
+                  <option value="">Select State / UT</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Odisha">Odisha</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Other State/UT">Other State/UT</option>
+                </select>
+              </div>
+              <span class="field-error-msg" id="error-state"><i class="fa-solid fa-circle-exclamation"></i> State is required.</span>
+            </div>
+
+            <!-- Pincode -->
+            <div class="form-group">
+              <label class="form-label" for="input-pincode">
+                <span>Pincode / Postal Code <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-hashtag input-icon"></i>
+                <input type="text" id="input-pincode" class="form-control" placeholder="e.g. 110001" maxlength="6">
+              </div>
+              <span class="field-error-msg" id="error-pincode"><i class="fa-solid fa-circle-exclamation"></i> Enter a valid 6-digit postal code.</span>
+            </div>
+
+            <!-- Country -->
+            <div class="form-group">
+              <label class="form-label" for="input-country">
+                <span>Country <span class="required-star">*</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-globe input-icon"></i>
+                <input type="text" id="input-country" class="form-control" value="India">
+              </div>
+              <span class="field-error-msg" id="error-country"><i class="fa-solid fa-circle-exclamation"></i> Country is required.</span>
+            </div>
+
+            <!-- LinkedIn or Portfolio URL (Optional) -->
+            <div class="form-group col-full">
+              <label class="form-label" for="input-portfolio-url">
+                <span>LinkedIn / Professional Portfolio URL <span class="helper-badge">(Optional)</span></span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-brands fa-linkedin input-icon"></i>
+                <input type="url" id="input-portfolio-url" class="form-control" placeholder="https://linkedin.com/in/yourprofile">
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- =========================================================
+             STEP 2: ROLE SPECIFIC DETAILS
+             ========================================================= -->
+        <section class="step-section" id="step-section-2">
+          
+          <!-- STUDENT ROLE BLOCK -->
+          <div id="role-block-student" class="role-specific-block" style="display: none;">
+            <div class="section-heading-row">
+              <div>
+                <h2 class="section-title">
+                  <i class="fa-solid fa-graduation-cap"></i> Academic &amp; Clinical Details
+                </h2>
+                <p class="section-desc">Information about your institution, AYUSH branch, curriculum, and clinical competencies.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              
+              <!-- Institution Name -->
+              <div class="form-group col-full">
+                <label class="form-label" for="student-institution">
+                  <span>Institution / College Name <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-school input-icon"></i>
+                  <input type="text" id="student-institution" class="form-control" placeholder="e.g. National Institute of Ayurveda, Jaipur">
+                </div>
+                <span class="field-error-msg" id="error-student-institution"><i class="fa-solid fa-circle-exclamation"></i> College name is required.</span>
+              </div>
+
+              <!-- Course / Program Dropdown with Grouped Options -->
+              <div class="form-group col-full">
+                <label class="form-label" for="student-course">
+                  <span>Course / Program of Study <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-book-medical input-icon"></i>
+                  <select id="student-course" class="form-control" onchange="handleCourseChange(this.value)">
+                    <option value="">Select Course / Specialization</option>
+                    
+                    <optgroup label="Undergraduate (UG)">
+                      <option value="BAMS (Bachelor of Ayurvedic Medicine and Surgery)">BAMS (Bachelor of Ayurvedic Medicine and Surgery)</option>
+                      <option value="BHMS (Bachelor of Homoeopathic Medicine and Surgery)">BHMS (Bachelor of Homoeopathic Medicine and Surgery)</option>
+                      <option value="BUMS (Bachelor of Unani Medicine and Surgery)">BUMS (Bachelor of Unani Medicine and Surgery)</option>
+                      <option value="BSMS (Bachelor of Siddha Medicine and Surgery)">BSMS (Bachelor of Siddha Medicine and Surgery)</option>
+                      <option value="BNYS (Bachelor of Naturopathy and Yogic Sciences)">BNYS (Bachelor of Naturopathy and Yogic Sciences)</option>
+                    </optgroup>
+
+                    <optgroup label="Postgraduate (PG)">
+                      <option value="MD (Ayurveda)">MD (Ayurveda)</option>
+                      <option value="MS (Ayurveda)">MS (Ayurveda)</option>
+                      <option value="MD (Homoeopathy)">MD (Homoeopathy)</option>
+                      <option value="MD (Unani)">MD (Unani)</option>
+                      <option value="MD (Siddha)">MD (Siddha)</option>
+                    </optgroup>
+
+                    <optgroup label="Doctoral &amp; Diploma">
+                      <option value="Ph.D. (Ayurveda/Unani/Homeopathy/Siddha/Naturopathy)">Ph.D. (Ayurveda / Unani / Homoeopathy / Siddha / Naturopathy)</option>
+                      <option value="Diploma/Certificate (Panchakarma, Yoga, Naturopathy, etc.)">Diploma / Certificate (Panchakarma, Yoga, Naturopathy, etc.)</option>
+                    </optgroup>
+
+                    <option value="Other">Other (please specify)</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-student-course"><i class="fa-solid fa-circle-exclamation"></i> Please select your course.</span>
+
+                <!-- Dynamic "Other" Course Field -->
+                <div class="other-specify-wrapper" id="other-course-wrapper">
+                  <label class="form-label" for="student-course-other" style="color: var(--color-primary-dark);">
+                    <span>Please specify your course <span class="required-star">*</span></span>
+                  </label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-pen-nib input-icon"></i>
+                    <input type="text" id="student-course-other" class="form-control" placeholder="e.g. M.Sc. Medicinal Plants, Fellowship in Ksharsutra">
+                  </div>
+                  <span class="field-error-msg" id="error-student-course-other"><i class="fa-solid fa-circle-exclamation"></i> Please type your specific course name.</span>
+                </div>
+              </div>
+
+              <!-- Year of Study / Semester -->
+              <div class="form-group">
+                <label class="form-label" for="student-year">
+                  <span>Current Year / Semester <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-layer-group input-icon"></i>
+                  <select id="student-year" class="form-control">
+                    <option value="">Select Current Year</option>
+                    <option value="1st Professional / 1st Year">1st Professional / 1st Year</option>
+                    <option value="2nd Professional / 2nd Year">2nd Professional / 2nd Year</option>
+                    <option value="3rd Professional / 3rd Year">3rd Professional / 3rd Year</option>
+                    <option value="Final Professional / Final Year">Final Professional / Final Year</option>
+                    <option value="Internship / Rotatory Houseman">Internship / Rotatory Houseman</option>
+                    <option value="Postgraduate 1st Year">Postgraduate 1st Year</option>
+                    <option value="Postgraduate 2nd Year">Postgraduate 2nd Year</option>
+                    <option value="Postgraduate Final Year">Postgraduate Final Year</option>
+                    <option value="Ph.D. Scholar">Ph.D. Scholar</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-student-year"><i class="fa-solid fa-circle-exclamation"></i> Year of study is required.</span>
+              </div>
+
+              <!-- Graduation Year -->
+              <div class="form-group">
+                <label class="form-label" for="student-graduation-year">
+                  <span>Expected Graduation Year <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-graduation-cap input-icon"></i>
+                  <select id="student-graduation-year" class="form-control">
+                    <option value="">Select Year</option>
+                    <option value="2024">2024 (Graduated)</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-student-graduation-year"><i class="fa-solid fa-circle-exclamation"></i> Graduation year is required.</span>
+              </div>
+
+              <!-- Roll Number / Enrollment ID -->
+              <div class="form-group">
+                <label class="form-label" for="student-roll-id">
+                  <span>Enrollment ID / Student PRN <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-id-card input-icon"></i>
+                  <input type="text" id="student-roll-id" class="form-control" placeholder="e.g. AYUSH/2023/BAMS/042">
+                </div>
+                <span class="field-error-msg" id="error-student-roll-id"><i class="fa-solid fa-circle-exclamation"></i> Enrollment ID is required.</span>
+              </div>
+
+              <!-- Skills (Tag Input) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Core Skills &amp; Clinical Competencies <span class="required-star">*</span></span>
+                  <span class="helper-badge">Press Enter or Comma to add tag</span>
+                </label>
+                <div class="tag-input-box" id="box-student-skills" onclick="focusTagInput('input-student-skill')">
+                  <!-- Tag pills rendered dynamically -->
+                  <input type="text" id="input-student-skill" class="tag-input-field" placeholder="Type a skill and press Enter...">
+                </div>
+                <div class="tag-helper-notes">
+                  <span>e.g., Nadi Pariksha, Panchakarma, Herbal Formulations, Clinical Pharmacology</span>
+                  <span id="count-student-skills">0 skills added</span>
+                </div>
+                <div class="chip-suggestions">
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-skills', 'Nadi Pariksha')">+ Nadi Pariksha</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-skills', 'Panchakarma Procedures')">+ Panchakarma</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-skills', 'Dravyaguna Identification')">+ Dravyaguna</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-skills', 'Clinical Diagnostics')">+ Clinical Diagnostics</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-skills', 'Pharmacovigilance')">+ Pharmacovigilance</span>
+                </div>
+                <span class="field-error-msg" id="error-student-skills"><i class="fa-solid fa-circle-exclamation"></i> Please add at least 2 relevant skills.</span>
+              </div>
+
+              <!-- Areas of Interest (Multi-select Tags) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Areas of Interest / Specialization <span class="required-star">*</span></span>
+                  <span class="helper-badge">Add or select your focal areas</span>
+                </label>
+                <div class="tag-input-box" id="box-student-interests" onclick="focusTagInput('input-student-interest')">
+                  <input type="text" id="input-student-interest" class="tag-input-field" placeholder="Type area and press Enter...">
+                </div>
+                <div class="chip-suggestions">
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-interests', 'Clinical Practice')">+ Clinical Practice</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-interests', 'Herbal R&D')">+ Herbal R&D</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-interests', 'Public Health & Ayush Mission')">+ Ayush Mission</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-interests', 'Hospital Management')">+ Hospital Management</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('student-interests', 'Ayurvedic Cosmeceuticals')">+ Cosmeceuticals</span>
+                </div>
+                <span class="field-error-msg" id="error-student-interests"><i class="fa-solid fa-circle-exclamation"></i> Please add at least one area of interest.</span>
+              </div>
+
+              <!-- Preferred Location for Opportunities -->
+              <div class="form-group">
+                <label class="form-label" for="student-preferred-location">
+                  <span>Preferred Opportunity Location <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-location-crosshairs input-icon"></i>
+                  <input type="text" id="student-preferred-location" class="form-control" placeholder="e.g. Delhi NCR, Pan-India, Remote">
+                </div>
+                <span class="field-error-msg" id="error-student-preferred-location"><i class="fa-solid fa-circle-exclamation"></i> Preferred location is required.</span>
+              </div>
+
+              <!-- Certifications (Optional Multiple Entries) -->
+              <div class="form-group">
+                <label class="form-label">
+                  <span>Certifications / Honors <span class="helper-badge">(Optional)</span></span>
+                </label>
+                <div class="tag-input-box" id="box-student-certifications" onclick="focusTagInput('input-student-cert')">
+                  <input type="text" id="input-student-cert" class="tag-input-field" placeholder="Add certification & Enter...">
+                </div>
+                <div class="tag-helper-notes">
+                  <span>e.g., Yoga Protocol Instructor, WHO-GCTM Workshop</span>
+                </div>
+              </div>
+
+              <!-- Resume / CV Upload (PDF Only) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Resume / Curriculum Vitae <span class="required-star">*</span></span>
+                  <span class="helper-badge">PDF format only (Max 5MB)</span>
+                </label>
+
+                <div class="file-upload-dropzone" id="resume-dropzone" onclick="document.getElementById('input-student-resume').click()">
+                  <i class="fa-solid fa-file-pdf file-upload-icon"></i>
+                  <div class="file-upload-title">Choose PDF or Drag and Drop Resume</div>
+                  <div class="file-upload-sub">Recruiters and institutions review this for internships and placements.</div>
+                  <input type="file" id="input-student-resume" accept="application/pdf" style="display: none;">
+                </div>
+
+                <!-- Attached File Display Card -->
+                <div class="file-attached-pill" id="resume-attached-pill">
+                  <div class="file-attached-info">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span id="resume-filename-text">My_Resume.pdf</span>
+                    <span class="file-attached-size" id="resume-filesize-text">(1.2 MB)</span>
+                  </div>
+                  <button type="button" class="file-remove-btn" onclick="removeAttachedResume()" title="Remove file">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+
+                <span class="field-error-msg" id="error-student-resume"><i class="fa-solid fa-circle-exclamation"></i> Please attach your resume in PDF format.</span>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- INDUSTRY ROLE BLOCK -->
+          <div id="role-block-industry" class="role-specific-block" style="display: none;">
+            <div class="section-heading-row">
+              <div>
+                <h2 class="section-title">
+                  <i class="fa-solid fa-building"></i> Enterprise &amp; Organization Profile
+                </h2>
+                <p class="section-desc">Details of your pharmaceutical, wellness, clinical research, or healthcare organization.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              
+              <!-- Company Name -->
+              <div class="form-group col-full">
+                <label class="form-label" for="industry-company-name">
+                  <span>Company / Organization Name <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-building input-icon"></i>
+                  <input type="text" id="industry-company-name" class="form-control" placeholder="e.g. Himalaya Wellness, Dabur Research Foundation">
+                </div>
+                <span class="field-error-msg" id="error-industry-company-name"><i class="fa-solid fa-circle-exclamation"></i> Company name is required.</span>
+              </div>
+
+              <!-- Industry Sector Dropdown with Other -->
+              <div class="form-group">
+                <label class="form-label" for="industry-sector">
+                  <span>Industry Sector / Type <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-briefcase input-icon"></i>
+                  <select id="industry-sector" class="form-control" onchange="handleIndustrySectorChange(this.value)">
+                    <option value="">Select Sector</option>
+                    <option value="Manufacturing">Manufacturing &amp; Formulation</option>
+                    <option value="Healthcare/Hospitals">Healthcare &amp; Hospitals</option>
+                    <option value="Wellness & Spa">Wellness &amp; Spa Resorts</option>
+                    <option value="Research & Development">Research &amp; Development (R&amp;D)</option>
+                    <option value="Export/Trade">Export &amp; Global Trade</option>
+                    <option value="EdTech">AYUSH EdTech &amp; HealthTech</option>
+                    <option value="Pharma">Pharmaceuticals &amp; Nutraceuticals</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-industry-sector"><i class="fa-solid fa-circle-exclamation"></i> Please select your industry sector.</span>
+
+                <!-- Dynamic Other Sector Field -->
+                <div class="other-specify-wrapper" id="other-industry-sector-wrapper">
+                  <label class="form-label" for="industry-sector-other" style="color: var(--color-primary-dark);">
+                    <span>Please specify your industry sector <span class="required-star">*</span></span>
+                  </label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-pen-nib input-icon"></i>
+                    <input type="text" id="industry-sector-other" class="form-control" placeholder="e.g. Herbal Agri-Tech, AYUSH AI Tech">
+                  </div>
+                  <span class="field-error-msg" id="error-industry-sector-other"><i class="fa-solid fa-circle-exclamation"></i> Please specify your sector.</span>
+                </div>
+              </div>
+
+              <!-- Company Size -->
+              <div class="form-group">
+                <label class="form-label" for="industry-size">
+                  <span>Company Size <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-users-viewfinder input-icon"></i>
+                  <select id="industry-size" class="form-control">
+                    <option value="">Select Size</option>
+                    <option value="1-10">1-10 Employees (Startup / Clinic)</option>
+                    <option value="11-50">11-50 Employees</option>
+                    <option value="51-200">51-200 Employees</option>
+                    <option value="200+">200+ Employees (Large Enterprise)</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-industry-size"><i class="fa-solid fa-circle-exclamation"></i> Company size is required.</span>
+              </div>
+
+              <!-- Designation of Registering Person -->
+              <div class="form-group">
+                <label class="form-label" for="industry-designation">
+                  <span>Your Designation <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-user-tie input-icon"></i>
+                  <input type="text" id="industry-designation" class="form-control" placeholder="e.g. HR Director, Chief Medical Officer, Founder">
+                </div>
+                <span class="field-error-msg" id="error-industry-designation"><i class="fa-solid fa-circle-exclamation"></i> Your designation is required.</span>
+              </div>
+
+              <!-- Company Website -->
+              <div class="form-group">
+                <label class="form-label" for="industry-website">
+                  <span>Official Website <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-globe input-icon"></i>
+                  <input type="url" id="industry-website" class="form-control" placeholder="https://www.yourcompany.com">
+                </div>
+                <span class="field-error-msg" id="error-industry-website"><i class="fa-solid fa-circle-exclamation"></i> Valid website URL is required.</span>
+              </div>
+
+              <!-- Work Email -->
+              <div class="form-group">
+                <label class="form-label" for="industry-work-email">
+                  <span>Work / Talent Acquisition Email <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-envelope input-icon"></i>
+                  <input type="email" id="industry-work-email" class="form-control" placeholder="hr@company.com">
+                </div>
+                <span class="field-error-msg" id="error-industry-work-email"><i class="fa-solid fa-circle-exclamation"></i> Valid work email is required.</span>
+              </div>
+
+              <!-- Work Phone -->
+              <div class="form-group">
+                <label class="form-label" for="industry-work-phone">
+                  <span>Corporate Contact Number <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-phone input-icon"></i>
+                  <input type="tel" id="industry-work-phone" class="form-control" placeholder="+91 9876543210">
+                </div>
+                <span class="field-error-msg" id="error-industry-work-phone"><i class="fa-solid fa-circle-exclamation"></i> Corporate phone is required.</span>
+              </div>
+
+              <!-- GST / Registration Number (Optional) -->
+              <div class="form-group col-full">
+                <label class="form-label" for="industry-gst">
+                  <span>GSTIN / Corporate Identification Number (CIN) <span class="helper-badge">(Optional)</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-file-invoice input-icon"></i>
+                  <input type="text" id="industry-gst" class="form-control" placeholder="e.g. 07AAAAA0000A1Z5">
+                </div>
+              </div>
+
+              <!-- Hiring Domains / Skills Required (Tag Input) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Hiring Domains &amp; Required Skill Sets <span class="required-star">*</span></span>
+                  <span class="helper-badge">Press Enter or comma to add tag</span>
+                </label>
+                <div class="tag-input-box" id="box-industry-skills" onclick="focusTagInput('input-industry-skill')">
+                  <input type="text" id="input-industry-skill" class="tag-input-field" placeholder="Add required skills or job profile...">
+                </div>
+                <div class="tag-helper-notes">
+                  <span>e.g., Panchakarma Physician, QA/QC Herbal Chemist, Ayush Teleconsultant</span>
+                  <span id="count-industry-skills">0 domains added</span>
+                </div>
+                <div class="chip-suggestions">
+                  <span class="suggest-chip" onclick="addSuggestedTag('industry-skills', 'BAMS Resident Doctor')">+ Resident Doctor</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('industry-skills', 'Ayurvedic Formulations')">+ Formulations</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('industry-skills', 'Clinical Trials & Research')">+ Clinical Trials</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('industry-skills', 'Wellness Consultant')">+ Wellness Consultant</span>
+                </div>
+                <span class="field-error-msg" id="error-industry-skills"><i class="fa-solid fa-circle-exclamation"></i> Please add at least one hiring domain.</span>
+              </div>
+
+              <!-- Company Address Block (with checkbox option) -->
+              <div class="form-group col-full" style="background: var(--color-surface-subtle); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <span style="font-size: 0.88rem; font-weight: 700; color: var(--color-text-main);">Company Registered Headquarters</span>
+                  <label class="checkbox-item" style="font-size: 0.8rem; font-weight: 600; color: var(--color-primary-dark);">
+                    <input type="checkbox" id="checkbox-same-address" onchange="handleSameAddressToggle(this.checked)">
+                    <span>Same as my personal address</span>
+                  </label>
+                </div>
+
+                <div id="company-separate-address-block" class="form-grid">
+                  <div class="form-group col-full">
+                    <input type="text" id="company-street" class="form-control no-icon" placeholder="Company Headquarters Address">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" id="company-city" class="form-control no-icon" placeholder="Company City">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" id="company-pincode" class="form-control no-icon" placeholder="Company Pincode" maxlength="6">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- ACADEMICIAN ROLE BLOCK -->
+          <div id="role-block-academician" class="role-specific-block" style="display: none;">
+            <div class="section-heading-row">
+              <div>
+                <h2 class="section-title">
+                  <i class="fa-solid fa-building-columns"></i> Academic &amp; Institutional Profile
+                </h2>
+                <p class="section-desc">Details of your professorship, department, academic disciplines, and research contributions.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              
+              <!-- Institution Name -->
+              <div class="form-group col-full">
+                <label class="form-label" for="academic-institution">
+                  <span>Institution / University Name <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-building-columns input-icon"></i>
+                  <input type="text" id="academic-institution" class="form-control" placeholder="e.g. All India Institute of Ayurveda, New Delhi">
+                </div>
+                <span class="field-error-msg" id="error-academic-institution"><i class="fa-solid fa-circle-exclamation"></i> Institution name is required.</span>
+              </div>
+
+              <!-- Department -->
+              <div class="form-group">
+                <label class="form-label" for="academic-department">
+                  <span>Department / Faculty <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-sitemap input-icon"></i>
+                  <input type="text" id="academic-department" class="form-control" placeholder="e.g. Kayachikitsa, Dravyaguna, Shalya Tantra">
+                </div>
+                <span class="field-error-msg" id="error-academic-department"><i class="fa-solid fa-circle-exclamation"></i> Department is required.</span>
+              </div>
+
+              <!-- Designation Dropdown with Other -->
+              <div class="form-group">
+                <label class="form-label" for="academic-designation">
+                  <span>Academic Designation <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-user-graduate input-icon"></i>
+                  <select id="academic-designation" class="form-control" onchange="handleAcademicDesignationChange(this.value)">
+                    <option value="">Select Designation</option>
+                    <option value="Professor">Professor</option>
+                    <option value="Associate Professor">Associate Professor</option>
+                    <option value="Assistant Professor">Assistant Professor</option>
+                    <option value="Lecturer">Lecturer</option>
+                    <option value="Dean">Dean / Principal</option>
+                    <option value="HOD">Head of Department (HOD)</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <span class="field-error-msg" id="error-academic-designation"><i class="fa-solid fa-circle-exclamation"></i> Designation is required.</span>
+
+                <!-- Dynamic Other Designation Field -->
+                <div class="other-specify-wrapper" id="other-academic-designation-wrapper">
+                  <label class="form-label" for="academic-designation-other" style="color: var(--color-primary-dark);">
+                    <span>Please specify your designation <span class="required-star">*</span></span>
+                  </label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-pen-nib input-icon"></i>
+                    <input type="text" id="academic-designation-other" class="form-control" placeholder="e.g. Dean of Studies, Adjunct Faculty, Principal">
+                  </div>
+                  <span class="field-error-msg" id="error-academic-designation-other"><i class="fa-solid fa-circle-exclamation"></i> Please specify your designation.</span>
+                </div>
+              </div>
+
+              <!-- Years of Experience -->
+              <div class="form-group">
+                <label class="form-label" for="academic-experience">
+                  <span>Years of Experience <span class="required-star">*</span></span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-clock-rotate-left input-icon"></i>
+                  <input type="number" id="academic-experience" class="form-control" placeholder="e.g. 8" min="0" max="60">
+                </div>
+                <span class="field-error-msg" id="error-academic-experience"><i class="fa-solid fa-circle-exclamation"></i> Enter years of experience.</span>
+              </div>
+
+              <!-- Subjects / Courses Taught (Tag Input) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Subjects / Disciplines Taught <span class="required-star">*</span></span>
+                  <span class="helper-badge">Press Enter to add tag</span>
+                </label>
+                <div class="tag-input-box" id="box-academic-subjects" onclick="focusTagInput('input-academic-subject')">
+                  <input type="text" id="input-academic-subject" class="tag-input-field" placeholder="Add subject and press Enter...">
+                </div>
+                <div class="tag-helper-notes">
+                  <span>e.g., Charaka Samhita, Rasashastra, Roganidana, Ayurvedic Pharmacology</span>
+                  <span id="count-academic-subjects">0 subjects added</span>
+                </div>
+                <div class="chip-suggestions">
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-subjects', 'Samhita & Siddhanta')">+ Samhita &amp; Siddhanta</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-subjects', 'Kayachikitsa')">+ Kayachikitsa</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-subjects', 'Dravyaguna Vijnana')">+ Dravyaguna Vijnana</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-subjects', 'Shalya Tantra')">+ Shalya Tantra</span>
+                </div>
+                <span class="field-error-msg" id="error-academic-subjects"><i class="fa-solid fa-circle-exclamation"></i> Add at least one subject taught.</span>
+              </div>
+
+              <!-- Areas of Research / Interest (Optional) -->
+              <div class="form-group col-full">
+                <label class="form-label">
+                  <span>Areas of Research &amp; Scholarly Interests <span class="helper-badge">(Optional)</span></span>
+                </label>
+                <div class="tag-input-box" id="box-academic-research" onclick="focusTagInput('input-academic-research')">
+                  <input type="text" id="input-academic-research" class="tag-input-field" placeholder="Add research interest and Enter...">
+                </div>
+                <div class="chip-suggestions">
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-research', 'Reverse Pharmacology')">+ Reverse Pharmacology</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-research', 'Ayurgenomics')">+ Ayurgenomics</span>
+                  <span class="suggest-chip" onclick="addSuggestedTag('academic-research', 'Herbal Standardisation')">+ Standardisation</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- =========================================================
+               COLLAPSIBLE SECTION: ADDITIONAL PREFERENCES (All Roles)
+               ========================================================= -->
+          <div class="collapsible-card" id="card-preferences">
+            <div class="collapsible-header" onclick="toggleCollapsible('card-preferences')">
+              <div class="collapsible-title">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Additional Preferences &amp; Availability (Optional)</span>
+              </div>
+              <i class="fa-solid fa-chevron-down collapsible-chevron"></i>
+            </div>
+            <div class="collapsible-body">
+              <div class="form-grid">
+                
+                <!-- Preferred Language -->
+                <div class="form-group">
+                  <label class="form-label" for="pref-language">Preferred Communication Language</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-language input-icon"></i>
+                    <select id="pref-language" class="form-control">
+                      <option value="English">English</option>
+                      <option value="Hindi">Hindi (हिंदी)</option>
+                      <option value="Sanskrit">Sanskrit (संस्कृतम्)</option>
+                      <option value="Tamil">Tamil (தமிழ்)</option>
+                      <option value="Malayalam">Malayalam (മലയാളം)</option>
+                      <option value="Bengali">Bengali (বাংলা)</option>
+                      <option value="Gujarati">Gujarati (ગુજરાતી)</option>
+                      <option value="Other">Other Regional Language</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Availability for Students / Engagement for others -->
+                <div class="form-group">
+                  <label class="form-label" for="pref-availability">Availability / Engagement Model</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-calendar-check input-icon"></i>
+                    <select id="pref-availability" class="form-control">
+                      <option value="Immediate - Full Time">Immediate &mdash; Full Time</option>
+                      <option value="Part-time (20 hrs/week)">Part-time (20 hrs/week)</option>
+                      <option value="3 Months Internship">3 Months Internship</option>
+                      <option value="6 Months Clinical Rotation">6 Months Clinical Rotation</option>
+                      <option value="Consulting / Project Based">Consulting / Project Based</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="form-group col-full">
+                  <label class="form-label">Notification Preferences</label>
+                  <div class="checkbox-group">
+                    <label class="checkbox-item">
+                      <input type="checkbox" id="pref-notify-email" checked>
+                      <span>Receive opportunity alerts &amp; notifications via Email</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" id="pref-notify-sms" checked>
+                      <span>Receive critical updates via SMS / WhatsApp</span>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- Card Footer: Step Controls & Save Button -->
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary" id="btn-prev-step" onclick="handlePrevStep()" style="visibility: hidden;">
+          <i class="fa-solid fa-arrow-left"></i> Previous Step
         </button>
-      </form>
+
+        <button type="button" class="btn btn-primary" id="btn-next-step" onclick="handleNextOrSubmit()">
+          <span id="btn-next-text">Continue to Role Details</span>
+          <i class="fa-solid fa-arrow-right" id="btn-next-icon"></i>
+        </button>
+      </div>
+
     </div>
   </main>
 
-  <footer style="padding: 1.5rem; text-align: center; font-size: 0.82rem; color: var(--text-muted);">
-    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India
+  <!-- Submission Confirmation Modal -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal-dialog">
+      <div class="modal-success-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="modal-title">Profile Successfully Completed!</h3>
+      <p class="modal-subtitle">
+        Your information has been validated and structured for the AYUSH CONNECT database.
+      </p>
+
+      <div style="text-align: left; font-size: 0.78rem; font-weight: 700; color: var(--color-text-muted); margin-bottom: 0.4rem;">
+        PAYLOAD LOGGED TO CONSOLE (MAPPED TO SUPABASE TABLES):
+      </div>
+      <div class="json-code-box" id="payload-preview-box"></div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button type="button" class="btn btn-primary" id="btn-modal-dashboard" onclick="proceedToDashboard()">
+          <span>Launch Your Portal</span> <i class="fa-solid fa-rocket"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Footer -->
+  <footer class="app-footer">
+    &copy; 2026 AYUSH CONNECT &bull; Ministry of AYUSH, Government of India. All rights reserved.
   </footer>
 
+  <!-- =========================================================
+       VANILLA JAVASCRIPT / ES MODULE SCRIPT
+       ========================================================= -->
   <script type="module">
     import { supabase } from '/js/supabase.js';
+    import { routeUserAfterAuth, setCurrentUser } from '/js/auth.js';
 
-    let currentSessionUser = null;
-    let selectedRole = 'student';
+    /**
+     * AYUSH CONNECT — Complete Profile Controller
+     * Handles dynamic role rendering, multi-step navigation,
+     * tags management, other-dropdown logic, client-side validation,
+     * and Supabase-ready JSON payload generation.
+     */
 
-    window.selectCallbackRole = function(role) {
-      selectedRole = role;
-      document.querySelectorAll('.role-choice-card').forEach(card => {
-        card.classList.toggle('selected', card.dataset.role === role);
-      });
+    // 1. Role State: reads from URL query parameter or fallback
+    const urlParams = new URLSearchParams(window.location.search);
+    let userRole = (urlParams.get('role') || 'student').toLowerCase().trim();
+    if (!['student', 'industry', 'academician'].includes(userRole)) {
+      userRole = 'student';
+    }
 
-      const label = document.getElementById('profile-org-label');
-      const input = document.getElementById('profile-org-input');
-      const icon = document.getElementById('profile-org-icon');
+    // User metadata state
+    let currentUser = {
+      id: urlParams.get('uid') || 'usr_' + Date.now(),
+      name: urlParams.get('name') || 'Dr. Ayush Professional',
+      email: urlParams.get('email') || 'ayush.scholar@ayush.gov.in',
+      photoBase64: null,
+      resumeFile: null,
+      resumeMeta: null
+    };
 
-      if (role === 'industry') {
-        label.textContent = 'Company / Organization Name *';
-        input.placeholder = 'e.g. Himalaya Wellness Company, Dabur R&D';
-        icon.className = 'fa-solid fa-building';
-      } else if (role === 'academician') {
-        label.textContent = 'University / Department *';
-        input.placeholder = 'e.g. All India Institute of Ayurveda, New Delhi';
-        icon.className = 'fa-solid fa-building-columns';
+    function showFormError(message) {
+      const alertBox = document.getElementById('profile-submission-error-alert');
+      const textEl = document.getElementById('profile-submission-error-text');
+      if (alertBox && textEl) {
+        textEl.textContent = message;
+        alertBox.style.display = 'flex';
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        label.textContent = 'College / Institution Name *';
-        input.placeholder = 'e.g. National Institute of Ayurveda, Jaipur';
-        icon.className = 'fa-solid fa-school';
+        alert(message);
+      }
+    }
+
+    function hideFormError() {
+      const alertBox = document.getElementById('profile-submission-error-alert');
+      if (alertBox) {
+        alertBox.style.display = 'none';
+      }
+    }
+
+    // Current step tracker
+    let currentStep = 1;
+    const totalSteps = 2;
+
+    // Tag management storage
+    const tagLists = {
+      'student-skills': ['Ayurvedic Diagnostics', 'Clinical Herbology'],
+      'student-interests': ['Panchakarma Clinical Care', 'Ayurveda R&D'],
+      'student-certifications': [],
+      'industry-skills': ['BAMS Resident Doctor', 'Clinical Trials'],
+      'academic-subjects': ['Dravyaguna Vijnana'],
+      'academic-research': ['Pharmacognosy']
+    };
+
+    // =========================================================
+    // INITIALIZATION
+    // =========================================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 0. Verify Supabase session
+      let session = null;
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        session = sessionData?.session;
+      } catch (e) {
+        console.warn('[Complete Profile] Session check warning:', e);
+      }
+
+      if (session?.user) {
+        const user = session.user;
+        currentUser.id = user.id;
+        currentUser.email = user.email || currentUser.email;
+        currentUser.name = user.user_metadata?.full_name 
+          || user.user_metadata?.name 
+          || user.email?.split('@')[0] 
+          || currentUser.name;
+
+        // Query existing profile row
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (profile) {
+            if (profile.role && ['student', 'industry', 'academician'].includes(profile.role.toLowerCase())) {
+              userRole = profile.role.toLowerCase();
+            }
+            if (profile.full_name) currentUser.name = profile.full_name;
+            if (profile.avatar_url) {
+              currentUser.photoBase64 = profile.avatar_url;
+              localStorage.setItem('ayush_candidate_photo', profile.avatar_url);
+              const previewImg = document.getElementById('avatar-preview-img');
+              const previewText = document.getElementById('avatar-preview-text');
+              if (previewImg) {
+                previewImg.src = profile.avatar_url;
+                previewImg.style.display = 'block';
+                if (previewText) previewText.style.display = 'none';
+              }
+            }
+            if (profile.phone) document.getElementById('input-phone').value = profile.phone;
+            if (profile.alternate_phone) document.getElementById('input-alt-phone').value = profile.alternate_phone;
+            if (profile.date_of_birth) document.getElementById('input-dob').value = profile.date_of_birth;
+            if (profile.gender) document.getElementById('select-gender').value = profile.gender;
+            if (profile.address_street) document.getElementById('input-street').value = profile.address_street;
+            if (profile.address_city) document.getElementById('input-city').value = profile.address_city;
+            if (profile.address_state) document.getElementById('input-state').value = profile.address_state;
+            if (profile.address_pincode) document.getElementById('input-pincode').value = profile.address_pincode;
+            if (profile.address_country) document.getElementById('input-country').value = profile.address_country;
+            if (profile.linkedin_url) document.getElementById('input-portfolio-url').value = profile.linkedin_url;
+          }
+
+          // Pre-fill role-specific details from database
+          if (userRole === 'student') {
+            const { data: sp } = await supabase.from('student_profiles').select('*').eq('profile_id', user.id).maybeSingle();
+            if (sp) {
+              if (sp.college_institution) document.getElementById('student-institution').value = sp.college_institution;
+              if (sp.course) {
+                const sel = document.getElementById('student-course');
+                const hasOpt = Array.from(sel.options).some(o => o.value === sp.course);
+                if (hasOpt) {
+                  sel.value = sp.course;
+                } else {
+                  sel.value = 'Other';
+                  const otherInp = document.getElementById('student-course-other');
+                  if (otherInp) {
+                    otherInp.style.display = 'block';
+                    otherInp.value = sp.course;
+                  }
+                }
+              }
+              if (sp.year) document.getElementById('student-year').value = sp.year;
+              if (sp.graduation_year) {
+                const gy = document.getElementById('student-graduation-year');
+                if (gy) gy.value = sp.graduation_year;
+              }
+              if (sp.roll_number) document.getElementById('student-roll-id').value = sp.roll_number;
+              if (sp.preferred_location) {
+                const pl = document.getElementById('student-preferred-location');
+                if (pl) pl.value = sp.preferred_location;
+              }
+              if (Array.isArray(sp.skills) && sp.skills.length > 0) {
+                tagLists['student-skills'] = sp.skills;
+              }
+              if (Array.isArray(sp.interests) && sp.interests.length > 0) {
+                tagLists['student-interests'] = sp.interests;
+              }
+              if (Array.isArray(sp.certifications) && sp.certifications.length > 0) {
+                tagLists['student-certifications'] = sp.certifications;
+              }
+            }
+          } else if (userRole === 'industry') {
+            const { data: ip } = await supabase.from('industry_profiles').select('*').eq('profile_id', user.id).maybeSingle();
+            if (ip) {
+              if (ip.company_name) document.getElementById('industry-company-name').value = ip.company_name;
+              if (ip.industry_sector) document.getElementById('industry-sector').value = ip.industry_sector;
+              if (ip.company_size) document.getElementById('industry-size').value = ip.company_size;
+              if (ip.designation) document.getElementById('industry-designation').value = ip.designation;
+              if (ip.company_website) document.getElementById('industry-website').value = ip.company_website;
+              if (ip.work_email) {
+                const we = document.getElementById('industry-work-email');
+                if (we) we.value = ip.work_email;
+              }
+              if (ip.work_phone) {
+                const wp = document.getElementById('industry-work-phone');
+                if (wp) wp.value = ip.work_phone;
+              }
+              if (ip.gst_number) document.getElementById('industry-gst').value = ip.gst_number;
+              if (Array.isArray(ip.hiring_domains) && ip.hiring_domains.length > 0) {
+                tagLists['industry-skills'] = ip.hiring_domains;
+              }
+            }
+          } else if (userRole === 'academician') {
+            const { data: ap } = await supabase.from('academician_profiles').select('*').eq('profile_id', user.id).maybeSingle();
+            if (ap) {
+              if (ap.institution) document.getElementById('academic-institution').value = ap.institution;
+              if (ap.department) document.getElementById('academic-department').value = ap.department;
+              if (ap.designation) document.getElementById('academic-designation').value = ap.designation;
+              if (ap.experience_years) document.getElementById('academic-experience').value = ap.experience_years;
+              if (Array.isArray(ap.subjects) && ap.subjects.length > 0) {
+                tagLists['academic-subjects'] = ap.subjects;
+              }
+              if (Array.isArray(ap.research_interests) && ap.research_interests.length > 0) {
+                tagLists['academic-research'] = ap.research_interests;
+              }
+            }
+          }
+        } catch (profileErr) {
+          console.warn('[Complete Profile] Profile query error:', profileErr);
+        }
+      }
+
+      // Also prefill from localStorage if available
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('ayush_current_user') || '{}');
+        const storedProfile = JSON.parse(localStorage.getItem('ayush_saved_profile') || '{}');
+        const merged = { ...storedUser, ...storedProfile };
+        if (merged.phone && !document.getElementById('input-phone').value) document.getElementById('input-phone').value = merged.phone;
+        if (merged.gender && !document.getElementById('select-gender').value) document.getElementById('select-gender').value = merged.gender;
+        if (merged.address_city && !document.getElementById('input-city').value) document.getElementById('input-city').value = merged.address_city;
+        if (merged.address_state && !document.getElementById('input-state').value) document.getElementById('input-state').value = merged.address_state;
+        if (merged.institution && !document.getElementById('student-institution').value) document.getElementById('student-institution').value = merged.institution;
+        if (merged.course && !document.getElementById('student-course').value) document.getElementById('student-course').value = merged.course;
+        if (merged.year && !document.getElementById('student-year').value) document.getElementById('student-year').value = merged.year;
+        if (merged.grad_year && !document.getElementById('student-graduation-year').value) document.getElementById('student-graduation-year').value = merged.grad_year;
+        if (merged.roll_number && !document.getElementById('student-roll-id').value) document.getElementById('student-roll-id').value = merged.roll_number;
+      } catch (e) {}
+
+      // 1. Setup role UI & blocks
+      applyUserRole(userRole);
+
+      // 2. Setup user greeting
+      initUserHeader();
+
+      // 3. Render initial tags
+      renderAllTagContainers();
+
+      // 4. Attach input event listeners for real-time validation clearing
+      setupInputListeners();
+
+      // 5. Setup file & image listeners
+      setupFileHandlers();
+
+      // 6. Role switcher dropdown sync
+      const switcher = document.getElementById('role-preview-switcher');
+      if (switcher) {
+        switcher.value = userRole;
+        switcher.addEventListener('change', (e) => {
+          applyUserRole(e.target.value);
+        });
+      }
+    });
+
+    // =========================================================
+    // ROLE RENDERING LOGIC
+    // =========================================================
+    function applyUserRole(role) {
+      userRole = role;
+
+      // Update header badge
+      const badge = document.getElementById('display-role-badge');
+      const badgeText = document.getElementById('display-role-text');
+      const badgeIcon = document.getElementById('display-role-icon');
+
+      badge.className = `role-badge ${role}`;
+      if (role === 'student') {
+        badgeText.textContent = 'Student Scholar';
+        badgeIcon.className = 'fa-solid fa-graduation-cap';
+        document.getElementById('step-label-2').textContent = 'Academic Details';
+      } else if (role === 'industry') {
+        badgeText.textContent = 'Industry Enterprise';
+        badgeIcon.className = 'fa-solid fa-building';
+        document.getElementById('step-label-2').textContent = 'Company Details';
+      } else if (role === 'academician') {
+        badgeText.textContent = 'Academician / Faculty';
+        badgeIcon.className = 'fa-solid fa-building-columns';
+        document.getElementById('step-label-2').textContent = 'Faculty Details';
+      }
+
+      // Hide all role blocks, show only target
+      document.querySelectorAll('.role-specific-block').forEach(b => b.style.display = 'none');
+      const targetBlock = document.getElementById(`role-block-${role}`);
+      if (targetBlock) {
+        targetBlock.style.display = 'block';
+      }
+    }
+
+    function initUserHeader() {
+      if (currentUser.name) {
+        document.getElementById('welcome-user-heading').textContent = `Welcome, ${currentUser.name}!`;
+        // Init avatar initials
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        document.getElementById('avatar-preview-text').textContent = initials || 'AY';
+      }
+      if (currentUser.email) {
+        document.getElementById('welcome-user-sub').textContent = `Signed in as ${currentUser.email}. Please complete your verification details below.`;
+      }
+    }
+
+    // =========================================================
+    // MULTI-STEP NAVIGATION & VALIDATION
+    // =========================================================
+    window.navigateToStep = function(step) {
+      if (step === 2 && currentStep === 1) {
+        if (!validateStep1()) return;
+      }
+      setStep(step);
+    };
+
+    window.handlePrevStep = function() {
+      if (currentStep > 1) {
+        setStep(currentStep - 1);
       }
     };
 
-    async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session || !session.user) {
-        window.location.replace('/login.html');
-        return;
+    window.handleNextOrSubmit = function() {
+      if (currentStep === 1) {
+        if (validateStep1()) {
+          setStep(2);
+        }
+      } else if (currentStep === 2) {
+        if (validateStep2()) {
+          submitProfileData();
+        }
       }
-      currentSessionUser = session.user;
+    };
 
-      const emailEl = document.getElementById('user-oauth-email-display');
-      if (emailEl && currentSessionUser.email) {
-        emailEl.textContent = `Signed in as: ${currentSessionUser.email}`;
+    function setStep(step) {
+      currentStep = step;
+
+      // Update sections visibility
+      document.querySelectorAll('.step-section').forEach(sec => sec.classList.remove('active'));
+      const activeSection = document.getElementById(`step-section-${step}`);
+      if (activeSection) activeSection.classList.add('active');
+
+      // Update progress indicators
+      const ind1 = document.getElementById('step-indicator-1');
+      const ind2 = document.getElementById('step-indicator-2');
+      const fill = document.getElementById('progress-fill');
+
+      if (step === 1) {
+        ind1.classList.add('active');
+        ind1.classList.remove('completed');
+        ind2.classList.remove('active', 'completed');
+        fill.style.width = '0%';
+
+        document.getElementById('btn-prev-step').style.visibility = 'hidden';
+        document.getElementById('btn-next-text').textContent = 'Continue to Role Details';
+        document.getElementById('btn-next-icon').className = 'fa-solid fa-arrow-right';
+      } else {
+        ind1.classList.remove('active');
+        ind1.classList.add('completed');
+        ind2.classList.add('active');
+        fill.style.width = '100%';
+
+        document.getElementById('btn-prev-step').style.visibility = 'visible';
+        document.getElementById('btn-next-text').textContent = 'Save & Complete Profile';
+        document.getElementById('btn-next-icon').className = 'fa-solid fa-check';
       }
 
-      const fullName = currentSessionUser.user_metadata?.full_name || currentSessionUser.user_metadata?.name || currentSessionUser.email?.split('@')[0] || 'User';
-      const avatarUrl = currentSessionUser.user_metadata?.avatar_url || currentSessionUser.user_metadata?.picture;
-      const avatarEl = document.getElementById('user-avatar-preview');
-      if (avatarUrl && avatarEl) {
-        avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${fullName}" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer">`;
-      } else if (avatarEl) {
-        avatarEl.textContent = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY';
+      // Scroll smoothly to card top
+      document.querySelector('.profile-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // =========================================================
+    // STEP VALIDATIONS
+    // =========================================================
+    function validateStep1() {
+      let isValid = true;
+
+      // Phone (10 digits)
+      const phoneInput = document.getElementById('input-phone');
+      const cleanPhone = phoneInput.value.replace(/\D/g, '');
+      if (cleanPhone.length < 10) {
+        showError('phone', 'Please enter a valid 10-digit mobile number.');
+        isValid = false;
+      } else {
+        hideError('phone');
       }
 
-      document.getElementById('form-complete-profile').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('btn-save-profile');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      // DOB
+      const dobInput = document.getElementById('input-dob');
+      if (!dobInput.value) {
+        showError('dob', 'Date of birth is required.');
+        isValid = false;
+      } else {
+        hideError('dob');
+      }
 
-        const orgName = document.getElementById('profile-org-input').value.trim();
-        const userId = currentSessionUser.id;
+      // Gender
+      const genderSelect = document.getElementById('select-gender');
+      if (!genderSelect.value) {
+        showError('gender', 'Please choose your gender.');
+        isValid = false;
+      } else {
+        hideError('gender');
+      }
 
-        // Upsert profile with role and profile_completed = true
-        try {
-          await supabase.from('profiles').upsert({
-            id: userId,
-            role: selectedRole,
-            full_name: fullName,
-            email: currentSessionUser.email,
-            avatar_url: avatarUrl || null,
-            profile_completed: true,
-            status: selectedRole === 'student' ? 'active' : 'pending',
-            is_approved: selectedRole === 'student',
-            is_verified: selectedRole === 'student',
-            updated_at: new Date().toISOString()
-          });
+      // Address Fields
+      const streetInput = document.getElementById('input-street');
+      if (!streetInput.value.trim()) {
+        showError('street', 'Street address is required.');
+        isValid = false;
+      } else {
+        hideError('street');
+      }
 
-          if (selectedRole === 'student') {
-            await supabase.from('student_profiles').upsert({
-              profile_id: userId,
-              college_institution: orgName || 'National Institute of Ayurveda',
-              course: 'BAMS',
-              year: 'Final Year',
-              graduation_year: '2026',
-              career_stage: 'profile',
-              updated_at: new Date().toISOString()
-            });
-          } else if (selectedRole === 'industry') {
-            await supabase.from('industry_profiles').upsert({
-              profile_id: userId,
-              company_name: orgName || `${fullName} Organization`,
-              designation: 'Representative',
-              industry_sector: 'Ayurveda & HealthTech',
-              updated_at: new Date().toISOString()
-            });
-          } else if (selectedRole === 'academician') {
-            await supabase.from('academician_profiles').upsert({
-              profile_id: userId,
-              institution: orgName || 'National Institute of Ayurveda',
-              department: 'Ayurveda Medicine',
-              designation: 'Faculty Member',
-              updated_at: new Date().toISOString()
-            });
-          }
-        } catch (err) {
-          console.error('Error saving profile:', err);
+      const cityInput = document.getElementById('input-city');
+      if (!cityInput.value.trim()) {
+        showError('city', 'City is required.');
+        isValid = false;
+      } else {
+        hideError('city');
+      }
+
+      const stateSelect = document.getElementById('input-state');
+      if (!stateSelect.value) {
+        showError('state', 'State is required.');
+        isValid = false;
+      } else {
+        hideError('state');
+      }
+
+      const pincodeInput = document.getElementById('input-pincode');
+      const cleanPin = pincodeInput.value.replace(/\D/g, '');
+      if (cleanPin.length !== 6) {
+        showError('pincode', 'Please enter a 6-digit postal pincode.');
+        isValid = false;
+      } else {
+        hideError('pincode');
+      }
+
+      const countryInput = document.getElementById('input-country');
+      if (!countryInput.value.trim()) {
+        showError('country', 'Country is required.');
+        isValid = false;
+      } else {
+        hideError('country');
+      }
+
+      return isValid;
+    }
+
+    function validateStep2() {
+      let isValid = true;
+
+      if (userRole === 'student') {
+        // Institution
+        const inst = document.getElementById('student-institution');
+        if (!inst.value.trim()) {
+          showError('student-institution', 'Institution / College name is required.');
+          isValid = false;
+        } else {
+          hideError('student-institution');
         }
 
-        const dest = selectedRole === 'student'
-          ? '/dashboard-student.html'
-          : (selectedRole === 'industry' ? '/dashboard-industry.html' : '/dashboard-academician.html');
+        // Course & Other Check
+        const course = document.getElementById('student-course');
+        if (!course.value) {
+          showError('student-course', 'Please select your course.');
+          isValid = false;
+        } else if (course.value === 'Other') {
+          const otherCourse = document.getElementById('student-course-other');
+          if (!otherCourse.value.trim()) {
+            showError('student-course-other', 'Please specify your custom course name.');
+            isValid = false;
+          } else {
+            hideError('student-course-other');
+          }
+        } else {
+          hideError('student-course');
+          hideError('student-course-other');
+        }
 
-        window.location.replace(dest);
+        // Year
+        const year = document.getElementById('student-year');
+        if (!year.value) {
+          showError('student-year', 'Please select current year of study.');
+          isValid = false;
+        } else {
+          hideError('student-year');
+        }
+
+        // Graduation Year
+        const gradYear = document.getElementById('student-graduation-year');
+        if (gradYear && !gradYear.value) {
+          showError('student-graduation-year', 'Please select expected graduation year.');
+          isValid = false;
+        } else if (gradYear) {
+          hideError('student-graduation-year');
+        }
+
+        // Roll ID
+        const roll = document.getElementById('student-roll-id');
+        if (!roll.value.trim()) {
+          showError('student-roll-id', 'Enrollment ID or Roll number is required.');
+          isValid = false;
+        } else {
+          hideError('student-roll-id');
+        }
+
+        // Skills (at least 1)
+        if (tagLists['student-skills'].length === 0) {
+          showError('student-skills', 'Please add at least 1 core clinical or academic skill.');
+          isValid = false;
+        } else {
+          hideError('student-skills');
+        }
+
+        // Interests (at least 1)
+        if (tagLists['student-interests'].length === 0) {
+          showError('student-interests', 'Please add at least 1 area of interest.');
+          isValid = false;
+        } else {
+          hideError('student-interests');
+        }
+
+        // Preferred Location
+        const loc = document.getElementById('student-preferred-location');
+        if (!loc.value.trim()) {
+          showError('student-preferred-location', 'Preferred location is required.');
+          isValid = false;
+        } else {
+          hideError('student-preferred-location');
+        }
+
+      } else if (userRole === 'industry') {
+        // Company Name
+        const comp = document.getElementById('industry-company-name');
+        if (!comp.value.trim()) {
+          showError('industry-company-name', 'Company name is required.');
+          isValid = false;
+        } else {
+          hideError('industry-company-name');
+        }
+
+        // Sector & Other
+        const sector = document.getElementById('industry-sector');
+        if (!sector.value) {
+          showError('industry-sector', 'Please select industry sector.');
+          isValid = false;
+        } else if (sector.value === 'Other') {
+          const otherSec = document.getElementById('industry-sector-other');
+          if (!otherSec.value.trim()) {
+            showError('industry-sector-other', 'Please specify your industry sector.');
+            isValid = false;
+          } else {
+            hideError('industry-sector-other');
+          }
+        } else {
+          hideError('industry-sector');
+          hideError('industry-sector-other');
+        }
+
+        // Size
+        const size = document.getElementById('industry-size');
+        if (!size.value) {
+          showError('industry-size', 'Company size is required.');
+          isValid = false;
+        } else {
+          hideError('industry-size');
+        }
+
+        // Designation
+        const desig = document.getElementById('industry-designation');
+        if (!desig.value.trim()) {
+          showError('industry-designation', 'Your designation is required.');
+          isValid = false;
+        } else {
+          hideError('industry-designation');
+        }
+
+        // Website
+        const site = document.getElementById('industry-website');
+        if (!site.value.trim()) {
+          showError('industry-website', 'Company website URL is required.');
+          isValid = false;
+        } else {
+          hideError('industry-website');
+        }
+
+        // Work Email
+        const workEmail = document.getElementById('industry-work-email');
+        if (workEmail && (!workEmail.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(workEmail.value.trim()))) {
+          showError('industry-work-email', 'Please enter a valid work email.');
+          isValid = false;
+        } else if (workEmail) {
+          hideError('industry-work-email');
+        }
+
+        // Work Phone
+        const workPhone = document.getElementById('industry-work-phone');
+        if (workPhone && !workPhone.value.trim()) {
+          showError('industry-work-phone', 'Corporate contact number is required.');
+          isValid = false;
+        } else if (workPhone) {
+          hideError('industry-work-phone');
+        }
+
+        // Required skills / domains
+        if (tagLists['industry-skills'].length === 0) {
+          showError('industry-skills', 'Please add at least 1 hiring domain or required skill.');
+          isValid = false;
+        } else {
+          hideError('industry-skills');
+        }
+
+      } else if (userRole === 'academician') {
+        // Institution
+        const inst = document.getElementById('academic-institution');
+        if (!inst.value.trim()) {
+          showError('academic-institution', 'Institution / University name is required.');
+          isValid = false;
+        } else {
+          hideError('academic-institution');
+        }
+
+        // Department
+        const dept = document.getElementById('academic-department');
+        if (!dept.value.trim()) {
+          showError('academic-department', 'Department is required.');
+          isValid = false;
+        } else {
+          hideError('academic-department');
+        }
+
+        // Designation & Other
+        const desig = document.getElementById('academic-designation');
+        if (!desig.value) {
+          showError('academic-designation', 'Please select academic designation.');
+          isValid = false;
+        } else if (desig.value === 'Other') {
+          const otherDesig = document.getElementById('academic-designation-other');
+          if (!otherDesig.value.trim()) {
+            showError('academic-designation-other', 'Please specify your designation.');
+            isValid = false;
+          } else {
+            hideError('academic-designation-other');
+          }
+        } else {
+          hideError('academic-designation');
+          hideError('academic-designation-other');
+        }
+
+        // Experience
+        const exp = document.getElementById('academic-experience');
+        if (exp.value === '' || Number(exp.value) < 0) {
+          showError('academic-experience', 'Please enter valid years of experience.');
+          isValid = false;
+        } else {
+          hideError('academic-experience');
+        }
+
+        // Subjects taught
+        if (tagLists['academic-subjects'].length === 0) {
+          showError('academic-subjects', 'Please add at least 1 subject taught.');
+          isValid = false;
+        } else {
+          hideError('academic-subjects');
+        }
+      }
+
+      return isValid;
+    }
+
+    function showError(fieldId, message) {
+      const errEl = document.getElementById(`error-${fieldId}`);
+      if (errEl) {
+        errEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${message}`;
+        errEl.classList.add('visible');
+      }
+      const inputEl = document.getElementById(`input-${fieldId}`) || document.getElementById(fieldId);
+      if (inputEl && inputEl.classList) {
+        inputEl.classList.add('error');
+      }
+    }
+
+    function hideError(fieldId) {
+      const errEl = document.getElementById(`error-${fieldId}`);
+      if (errEl) {
+        errEl.classList.remove('visible');
+      }
+      const inputEl = document.getElementById(`input-${fieldId}`) || document.getElementById(fieldId);
+      if (inputEl && inputEl.classList) {
+        inputEl.classList.remove('error');
+      }
+    }
+
+    function setupInputListeners() {
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => {
+          input.classList.remove('error');
+          const errId = input.id.replace('input-', '');
+          hideError(errId);
+          hideError(input.id);
+        });
       });
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    // =========================================================
+    // DYNAMIC "OTHER" DROPDOWN BEHAVIOR
+    // =========================================================
+    window.handleCourseChange = function(val) {
+      const wrapper = document.getElementById('other-course-wrapper');
+      const otherInput = document.getElementById('student-course-other');
+      if (val === 'Other') {
+        wrapper.classList.add('visible');
+        otherInput.focus();
+      } else {
+        wrapper.classList.remove('visible');
+        otherInput.value = '';
+        hideError('student-course-other');
+      }
+    };
+
+    window.handleIndustrySectorChange = function(val) {
+      const wrapper = document.getElementById('other-industry-sector-wrapper');
+      const otherInput = document.getElementById('industry-sector-other');
+      if (val === 'Other') {
+        wrapper.classList.add('visible');
+        otherInput.focus();
+      } else {
+        wrapper.classList.remove('visible');
+        otherInput.value = '';
+        hideError('industry-sector-other');
+      }
+    };
+
+    window.handleAcademicDesignationChange = function(val) {
+      const wrapper = document.getElementById('other-academic-designation-wrapper');
+      const otherInput = document.getElementById('academic-designation-other');
+      if (val === 'Other') {
+        wrapper.classList.add('visible');
+        otherInput.focus();
+      } else {
+        wrapper.classList.remove('visible');
+        otherInput.value = '';
+        hideError('academic-designation-other');
+      }
+    };
+
+    window.handleSameAddressToggle = function(isChecked) {
+      const separateBlock = document.getElementById('company-separate-address-block');
+      if (isChecked) {
+        // Auto-fill from personal address
+        document.getElementById('company-street').value = document.getElementById('input-street').value;
+        document.getElementById('company-city').value = document.getElementById('input-city').value;
+        document.getElementById('company-pincode').value = document.getElementById('input-pincode').value;
+        separateBlock.style.opacity = '0.5';
+        separateBlock.style.pointerEvents = 'none';
+      } else {
+        separateBlock.style.opacity = '1';
+        separateBlock.style.pointerEvents = 'auto';
+      }
+    };
+
+    // =========================================================
+    // TAG INPUT COMPONENT IMPLEMENTATION
+    // =========================================================
+    window.focusTagInput = function(inputId) {
+      const el = document.getElementById(inputId);
+      if (el) el.focus();
+    };
+
+    function renderTagList(listKey, containerBoxId, countId) {
+      const container = document.getElementById(containerBoxId);
+      if (!container) return;
+
+      // Keep the input field
+      const inputEl = container.querySelector('.tag-input-field');
+      
+      // Remove all existing pills
+      container.querySelectorAll('.tag-pill').forEach(p => p.remove());
+
+      const items = tagLists[listKey] || [];
+      items.forEach((tag, idx) => {
+        const pill = document.createElement('div');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `
+          <span>${escapeHtml(tag)}</span>
+          <button type="button" class="tag-pill-remove" title="Remove tag" onclick="removeTag('${listKey}', ${idx}, '${containerBoxId}', '${countId}')">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        container.insertBefore(pill, inputEl);
+      });
+
+      if (countId && document.getElementById(countId)) {
+        document.getElementById(countId).textContent = `${items.length} ${items.length === 1 ? 'item' : 'items'} added`;
+      }
+    }
+
+    function renderAllTagContainers() {
+      renderTagList('student-skills', 'box-student-skills', 'count-student-skills');
+      renderTagList('student-interests', 'box-student-interests', null);
+      renderTagList('student-certifications', 'box-student-certifications', null);
+      renderTagList('industry-skills', 'box-industry-skills', 'count-industry-skills');
+      renderTagList('academic-subjects', 'box-academic-subjects', 'count-academic-subjects');
+      renderTagList('academic-research', 'box-academic-research', null);
+
+      // Bind Enter / Comma events to each tag input
+      bindTagInputEvent('input-student-skill', 'student-skills', 'box-student-skills', 'count-student-skills');
+      bindTagInputEvent('input-student-interest', 'student-interests', 'box-student-interests', null);
+      bindTagInputEvent('input-student-cert', 'student-certifications', 'box-student-certifications', null);
+      bindTagInputEvent('input-industry-skill', 'industry-skills', 'box-industry-skills', 'count-industry-skills');
+      bindTagInputEvent('input-academic-subject', 'academic-subjects', 'box-academic-subjects', 'count-academic-subjects');
+      bindTagInputEvent('input-academic-research', 'academic-research', 'box-academic-research', null);
+    }
+
+    function bindTagInputEvent(inputId, listKey, boxId, countId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const val = input.value.trim().replace(/^,+|,+$/g, '');
+          if (val && !tagLists[listKey].includes(val)) {
+            tagLists[listKey].push(val);
+            input.value = '';
+            renderTagList(listKey, boxId, countId);
+            hideError(listKey);
+          }
+        } else if (e.key === 'Backspace' && input.value === '' && tagLists[listKey].length > 0) {
+          tagLists[listKey].pop();
+          renderTagList(listKey, boxId, countId);
+        }
+      });
+    }
+
+    window.addSuggestedTag = function(listKey, value) {
+      if (!tagLists[listKey].includes(value)) {
+        tagLists[listKey].push(value);
+        if (listKey === 'student-skills') renderTagList(listKey, 'box-student-skills', 'count-student-skills');
+        if (listKey === 'student-interests') renderTagList(listKey, 'box-student-interests', null);
+        if (listKey === 'industry-skills') renderTagList(listKey, 'box-industry-skills', 'count-industry-skills');
+        if (listKey === 'academic-subjects') renderTagList(listKey, 'box-academic-subjects', 'count-academic-subjects');
+        if (listKey === 'academic-research') renderTagList(listKey, 'box-academic-research', null);
+        hideError(listKey);
+      }
+    };
+
+    window.removeTag = function(listKey, index, boxId, countId) {
+      tagLists[listKey].splice(index, 1);
+      renderTagList(listKey, boxId, countId);
+    };
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // =========================================================
+    // FILE & IMAGE UPLOAD LOGIC
+    // =========================================================
+    function setupFileHandlers() {
+      // 1. Photo upload handler
+      const photoInput = document.getElementById('input-profile-photo');
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            showError('photo', 'Please select a valid image (JPEG, PNG, WebP).');
+            return;
+          }
+          if (file.size > 3 * 1024 * 1024) {
+            showError('photo', 'Image size exceeds maximum limit of 3MB.');
+            return;
+          }
+          hideError('photo');
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            currentUser.photoBase64 = event.target.result;
+            const previewBox = document.getElementById('avatar-preview-box');
+            previewBox.innerHTML = `<img src="${currentUser.photoBase64}" alt="Profile Photo">`;
+            document.getElementById('btn-remove-photo').style.display = 'inline-flex';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // 2. Resume PDF upload handler
+      const resumeInput = document.getElementById('input-student-resume');
+      resumeInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        handleResumeFile(file);
+      });
+
+      // Drag and drop for resume
+      const dropzone = document.getElementById('resume-dropzone');
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('dragover');
+        });
+      });
+      dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files[0];
+        handleResumeFile(file);
+      });
+    }
+
+    function handleResumeFile(file) {
+      if (!file) return;
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        showError('student-resume', 'Only PDF format is accepted for resume upload.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showError('student-resume', 'Resume PDF exceeds maximum limit of 5MB.');
+        return;
+      }
+      hideError('student-resume');
+
+      currentUser.resumeFile = file;
+      currentUser.resumeMeta = {
+        name: file.name,
+        sizeKb: Math.round(file.size / 1024),
+        type: file.type
+      };
+
+      document.getElementById('resume-filename-text').textContent = file.name;
+      document.getElementById('resume-filesize-text').textContent = `(${Math.round(file.size / 1024)} KB)`;
+      document.getElementById('resume-attached-pill').style.display = 'flex';
+      document.getElementById('resume-dropzone').style.display = 'none';
+    }
+
+    window.removeAttachedResume = function() {
+      currentUser.resumeFile = null;
+      currentUser.resumeMeta = null;
+      document.getElementById('input-student-resume').value = '';
+      document.getElementById('resume-attached-pill').style.display = 'none';
+      document.getElementById('resume-dropzone').style.display = 'block';
+    };
+
+    window.removeSelectedPhoto = function() {
+      currentUser.photoBase64 = null;
+      document.getElementById('input-profile-photo').value = '';
+      document.getElementById('avatar-preview-box').innerHTML = `<span id="avatar-preview-text">AY</span>`;
+      initUserHeader();
+      document.getElementById('btn-remove-photo').style.display = 'none';
+    };
+
+    window.toggleCollapsible = function(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) card.classList.toggle('open');
+    };
+
+    // =========================================================
+    // SUBMISSION & SUPABASE UPDATE
+    // =========================================================
+    async function submitProfileData() {
+      const btn = document.getElementById('btn-next-step');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Saving Profile...</span>`;
+      hideFormError();
+
+      // 1. Resolve Course (Handle "Other" manual input directly)
+      let resolvedCourse = null;
+      if (userRole === 'student') {
+        const rawCourse = document.getElementById('student-course').value;
+        resolvedCourse = rawCourse === 'Other'
+          ? document.getElementById('student-course-other').value.trim()
+          : rawCourse;
+      }
+
+      // 2. Resolve Industry Sector (Handle "Other" manual input directly)
+      let resolvedIndustrySector = null;
+      if (userRole === 'industry') {
+        const rawSector = document.getElementById('industry-sector').value;
+        resolvedIndustrySector = rawSector === 'Other'
+          ? document.getElementById('industry-sector-other').value.trim()
+          : rawSector;
+      }
+
+      // 3. Resolve Academic Designation (Handle "Other" manual input directly)
+      let resolvedAcademicDesignation = null;
+      if (userRole === 'academician') {
+        const rawDesignation = document.getElementById('academic-designation').value;
+        resolvedAcademicDesignation = rawDesignation === 'Other'
+          ? document.getElementById('academic-designation-other').value.trim()
+          : rawDesignation;
+      }
+
+      // 4. Construct payload for public.profiles
+      let candidateId = currentUser.candidate_id || localStorage.getItem('ayush_candidate_id');
+      if (!candidateId || candidateId.includes('ONLINE')) {
+        const prefix = userRole === 'student' ? 'AYU-STU-' : (userRole === 'industry' ? 'AYU-IND-' : 'AYU-ACA-');
+        const seq = String(Math.floor(100000 + Math.random() * 900000));
+        candidateId = `${prefix}${seq}`;
+        localStorage.setItem('ayush_candidate_id', candidateId);
+      }
+
+      const profileUpdates = {
+        role: userRole,
+        candidate_id: candidateId,
+        full_name: currentUser.name,
+        phone: document.getElementById('input-phone').value.trim(),
+        alternate_phone: document.getElementById('input-alt-phone').value.trim() || null,
+        date_of_birth: document.getElementById('input-dob').value || null,
+        gender: document.getElementById('select-gender').value,
+        avatar_url: currentUser.photoBase64 || null,
+        address_street: document.getElementById('input-street').value.trim(),
+        address_city: document.getElementById('input-city').value.trim(),
+        address_state: document.getElementById('input-state').value,
+        address_pincode: document.getElementById('input-pincode').value.trim(),
+        address_country: document.getElementById('input-country').value.trim(),
+        linkedin_url: document.getElementById('input-portfolio-url').value.trim() || null,
+        profile_completed: true, // TASK 4: Explicitly set profile_completed = true
+        updated_at: new Date().toISOString()
+      };
+
+      const submissionPayload = {
+        profiles: {
+          id: currentUser.id,
+          email: currentUser.email,
+          ...profileUpdates
+        }
+      };
+
+      // Resilient update helper: automatically strips any column that doesn't yet exist in the DB schema cache
+      async function resilientUpdate(table, payload, idVal) {
+        let updateData = { ...payload };
+        let stripped = [];
+        
+        for (let attempt = 0; attempt < 25; attempt++) {
+          const { error } = await supabase
+            .from(table)
+            .update(updateData)
+            .eq('id', idVal);
+
+          if (!error) {
+            return { success: true, stripped };
+          }
+
+          // Check if error is missing column in schema cache or table
+          const missingColMatch = error.message?.match(/Could not find the '([^']+)' column/i)
+            || error.message?.match(/column [^.]*\.?["']?([a-zA-Z0-9_]+)["']? does not exist/i)
+            || error.message?.match(/column "([a-zA-Z0-9_]+)" of relation/i);
+
+          if (missingColMatch && missingColMatch[1]) {
+            const missingCol = missingColMatch[1];
+            if (Object.prototype.hasOwnProperty.call(updateData, missingCol)) {
+              console.warn(`[Complete Profile] Column '${missingCol}' does not exist on '${table}'. Stripping and retrying...`);
+              delete updateData[missingCol];
+              stripped.push(missingCol);
+              continue;
+            }
+          }
+
+          return { success: false, error, stripped };
+        }
+
+        return { success: false, error: new Error('Exceeded maximum schema retry attempts'), stripped };
+      }
+
+      // Resilient upsert helper: automatically strips any column that doesn't yet exist in the DB schema cache
+      async function resilientUpsert(table, payload, primaryKey) {
+        let upsertData = { ...payload };
+        let stripped = [];
+
+        for (let attempt = 0; attempt < 25; attempt++) {
+          const { error } = await supabase
+            .from(table)
+            .upsert(upsertData);
+
+          if (!error) {
+            return { success: true, stripped };
+          }
+
+          const missingColMatch = error.message?.match(/Could not find the '([^']+)' column/i)
+            || error.message?.match(/column [^.]*\.?["']?([a-zA-Z0-9_]+)["']? does not exist/i)
+            || error.message?.match(/column "([a-zA-Z0-9_]+)" of relation/i);
+
+          if (missingColMatch && missingColMatch[1]) {
+            const missingCol = missingColMatch[1];
+            if (Object.prototype.hasOwnProperty.call(upsertData, missingCol) && missingCol !== primaryKey) {
+              console.warn(`[Complete Profile] Column '${missingCol}' does not exist on '${table}'. Stripping and retrying...`);
+              delete upsertData[missingCol];
+              stripped.push(missingCol);
+              continue;
+            }
+          }
+
+          return { success: false, error, stripped };
+        }
+
+        return { success: false, error: new Error('Exceeded maximum schema retry attempts'), stripped };
+      }
+
+      try {
+        // 1. Update the user's row in the profiles table with all submitted field values (resilient to schema gaps)
+        const updateResult = await resilientUpdate('profiles', profileUpdates, currentUser.id);
+
+        if (!updateResult.success) {
+          console.error('[Complete Profile] Failed to update profiles table:', updateResult.error);
+          showFormError(`Unable to save profile (${updateResult.error?.message || 'Database error'}). Please check your inputs and try again.`);
+          btn.disabled = false;
+          btn.innerHTML = `<span>Save &amp; Complete Profile</span> <i class="fa-solid fa-check"></i>`;
+          return;
+        }
+
+        // Also update Auth metadata so user has profile_completed = true recorded in auth session
+        try {
+          await supabase.auth.updateUser({
+            data: {
+              profile_completed: true,
+              role: userRole,
+              full_name: currentUser.name
+            }
+          });
+        } catch (metaErr) {
+          console.warn('[Complete Profile] User metadata update note:', metaErr);
+        }
+
+        // Also update role-specific details table with resilient column handling
+        try {
+          if (userRole === 'student') {
+            await resilientUpsert('student_profiles', {
+              profile_id: currentUser.id,
+              candidate_id: candidateId,
+              college_institution: document.getElementById('student-institution').value.trim(),
+              course: resolvedCourse,
+              year: document.getElementById('student-year').value,
+              graduation_year: document.getElementById('student-graduation-year')?.value || '2026',
+              roll_number: document.getElementById('student-roll-id').value.trim(),
+              preferred_location: document.getElementById('student-preferred-location')?.value.trim() || null,
+              skills: tagLists['student-skills'],
+              interests: tagLists['student-interests'],
+              certifications: tagLists['student-certifications'],
+              profile_completion_pct: 100,
+              updated_at: new Date().toISOString()
+            }, 'profile_id');
+          } else if (userRole === 'industry') {
+            await resilientUpsert('industry_profiles', {
+              profile_id: currentUser.id,
+              candidate_id: candidateId,
+              company_name: document.getElementById('industry-company-name').value.trim(),
+              industry_sector: resolvedIndustrySector,
+              company_size: document.getElementById('industry-size').value,
+              designation: document.getElementById('industry-designation').value.trim(),
+              company_website: document.getElementById('industry-website').value.trim(),
+              work_email: document.getElementById('industry-work-email')?.value.trim() || null,
+              work_phone: document.getElementById('industry-work-phone')?.value.trim() || null,
+              gst_number: document.getElementById('industry-gst').value.trim() || null,
+              hiring_domains: tagLists['industry-skills'],
+              updated_at: new Date().toISOString()
+            }, 'profile_id');
+          } else if (userRole === 'academician') {
+            await resilientUpsert('academician_profiles', {
+              profile_id: currentUser.id,
+              candidate_id: candidateId,
+              institution: document.getElementById('academic-institution').value.trim(),
+              department: document.getElementById('academic-department').value.trim(),
+              designation: resolvedAcademicDesignation,
+              experience_years: Number(document.getElementById('academic-experience').value) || 0,
+              subjects: tagLists['academic-subjects'],
+              research_interests: tagLists['academic-research'],
+              updated_at: new Date().toISOString()
+            }, 'profile_id');
+          }
+        } catch (roleUpsertErr) {
+          console.warn('[Complete Profile] Role details table update note:', roleUpsertErr);
+        }
+
+        // Persist to localStorage
+        localStorage.setItem('ayush_profile_completed', 'true');
+        localStorage.setItem('ayush_candidate_id', candidateId);
+        localStorage.setItem('ayush_saved_profile', JSON.stringify(submissionPayload));
+
+        // Update active session user object with freshly saved profile details
+        let cachedUser = {};
+        try {
+          cachedUser = JSON.parse(localStorage.getItem('ayush_current_user') || '{}');
+        } catch (e) {}
+
+        const updatedUser = {
+          ...cachedUser,
+          id: currentUser.id,
+          candidate_id: candidateId,
+          name: currentUser.name,
+          full_name: currentUser.name,
+          email: currentUser.email,
+          role: userRole,
+          phone: document.getElementById('input-phone').value.trim(),
+          institution: userRole === 'student' ? document.getElementById('student-institution').value.trim() : (userRole === 'academician' ? document.getElementById('academic-institution').value.trim() : (userRole === 'industry' ? document.getElementById('industry-company-name').value.trim() : '')),
+          course: userRole === 'student' ? resolvedCourse : '',
+          year: userRole === 'student' ? document.getElementById('student-year').value : '',
+          graduation_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
+          grad_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
+          roll_number: userRole === 'student' ? document.getElementById('student-roll-id').value.trim() : '',
+          preferred_location: userRole === 'student' ? (document.getElementById('student-preferred-location')?.value.trim() || '') : '',
+          avatar: currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US',
+          avatar_url: currentUser.photoBase64 || cachedUser.avatar_url || null,
+          profile_completed: true
+        };
+        localStorage.setItem('ayush_current_user', JSON.stringify(updatedUser));
+
+        if (currentUser.photoBase64) {
+          localStorage.setItem('ayush_candidate_photo', currentUser.photoBase64);
+        }
+
+        console.log('[Complete Profile] Profile saved with profile_completed: true. Routing to dashboard...');
+        
+        // 3. Only after that update succeeds, call routeUserAfterAuth() to send the user to their correct dashboard
+        await routeUserAfterAuth();
+
+      } catch (err) {
+        console.error('[Complete Profile] Unexpected error saving profile:', err);
+        showFormError(`Unable to save profile: ${err.message || 'An unexpected error occurred'}. Please try again.`);
+        btn.disabled = false;
+        btn.innerHTML = `<span>Save &amp; Complete Profile</span> <i class="fa-solid fa-check"></i>`;
+      }
+    }
+
+    // Modal navigation handler
+    window.proceedToDashboard = async function() {
+      await routeUserAfterAuth();
+    };
+
   </script>
 </body>
 </html>

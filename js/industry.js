@@ -392,7 +392,7 @@ export function initPostOpportunityPage() {
         type,
         stipend: stipend || 'Competitive Stipend',
         deadline: deadline || '2026-11-30',
-        description: 'New opportunity published via AYUSH Connect portal.',
+        description: 'New opportunity published via AYUSH CONNECT portal.',
         required_skills: [...INDUSTRY_STATE.selectedPostSkills],
         minimum_level: 'Intermediate',
         eligibility: 'BAMS / Life Sciences graduates',
@@ -401,7 +401,7 @@ export function initPostOpportunityPage() {
       };
 
       await saveOpportunityToSupabase(newOpp);
-      showToast(`Opportunity "${title}" successfully published to AYUSH Connect!`, 'success');
+      showToast(`Opportunity "${title}" successfully published to AYUSH CONNECT!`, 'success');
       setTimeout(() => {
         window.location.href = '/industry/dashboard.html';
       }, 1000);

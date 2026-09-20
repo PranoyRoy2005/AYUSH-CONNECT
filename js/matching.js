@@ -3,68 +3,93 @@
  * SIH 2026: Skill-to-Opportunity Matrix & Gap Analyzer
  */
 
-import { MOCK_DB } from './supabase.js';
-import { STUDENT_STATE } from './student.js';
-import { showToast } from './auth.js';
+import { 
+  fetchOpportunitiesData,
+  fetchStudentSkillsData,
+  calculateMatch,
+  applyForOpportunity 
+} from './supabase.js';
+import { getCurrentUser, showToast } from './auth.js';
 
 export class MatchingEngine {
   constructor() {
-    this.studentSkills = STUDENT_STATE.skills.map(s => s.name);
+    this.studentSkills = [];
+    this.studentSkillsRaw = [];
   }
 
   /**
-   * Calculate real match percentage based on student skill overlap
+   * Load real student skills from DB
    */
-  calculateOpportunityMatch(opp) {
-    const required = opp.required_skills || [];
-    if (required.length === 0) return { pct: 85, matched: [], missing: [] };
+  async loadStudentSkills() {
+    const user = getCurrentUser();
+    const { skills } = await fetchStudentSkillsData(user?.id);
+    this.studentSkillsRaw = skills || [];
+    this.studentSkills = this.studentSkillsRaw.map(s => s.name);
+  }
 
-    const matched = [];
-    const missing = [];
-
-    required.forEach(req => {
-      // Fuzzy or direct match
-      const hasSkill = this.studentSkills.some(st => 
-        st.toLowerCase().includes(req.toLowerCase()) || req.toLowerCase().includes(st.toLowerCase())
-      );
-      if (hasSkill) {
-        matched.push(req);
-      } else {
-        missing.push(req);
-      }
-    });
-
-    const pct = Math.round((matched.length / required.length) * 100);
-    // Baseline minimum display for high relevance in demo
-    const finalPct = Math.max(65, pct);
-
+  /**
+   * Calculate real match percentage based on student skill overlap & weighting formula
+   * Weight: 2 for "required", 1 for "preferred"
+   * match_percentage = ( Σ(proficiency_score × weight) / Σ(100 × weight) ) × 100
+   * Constraint: If a "required" skill is missing/0, cap match_percentage at 50
+   */
+  async calculateOpportunityMatch(opp) {
+    const user = getCurrentUser();
+    const result = await calculateMatch(user?.id, opp.id);
     return {
-      pct: finalPct,
-      matched,
-      missing,
-      suggestedAction: missing.length > 0 
-        ? `Improve ${missing[0]} to elevate your match score to 95%+` 
-        : 'Your skill profile meets 100% of the industry prerequisites.'
+      pct: result.match_percentage,
+      matched: result.matched.map(m => typeof m === 'string' ? m : `${m.name} (${m.score}%)`),
+      missing: result.missing.map(m => typeof m === 'string' ? m : `${m.name} (${m.importance})`),
+      suggestedAction: result.suggestedAction
     };
   }
 
   /**
    * Render Recommendations Page
    */
-  renderRecommendations(containerId = 'recommendations-grid') {
+  async renderRecommendations(containerId = 'recommendations-grid') {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const opportunities = MOCK_DB.opportunities;
+    await this.loadStudentSkills();
 
-    // Compute matches
-    const scoredList = opportunities.map(opp => {
-      const matchData = this.calculateOpportunityMatch(opp);
-      return {
+    // Fetch real opportunities
+    const opportunities = await fetchOpportunitiesData();
+
+    if (!opportunities || opportunities.length === 0) {
+      container.innerHTML = `
+        <div class="ayush-card" style="text-align: center; padding: 3.5rem 1.5rem; border: 1px dashed var(--border-color); background: #fffcf7; border-radius: var(--radius-lg);">
+          <div style="width: 64px; height: 64px; margin: 0 auto 1.25rem; border-radius: 50%; background: var(--bg-cream); display: flex; align-items: center; justify-content: center; color: var(--secondary-teal); font-size: 1.75rem; border: 1px solid var(--border-color);">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0 0 0.5rem 0;">No Active Industry Recommendations Found</h3>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); max-width: 540px; margin: 0 auto 1.5rem; line-height: 1.6;">
+            There are currently no active enterprise opportunities posted in the system. As soon as recruiters post verified internships, fellowships, or positions from the Industry portal, your AI skill recommendations will appear here automatically.
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/student/skill-profile.html" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-leaf"></i> Update Verified Skills
+            </a>
+            <a href="/industry/post-opportunity.html" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-circle-plus"></i> Post an Opportunity (Industry)
+            </a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Compute matches using real database formula
+    const scoredList = [];
+    for (const opp of opportunities) {
+      const matchData = await this.calculateOpportunityMatch(opp);
+      scoredList.push({
         ...opp,
         match: matchData
-      };
-    }).sort((a, b) => b.match.pct - a.match.pct);
+      });
+    }
+
+    scoredList.sort((a, b) => b.match.pct - a.match.pct);
 
     container.innerHTML = scoredList.map(item => {
       const match = item.match;
@@ -131,7 +156,7 @@ export class MatchingEngine {
               </div>
               <div class="match-action-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                 <a href="/student/assessment.html" class="btn btn-sm btn-secondary" style="white-space: normal; text-align: center;">Take Assessment</a>
-                <button class="btn btn-sm btn-accent" onclick="window.matchingEngine.applyDirect('${item.id}', '${item.title}', '${item.company_name}')" style="white-space: normal; text-align: center; box-sizing: border-box;">
+                <button class="btn btn-sm btn-accent" onclick="window.matchingEngine.applyDirect('${item.id}', '${item.title}', '${item.company_name}', ${match.pct})" style="white-space: normal; text-align: center; box-sizing: border-box;">
                   Apply with Profile
                 </button>
               </div>
@@ -142,12 +167,20 @@ export class MatchingEngine {
     }).join('');
   }
 
-  applyDirect(id, title, company) {
-    showToast(`Quick application submitted for ${title} at ${company}!`, 'success');
+  async applyDirect(id, title, company, matchPct = 85) {
+    const user = getCurrentUser();
+    const res = await applyForOpportunity(user?.id, id, matchPct);
+    if (res.success) {
+      showToast(res.message, 'success');
+      // Refresh recommendations & pipeline if active
+      await this.renderRecommendations();
+    } else {
+      showToast(res.message, 'info');
+    }
   }
 
-  init() {
-    this.renderRecommendations();
+  async init() {
+    await this.renderRecommendations();
     window.matchingEngine = this;
   }
 }

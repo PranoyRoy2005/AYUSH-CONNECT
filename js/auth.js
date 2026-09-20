@@ -32,7 +32,7 @@ export function toggleAppMode() {
   const next = current === 'dev' ? 'prod' : 'dev';
   setAppMode(next);
   if (next === 'prod') {
-    showToast('Production Mode: Real Supabase Auth active. Demo switchers hidden.', 'info');
+    showToast('Production Mode: Live Cloud Auth active. Demo switchers hidden.', 'info');
   } else {
     showToast('Development Mode: Demo role switcher & instant access enabled.', 'success');
   }
@@ -55,7 +55,7 @@ export function applyAppMode(mode) {
     btn.classList.toggle('mode-prod', isProd);
     if (isProd) {
       btn.innerHTML = `<i class="fa-solid fa-shield-halved" style="color:#059669;"></i> <span>Prod Mode</span>`;
-      btn.title = "Current: Production Mode (Supabase Auth). Click to switch to Dev Mode.";
+      btn.title = "Current: Production Mode (Live Cloud Auth). Click to switch to Dev Mode.";
     } else {
       btn.innerHTML = `<i class="fa-solid fa-code" style="color:#ea580c;"></i> <span>Dev Mode</span>`;
       btn.title = "Current: Development Mode (Demo Active). Click to switch to Prod Mode.";
@@ -169,7 +169,7 @@ export function getCurrentUser() {
         }
       }
       if (parsedUser.full_name && parsedUser.full_name !== 'Rajesh Kumar, IAS') {
-        parsedUser.avatar = parsedUser.full_name.split(' ').filter(Boolean).map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'AD';
+        parsedUser.avatar = computeUserInitials(parsedUser.full_name, parsedUser.role);
       }
       setCurrentUser(parsedUser);
       return parsedUser;
@@ -188,7 +188,7 @@ export function getCurrentUser() {
           if (reg.full_name || reg.name) {
             correctDemo.full_name = reg.full_name || reg.name;
             correctDemo.email = reg.email || correctDemo.email;
-            correctDemo.avatar = correctDemo.full_name.split(' ').filter(Boolean).map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'AD';
+            correctDemo.avatar = computeUserInitials(correctDemo.full_name, correctDemo.role);
           }
         } catch (e) {}
       }
@@ -209,7 +209,7 @@ export function getCurrentUser() {
         if (reg.full_name || reg.name) {
           fallbackDemo.full_name = reg.full_name || reg.name;
           fallbackDemo.email = reg.email || fallbackDemo.email;
-          fallbackDemo.avatar = fallbackDemo.full_name.split(' ').filter(Boolean).map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'AD';
+          fallbackDemo.avatar = computeUserInitials(fallbackDemo.full_name, fallbackDemo.role);
         }
       } catch (e) {}
     }
@@ -229,18 +229,195 @@ export function setCurrentUser(user) {
 
 /**
  * Helper to get role redirect path
- * Requirement 2:
- *  - student -> /student/dashboard.html
- *  - industry -> /industry/dashboard.html
- *  - academician -> /academician/dashboard.html
+ *  - student -> /dashboard-student.html
+ *  - industry -> /dashboard-industry.html
+ *  - academician -> /dashboard-academician.html
  *  - admin -> /admin/dashboard.html
  */
 export function getRedirectForRole(role) {
   const r = (role || '').toLowerCase().trim();
-  if (r === 'industry') return '/industry/dashboard.html';
-  if (r === 'academician') return '/academician/dashboard.html';
+  if (r === 'industry') return '/dashboard-industry.html';
+  if (r === 'academician') return '/dashboard-academician.html';
   if (r === 'admin') return '/admin/dashboard.html';
-  return '/student/dashboard.html';
+  return '/dashboard-student.html';
+}
+
+/**
+ * Single centralized post-auth redirect gate.
+ * Requirement (Task 2):
+ * There must be ONE function, called right after every successful Google sign-in
+ * (both from the register page and the login page), that decides where the user goes next.
+ *
+ * 1. Get the current session via supabase.auth.getSession(). If no session, redirect to /login.html and stop.
+ * 2. Query the profiles table for a row where id equals the logged-in user's id.
+ * 3. If no row exists OR profile_completed is false or null -> redirect to /complete-profile.html and STOP. Do not proceed to any dashboard logic.
+ * 4. Only if a row exists AND profile_completed is strictly true, THEN redirect based on role:
+ *    - "student" -> /dashboard-student.html
+ *    - "industry" -> /dashboard-industry.html
+ *    - "academician" -> /dashboard-academician.html
+ *    - if role is missing, redirect to /complete-profile.html instead (since role selection likely happens there too).
+ */
+export async function routeUserAfterAuth() {
+  try {
+    // 1. Get current session via supabase.auth.getSession(). If no session, redirect to /login.html and stop.
+    const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
+    if (sessionErr || !user) {
+      console.warn('[routeUserAfterAuth] No active session found. Redirecting to /login.html');
+      window.location.replace('/login.html');
+      return '/login.html';
+    }
+
+    // 2. Query the profiles table for a row where id equals the logged-in user's id.
+    // Use select('*') so newly added or missing columns do not trigger PGRST204 schema cache errors.
+    const { data: profile, error: profileErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileErr) {
+      console.warn('[routeUserAfterAuth] Profile query warning:', profileErr);
+    }
+
+    // 3. Check profile completion status
+    const isCompleted = profile?.profile_completed === true ||
+      (profile && profile.profile_completed === undefined && (
+        user.user_metadata?.profile_completed === true || 
+        localStorage.getItem('ayush_profile_completed') === 'true'
+      ));
+
+    // If no row exists OR profile is incomplete -> redirect to /complete-profile.html and STOP.
+    if (!profile || !isCompleted) {
+      console.log('[routeUserAfterAuth] Profile incomplete or missing. Routing to /complete-profile.html');
+      const candidateRole = profile?.role || user.user_metadata?.role || localStorage.getItem('ayush_oauth_pending_role') || '';
+      const dest = candidateRole ? `/complete-profile.html?role=${encodeURIComponent(candidateRole)}` : '/complete-profile.html';
+      window.location.replace(dest);
+      return dest;
+    }
+
+    // 4. Only if a row exists AND profile is completed, THEN redirect based on role:
+    const role = (profile.role || user.user_metadata?.role || '').toLowerCase().trim();
+
+    // Industry and Academician roles check approval workflow
+    if (role === 'industry' || role === 'academician') {
+      const isApproved = profile.is_approved === true || profile.status === 'approved';
+      if (!isApproved) {
+        const statusReason = (profile.status === 'rejected') ? 'rejected' : 'pending';
+        const dest = `/pending-approval.html?status=${statusReason}&role=${role}&email=${encodeURIComponent(user.email || '')}`;
+        window.location.replace(dest);
+        return dest;
+      }
+    }
+
+    let targetDashboard = '/complete-profile.html';
+    if (role === 'student') {
+      targetDashboard = '/dashboard-student.html';
+    } else if (role === 'industry') {
+      targetDashboard = '/dashboard-industry.html';
+    } else if (role === 'academician') {
+      targetDashboard = '/dashboard-academician.html';
+    } else {
+      // Role is missing, redirect to /complete-profile.html instead
+      targetDashboard = '/complete-profile.html';
+    }
+
+    // Update local cache
+    const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Ayush User';
+    const authUser = {
+      id: user.id,
+      email: user.email,
+      full_name: fullName,
+      role: role,
+      avatar: profile.avatar_url || computeUserInitials(fullName, role),
+      avatar_url: profile.avatar_url,
+      redirect: targetDashboard
+    };
+    setCurrentUser(authUser);
+    localStorage.setItem('ayush_profile_completed', 'true');
+
+    console.log(`[routeUserAfterAuth] Profile completed. Routing user (${role}) to: ${targetDashboard}`);
+    window.location.replace(targetDashboard);
+    return targetDashboard;
+  } catch (err) {
+    console.error('[routeUserAfterAuth] Error executing centralized redirect gate:', err);
+    window.location.replace('/complete-profile.html');
+    return '/complete-profile.html';
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.routeUserAfterAuth = routeUserAfterAuth;
+}
+
+/**
+ * Guard on all dashboard pages (TASK 3):
+ * Runs at the very top of each dashboard's script before rendering or fetching data:
+ * 1. Get the current session. If no session, redirect to /login.html.
+ * 2. Query profiles for the current user's profile_completed status.
+ * 3. If profile_completed is false or null (or the profile row doesn't exist),
+ *    redirect IMMEDIATELY to /complete-profile.html. Do not allow user to see or interact.
+ * 4. Also verify that user's role matches dashboard. If not, redirect via routeUserAfterAuth().
+ */
+export async function guardDashboardPage(expectedRole) {
+  try {
+    const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+    const session = sessionData?.session;
+
+    // 1. Get current session. If no session, redirect to /login.html
+    if (sessionErr || !session?.user) {
+      if (isDemoMode()) {
+        const localUser = getCurrentUser();
+        if (localUser && (!expectedRole || (localUser.role || '').toLowerCase() === expectedRole.toLowerCase())) {
+          return true;
+        }
+      }
+      console.warn('[Dashboard Guard] No session found. Redirecting to /login.html');
+      window.location.replace('/login.html');
+      return false;
+    }
+
+    const user = session.user;
+
+    // 2. Query profiles for the current user's profile_completed status and role
+    const { data: profile, error: profileErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const isCompleted = profile?.profile_completed === true ||
+      (profile && profile.profile_completed === undefined && (
+        user.user_metadata?.profile_completed === true || 
+        localStorage.getItem('ayush_profile_completed') === 'true'
+      ));
+
+    // 3. If profile_completed is false or null (or row doesn't exist), redirect IMMEDIATELY to /complete-profile.html
+    if (profileErr || !profile || !isCompleted) {
+      console.warn('[Dashboard Guard] Profile incomplete or missing. Redirecting to /complete-profile.html');
+      const roleParam = (profile?.role || user.user_metadata?.role) ? `?role=${encodeURIComponent(profile?.role || user.user_metadata?.role)}` : '';
+      window.location.replace(`/complete-profile.html${roleParam}`);
+      return false;
+    }
+
+    // 4. Verify that user's role matches the dashboard
+    const userRole = (profile.role || user.user_metadata?.role || '').toLowerCase().trim();
+    if (expectedRole && userRole !== expectedRole.toLowerCase().trim()) {
+      console.warn(`[Dashboard Guard] Role mismatch: user is '${userRole}', dashboard expects '${expectedRole}'. Routing via routeUserAfterAuth()...`);
+      await routeUserAfterAuth();
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('[Dashboard Guard] Unexpected error:', err);
+    window.location.replace('/login.html');
+    return false;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.guardDashboardPage = guardDashboardPage;
 }
 
 /**
@@ -327,6 +504,7 @@ export async function resolveUserRoleAndProfile(sbUser) {
           full_name: sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || sbUser.email?.split('@')[0],
           role: role,
           avatar_url: sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || null,
+          profile_completed: false,
           updated_at: new Date().toISOString()
         });
       } catch (e) {
@@ -379,7 +557,7 @@ export async function redirectUserByRole(sbUser, { forceRedirect = false } = {})
     email: sbUser.email,
     full_name: fullName,
     role: role || null,
-    avatar: avatarUrl || fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY',
+    avatar: avatarUrl || computeUserInitials(fullName, role),
     avatar_url: avatarUrl,
     auth_provider: sbUser.app_metadata?.provider || 'supabase',
     redirect: role ? getRedirectForRole(role) : '/auth/callback.html'
@@ -408,10 +586,8 @@ export async function redirectUserByRole(sbUser, { forceRedirect = false } = {})
     sessionStorage.removeItem('ayush_oauth_in_progress');
     sessionStorage.removeItem('ayush_just_logged_in');
     localStorage.removeItem('ayush_oauth_just_logged_in');
-    const targetDashboard = getRedirectForRole(role || 'student');
-    console.log(`[AYUSH Auth] Just logged in / OAuth completed. Routing to ${targetDashboard}`);
     window.__ayush_redirect_in_progress = true;
-    window.location.replace(targetDashboard);
+    await routeUserAfterAuth();
     return;
   }
 
@@ -664,7 +840,7 @@ export async function handleLogin(email, password, role = 'student') {
       email: sbUser.email,
       full_name: userFullName,
       role: userRole || null,
-      avatar: avatarUrl || userFullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY',
+      avatar: avatarUrl || computeUserInitials(userFullName, userRole),
       avatar_url: avatarUrl,
       auth_provider: 'supabase',
       redirect
@@ -672,11 +848,11 @@ export async function handleLogin(email, password, role = 'student') {
 
     setCurrentUser(authUser);
     saveRegisteredUser(authUser);
-    showToast(`Welcome back, ${userFullName}! Signed in with Supabase. Redirecting...`, 'success');
+    showToast(`Welcome back, ${userFullName}! Signed in successfully. Redirecting...`, 'success');
 
-    // Immediate direct redirect right after sign-in resolves (Requirement 3)
+    // Centralized post-auth redirect gate (Task 2)
     window.__ayush_redirect_in_progress = true;
-    window.location.replace(redirect);
+    await routeUserAfterAuth();
     return { success: true, user: authUser };
   }
 
@@ -684,7 +860,7 @@ export async function handleLogin(email, password, role = 'student') {
   if (supabaseResult?.error) {
     const err = supabaseResult.error;
     if (err.code === 'email_not_confirmed') {
-      const msg = 'Supabase Notice: Email confirmation is required by your Supabase project. Disable "Confirm email" in Supabase Auth to skip verification.';
+      const msg = 'Security Notice: Email confirmation is required by your security policy. Please verify your email or check security settings.';
       showToast(msg, 'warning');
       if (!isDemoMode()) {
         return { success: false, error: msg };
@@ -707,7 +883,7 @@ export async function handleLogin(email, password, role = 'student') {
     if (role === 'admin' || !isDemoMode()) {
       const errorMsg = err.message === 'Invalid login credentials'
         ? 'Invalid email or password. Please verify your credentials or register a new account.'
-        : (err.message || 'Supabase authentication failed.');
+        : (err.message || 'Authentication failed. Please check your credentials.');
       showToast(errorMsg, 'error');
       return { success: false, error: errorMsg };
     }
@@ -774,7 +950,7 @@ export async function handleSocialAuth(provider, role = null, flowMode = 'login'
   const providerKey = (provider || 'google').toLowerCase().trim();
   const providerDisplay = providerKey === 'google' ? 'Google' : 'GitHub';
 
-  showToast(`Initiating secure ${providerDisplay} authentication with Supabase...`, 'info');
+  showToast(`Initiating secure ${providerDisplay} authentication...`, 'info');
 
   if (role) {
     localStorage.setItem('ayush_oauth_pending_role', role);
@@ -785,8 +961,8 @@ export async function handleSocialAuth(provider, role = null, flowMode = 'login'
   const result = await signInWithOAuthProvider(providerKey, role, flowMode);
   if (!result.success) {
     const errorMsg = result.error?.message || `Failed to initiate ${providerDisplay} authentication.`;
-    console.error(`Supabase ${providerDisplay} OAuth initiation error:`, result.error);
-    showToast(`OAuth Notice: ${errorMsg}. Please verify ${providerDisplay} provider is enabled in your Supabase Dashboard.`, 'error');
+    console.error(`OAuth ${providerDisplay} initiation error:`, result.error);
+    showToast(`OAuth Notice: ${errorMsg}. Please verify ${providerDisplay} provider configuration.`, 'error');
     return { success: false, error: errorMsg };
   }
 
@@ -832,16 +1008,16 @@ export async function handleRegistration(formData) {
     const err = sbResult.error;
     console.warn('Supabase Auth error details:', err);
 
-    let errorMsg = err.message || 'Supabase registration failed.';
+    let errorMsg = err.message || 'Registration failed.';
     if (err.code === 'over_email_send_rate_limit' || err.status === 429) {
-      errorMsg = 'Notice: Supabase free email rate limit reached. To enable instant registration without rate limits, turn off "Confirm email" in Supabase Auth settings.';
+      errorMsg = 'Notice: Email rate limit reached. Please wait a few moments before requesting another confirmation email.';
       showToast(errorMsg, 'warning');
     } else if (err.message?.toLowerCase().includes('already registered') || err.message?.toLowerCase().includes('user already exists')) {
-      errorMsg = 'This email is already registered in Supabase. Please sign in.';
+      errorMsg = 'This email is already registered. Please sign in with your credentials.';
       showToast(errorMsg, 'error');
       return { success: false, error: 'User already exists' };
     } else {
-      showToast(`Supabase: ${errorMsg}`, 'error');
+      showToast(errorMsg, 'error');
     }
 
     // In production mode, registration failure in Supabase MUST NOT proceed to fake registration!
@@ -865,6 +1041,7 @@ export async function handleRegistration(formData) {
         email: cleanEmail,
         full_name: fullName,
         role: role,
+        profile_completed: false, // Task 1: explicitly false for new registrations
         status: initialStatus,
         is_approved: isApproved,
         is_verified: isVerified,
@@ -913,7 +1090,7 @@ export async function handleRegistration(formData) {
     status: initialStatus,
     is_approved: isApproved,
     is_verified: isVerified,
-    avatar: fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AY',
+    avatar: computeUserInitials(fullName, role),
     metadata: { ...formData },
     created_at: new Date().toISOString(),
     auth_provider: 'supabase',
@@ -966,14 +1143,14 @@ export async function handleRegistration(formData) {
     if (sbResult.data?.session) {
       showToast(`Account successfully registered and signed in! Launching student portal...`, 'success');
     } else {
-      showToast(`Account created in Supabase! Launching student portal...`, 'success');
+      showToast(`Account registered successfully! Launching student portal...`, 'success');
     }
   } else {
     showToast(`Account created for ${fullName}! Launching student portal...`, 'success');
   }
 
   window.__ayush_redirect_in_progress = true;
-  window.location.replace(redirect);
+  await routeUserAfterAuth();
 
   return { success: true, user: newUser };
 }
@@ -1028,7 +1205,7 @@ export function showToast(message, type = 'info') {
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `
     <div style="display: flex; align-items: center; gap: 0.6rem;">
-      <span style="font-weight: 700; color: var(--primary-deep); font-size: 0.9rem;">AYUSH Connect:</span>
+      <span style="font-weight: 700; color: var(--primary-deep); font-size: 0.9rem;">AYUSH CONNECT:</span>
       <span style="font-size: 0.85rem; color: var(--text-primary);">${message}</span>
     </div>
     <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.1rem;">&times;</button>
@@ -1040,6 +1217,42 @@ export function showToast(message, type = 'info') {
     toast.style.transform = 'translateY(10px)';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
+}
+
+/**
+ * Compute user avatar initials dynamically.
+ * Rules:
+ * - Take user's full_name.
+ * - Strip common honorifics: 'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.', 'Shri', 'Smt.' (case-insensitive, with or without dots).
+ * - Split the cleaned name into words (ignore extra spaces).
+ * - If 2 or more words: first letter of first word + first letter of second word (e.g. "Mr. P Creations" -> "PC", "Dr. Rajesh Sharma" -> "RS").
+ * - If only 1 word: first two letters of that word (e.g. "Ayush" -> "AY").
+ * - If no name available: fallback to role-based initials: "ST" for Student, "IN" for Industry, "AC" for Academician, "AD" for Admin.
+ * - Convert to uppercase.
+ */
+export function computeUserInitials(fullName, role) {
+  if (fullName && typeof fullName === 'string' && fullName.trim()) {
+    let cleaned = fullName.trim();
+    const prefixRegex = /^(mr|mrs|ms|dr|prof|shri|smt)\.?\s+/i;
+    while (prefixRegex.test(cleaned)) {
+      cleaned = cleaned.replace(prefixRegex, '').trim();
+    }
+    const words = cleaned.split(/\s+/).filter(Boolean);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    } else if (words.length === 1) {
+      if (words[0].length >= 2) {
+        return words[0].substring(0, 2).toUpperCase();
+      }
+      return words[0].toUpperCase();
+    }
+  }
+
+  const r = (role || '').toLowerCase().trim();
+  if (r === 'industry') return 'IN';
+  if (r === 'academician') return 'AC';
+  if (r === 'admin') return 'AD';
+  return 'ST';
 }
 
 /**
@@ -1088,22 +1301,48 @@ export function syncUserHeader() {
 
   if (!user) return;
 
-  const avatarEls = document.querySelectorAll('.user-avatar-circle, .user-avatar-text, #user-avatar, #sidebar-avatar-display');
+  const savedCandidatePhoto = localStorage.getItem('ayush_candidate_photo');
+  const effectiveAvatar = savedCandidatePhoto || user.avatar_url;
+  const initials = computeUserInitials(user.full_name || user.name, user.role);
+
+  const avatarEls = document.querySelectorAll('.user-avatar-circle, .user-avatar-text, #user-avatar, #sidebar-avatar-display, #candidate-avatar-initials');
   avatarEls.forEach(el => {
-    if (user.avatar_url && (user.avatar_url.startsWith('http://') || user.avatar_url.startsWith('https://'))) {
-      el.innerHTML = `<img src="${user.avatar_url}" alt="${user.full_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer">`;
+    if (effectiveAvatar && (effectiveAvatar.startsWith('data:image') || effectiveAvatar.startsWith('http://') || effectiveAvatar.startsWith('https://'))) {
+      el.innerHTML = `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer">`;
     } else {
-      el.textContent = user.avatar || 'AS';
+      el.textContent = initials;
     }
   });
 
-  const nameEls = document.querySelectorAll('.user-name-text');
-  nameEls.forEach(el => el.textContent = user.full_name || 'Ayush User');
+  const nameEls = document.querySelectorAll('.user-name-text, #user-name-display, .sidebar-user-name, #sidebar-user-name, #candidate-card-name');
+  nameEls.forEach(el => {
+    if (user.full_name) {
+      el.textContent = user.full_name;
+    }
+  });
 
   const roleEls = document.querySelectorAll('.user-role-text');
   roleEls.forEach(el => {
     el.textContent = (user.role || 'Student').toUpperCase();
   });
+
+  // Role switcher visibility control: STRICTLY hide in production mode
+  const switcherFooters = document.querySelectorAll('.portal-switcher-footer, [data-portal-switcher]');
+  switcherFooters.forEach(el => {
+    el.style.display = isDemoMode() ? 'block' : 'none';
+  });
+}
+
+// Universal Sign Out for all dashboards
+if (typeof window !== 'undefined') {
+  window.handleUniversalSignOut = async function() {
+    try {
+      await logout();
+    } catch (e) {
+      localStorage.removeItem('ayush_current_user');
+      window.location.replace('/login.html');
+    }
+  };
 }
 
 /**

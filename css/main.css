@@ -675,19 +675,46 @@ a:hover {
   width: 100%;
 }
 
-/* Quick Role Switcher (For demonstration during SIH 2026 presentation) */
-.role-demo-pill {
+/* Quick Role Switcher & Portal Switcher (Compact & Refined for Demo Section) */
+.role-demo-pill,
+.portal-switcher-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: #fff;
-  border: 1px dashed var(--accent-saffron);
+  gap: 0.25rem;
+  background: #ffffff;
+  border: 1px solid #fed7aa;
   border-radius: var(--radius-pill);
-  padding: 0.3rem 0.8rem;
-  font-size: 0.78rem;
-  color: var(--accent-saffron);
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  color: #c2410c;
   font-weight: 600;
   cursor: pointer;
+  height: 26px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.role-demo-pill:hover,
+.portal-switcher-pill:hover {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.role-demo-pill select,
+.portal-switcher-pill select {
+  border: none;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9a3412;
+  cursor: pointer;
+  outline: none;
+  max-width: 82px;
+  padding: 0;
+  line-height: 1;
 }
 
 /* Mobile Top Navigation Header for Dashboards */
@@ -1248,9 +1275,11 @@ a:hover {
 .mode-toggle-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.38rem 0.85rem;
-  font-size: 0.8rem;
+  gap: 0.35rem;
+  padding: 0.15rem 0.65rem;
+  height: 26px;
+  box-sizing: border-box;
+  font-size: 0.74rem;
   font-weight: 700;
   border-radius: var(--radius-pill);
   cursor: pointer;
@@ -1260,6 +1289,8 @@ a:hover {
   user-select: none;
   font-family: var(--font-sans);
   text-decoration: none;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .mode-toggle-btn.mode-dev {

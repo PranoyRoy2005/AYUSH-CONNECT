@@ -90,21 +90,21 @@
           <li><a href="/index.html" class="nav-link active" id="nav-home">Home</a></li>
           <li><a href="#how-it-works" class="nav-link" id="nav-how">How It Works</a></li>
           <li><a href="#ecosystem" class="nav-link" id="nav-ecosystem">Ecosystem</a></li>
-          <li><a href="/student/opportunities.html" class="nav-link" id="nav-opps">Opportunities</a></li>
+          <li><a href="#career-journey" class="nav-link" id="nav-career"><i class="fa-solid fa-route" style="font-size: 0.8rem; margin-right: 0.25rem; color: var(--secondary-teal);"></i> Career</a></li>
           <li><a href="#about" class="nav-link" id="nav-about">About Us</a></li>
         </ul>
       </nav>
 
       <!-- Action Buttons & Demo Quick Switcher -->
       <div class="nav-actions">
-        <!-- Quick Role Switcher -->
-        <div class="role-demo-pill" id="demo-role-dropdown" title="Quick Role Switcher">
-          <span style="font-size: 11px;"><i class="fa-solid fa-bolt" style="color: var(--accent-saffron); margin-right: 2px;"></i> DEMO:</span>
-          <select id="quick-role-select" style="border:none;background:transparent;font-size:12px;font-weight:700;color:var(--accent-saffron);cursor:pointer;outline:none;" onchange="window.switchDemoRoleDirect(this.value)">
-            <option value="">Switch Role...</option>
-            <option value="student">Student (Ayush Sharma)</option>
-            <option value="industry">Industry (Himalaya R&D)</option>
-            <option value="academician">Academician (NIA Jaipur)</option>
+        <!-- Quick Role Switcher (Compact & Sleek) -->
+        <div class="role-demo-pill" id="demo-role-dropdown" title="Quick Demo Role Switcher">
+          <span style="font-size: 10.5px; display: inline-flex; align-items: center; gap: 2px;"><i class="fa-solid fa-bolt" style="color: var(--accent-saffron);"></i> DEMO:</span>
+          <select id="quick-role-select" onchange="window.switchDemoRoleDirect(this.value)" aria-label="Switch Demo Role">
+            <option value="">Role...</option>
+            <option value="student">Student</option>
+            <option value="industry">Industry</option>
+            <option value="academician">Academic</option>
           </select>
         </div>
 
@@ -147,8 +147,8 @@
             <a href="/register.html" class="btn btn-primary btn-lg" id="hero-cta-primary">
               Get Started <i class="fa-solid fa-arrow-right" style="margin-left: 0.4rem;"></i>
             </a>
-            <a href="/student/opportunities.html" class="btn btn-secondary btn-lg" id="hero-cta-secondary">
-              <i class="fa-solid fa-compass" style="margin-right: 0.4rem;"></i> Explore Opportunities
+            <a href="#career-journey" class="btn btn-secondary btn-lg" id="hero-cta-career">
+              <i class="fa-solid fa-route" style="margin-right: 0.4rem;"></i> Career
             </a>
           </div>
 
@@ -176,8 +176,8 @@
       <div style="max-width: 1240px; margin: 0 auto;">
         <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
           <span class="badge badge-teal">National Vision</span>
-          <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">Why AYUSH Connect?</h2>
-          <p>India is experiencing an unprecedented global surge in traditional wellness, evidence-based Ayurveda, and biotechnology. AYUSH Connect solves the critical gap between academic curriculum and industrial requirements.</p>
+          <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">Why AYUSH CONNECT?</h2>
+          <p>India is experiencing an unprecedented global surge in traditional wellness, evidence-based Ayurveda, and biotechnology. AYUSH CONNECT solves the critical gap between academic curriculum and industrial requirements.</p>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
@@ -212,7 +212,7 @@
     <section id="how-it-works" style="padding: 5rem 1.5rem; max-width: 1240px; margin: 0 auto;">
       <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
         <span class="badge badge-primary">System Architecture</span>
-        <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">How AYUSH Connect Works</h2>
+        <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">How AYUSH CONNECT Works</h2>
         <p>A closed-loop 4-pillar career acceleration pathway linking student potential with market demand.</p>
       </div>
 
@@ -413,7 +413,7 @@
     </section>
 
     <!-- SECTION 8: CAREER JOURNEY -->
-    <section style="background: #ffffff; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4.5rem 1.5rem;">
+    <section id="career-journey" style="scroll-margin-top: 80px; background: #ffffff; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4.5rem 1.5rem;">
       <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
         <span class="badge badge-primary">Continuous Growth</span>
         <h2 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">The AYUSH Scholar Career Journey</h2>
@@ -476,44 +476,33 @@
 
   <!-- FOOTER -->
   <footer id="about" style="background: #ffffff; border-top: 1px solid var(--border-color); padding: 3.5rem 1.5rem 2rem;">
-    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem;">
+    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem;">
       <div>
         <img src="/assets/icons/ayush-logo.svg" alt="Logo" style="height: 42px; margin-bottom: 1rem;">
-        <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 340px; line-height: 1.6;">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 360px; line-height: 1.6;">
           AYUSH CONNECT is the official national digital workforce and career acceleration platform empowering student-to-industry connection and skill development across Ayurveda, Yoga, Naturopathy, Unani, Siddha, and Homoeopathy.
         </p>
-      </div>
-
-      <div>
-        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">Portals</h4>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem;">
-          <li><a href="/student/dashboard.html"><i class="fa-solid fa-user-graduate" style="margin-right: 0.35rem; color: var(--primary-deep);"></i> Student Dashboard</a></li>
-          <li><a href="/industry/dashboard.html" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('industry');return false;}"><i class="fa-solid fa-building" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Industry Dashboard</a></li>
-          <li><a href="/academician/dashboard.html" onclick="if(window.switchDemoRoleDirect){window.switchDemoRoleDirect('academician');return false;}"><i class="fa-solid fa-building-columns" style="margin-right: 0.35rem; color: var(--accent-saffron);"></i> Academician Dashboard</a></li>
-          <li><a href="/admin/login.html"><i class="fa-solid fa-shield-halved" style="margin-right: 0.35rem; color: var(--primary-dark);"></i> Government Nodal Desk</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">Student Tools</h4>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem;">
-          <li><a href="/student/skill-profile.html"><i class="fa-solid fa-leaf" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Skill Profile</a></li>
-          <li><a href="/student/assessment.html"><i class="fa-solid fa-clipboard-check" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Skill Assessment</a></li>
-          <li><a href="/student/opportunities.html"><i class="fa-solid fa-compass" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Opportunity Discovery</a></li>
-          <li><a href="/student/recommendations.html"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> AI Recommendations</a></li>
-          <li><a href="/student/portfolio.html"><i class="fa-solid fa-briefcase" style="margin-right: 0.35rem; color: var(--secondary-teal);"></i> Portfolio & Projects</a></li>
-        </ul>
       </div>
 
       <div>
         <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">AYUSH Systems</h4>
         <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem; color: var(--text-muted);">
           <li>Ayurveda (BAMS, MD)</li>
-          <li>Yoga & Naturopathy (BNYS)</li>
-          <li>Unani & Siddha Medicine</li>
+          <li>Yoga &amp; Naturopathy (BNYS)</li>
+          <li>Unani &amp; Siddha Medicine</li>
           <li>Homoeopathy Systems</li>
-          <li>WHO ICD-11 & NAMASTE Codes</li>
+          <li>WHO ICD-11 &amp; NAMASTE Codes</li>
         </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.95rem; color: var(--primary-deep); margin-bottom: 1rem;">Administration</h4>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
+          National nodal officer verification, institutional KYC credentials, and governance desk.
+        </p>
+        <a href="/admin/login.html" class="btn btn-secondary btn-sm" id="footer-admin-login" style="display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.84rem; font-weight: 600; padding: 0.45rem 0.9rem; color: var(--primary-deep); border-color: var(--primary-deep);">
+          <i class="fa-solid fa-shield-halved" style="color: var(--secondary-teal);"></i> Admin Login
+        </a>
       </div>
     </div>
 

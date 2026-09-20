@@ -148,14 +148,18 @@
   </div>
 
   <script type="module">
+    import { guardDashboardPage, handleLogout } from '/js/auth.js';
     import { initAcademicianDashboard } from '/js/academician.js';
-    import { handleLogout } from '/js/auth.js';
 
     window.academicLogout = handleLogout;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // TASK 3: Add a check at the very top of each dashboard's script running before anything else
+    (async () => {
+      const isAuthorized = await guardDashboardPage('academician');
+      if (!isAuthorized) return;
+
       initAcademicianDashboard();
-    });
+    })();
   </script>
 </body>
 </html>

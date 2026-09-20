@@ -279,3 +279,118 @@
   }
 }
 
+/* ==========================================================================
+   Modern Professional Social Auth Buttons & Compact Demo Controls
+   ========================================================================== */
+.social-login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.social-btn {
+  width: 100%;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: 9px;
+  cursor: pointer;
+  box-sizing: border-box;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  letter-spacing: -0.01em;
+}
+
+.social-btn svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Google Button: Crisp official Google aesthetic */
+.social-btn-google,
+#btn-login-google,
+#btn-reg-google {
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.social-btn-google:hover,
+#btn-login-google:hover,
+#btn-reg-google:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #111827;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.social-btn-google:active,
+#btn-login-google:active,
+#btn-reg-google:active {
+  transform: translateY(0);
+  background: #f3f4f6;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* GitHub Button: Crisp dark executive aesthetic */
+.social-btn-github,
+#btn-login-github,
+#btn-reg-github {
+  background: #181717;
+  color: #ffffff;
+  border: 1px solid #181717;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.social-btn-github svg path,
+#btn-login-github svg path,
+#btn-reg-github svg path {
+  fill: #ffffff;
+}
+
+.social-btn-github:hover,
+#btn-login-github:hover,
+#btn-reg-github:hover {
+  background: #24292f;
+  border-color: #24292f;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.social-btn-github:active,
+#btn-login-github:active,
+#btn-reg-github:active {
+  transform: translateY(0);
+  background: #0d1117;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Compact Demo Switcher Adjustments */
+.demo-access-container .btn-sm {
+  padding: 0.25rem 0.45rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  height: 28px !important;
+  gap: 0.3rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.demo-access-container .btn-sm i {
+  font-size: 0.72rem !important;
+}
+
