@@ -14,7 +14,8 @@ import {
   fetchOpportunitiesData,
   calculateMatch,
   saveProjectToSupabase,
-  saveSkillToSupabase
+  saveSkillToSupabase,
+  uploadUserAvatar
 } from './supabase.js';
 
 export const STUDENT_STATE = {
@@ -368,35 +369,39 @@ export function initCandidatePhoto(user) {
   }
 
   if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
 
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image size exceeds 5MB. Please choose a smaller image.', 'error');
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+        showToast('Please select a valid image file (JPEG, PNG, WebP).', 'error');
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target.result;
-        try {
-          localStorage.setItem('ayush_candidate_photo', dataUrl);
-          if (photoImg) {
-            photoImg.src = dataUrl;
-            photoImg.style.display = 'block';
-          }
-          if (initialsFallback) initialsFallback.style.display = 'none';
-          if (userAvatarSide) {
-            userAvatarSide.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-          }
-          if (removeBtn) removeBtn.style.display = 'inline-flex';
-          showToast('Candidate photo updated and verified!', 'success');
-        } catch (err) {
-          showToast('Failed to save image. Please select a lighter image.', 'error');
+      if (file.size > 8 * 1024 * 1024) {
+        showToast('Image size exceeds 8MB. Please choose a smaller image.', 'error');
+        return;
+      }
+
+      try {
+        showToast('Uploading profile photo to storage...', 'info');
+        const uploadRes = await uploadUserAvatar(user?.id, file);
+        const publicUrl = uploadRes?.publicUrl;
+
+        if (photoImg && publicUrl) {
+          photoImg.src = publicUrl;
+          photoImg.style.display = 'block';
         }
-      };
-      reader.readAsDataURL(file);
+        if (initialsFallback) initialsFallback.style.display = 'none';
+        if (userAvatarSide && publicUrl) {
+          userAvatarSide.innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        }
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
+        showToast('Candidate photo updated and verified!', 'success');
+      } catch (err) {
+        console.error('Candidate photo upload failed:', err);
+        showToast('Failed to upload image to storage: ' + (err.message || 'Error'), 'error');
+      }
     });
   }
 

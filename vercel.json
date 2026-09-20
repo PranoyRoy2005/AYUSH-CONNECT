@@ -1,0 +1,24 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/privacy-policy", "destination": "/privacy.html" },
+    { "source": "/privacy-policy.html", "destination": "/privacy.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/student/projects", "destination": "/student/projects.html" },
+    { "source": "/student/dashboard", "destination": "/student/dashboard.html" },
+    { "source": "/student/assessment", "destination": "/student/assessment.html" },
+    { "source": "/student/skill-profile", "destination": "/student/skill-profile.html" },
+    { "source": "/student/portfolio", "destination": "/student/portfolio.html" },
+    { "source": "/student/opportunities", "destination": "/student/opportunities.html" },
+    { "source": "/student/recommendations", "destination": "/student/recommendations.html" },
+    { "source": "/student/applications", "destination": "/student/applications.html" },
+    { "source": "/industry/dashboard", "destination": "/industry/dashboard.html" },
+    { "source": "/academician/dashboard", "destination": "/academician/dashboard.html" },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
+    { "source": "/admin/login", "destination": "/admin/login.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/complete-profile", "destination": "/complete-profile.html" }
+  ]
+}

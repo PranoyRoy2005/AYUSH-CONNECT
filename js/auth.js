@@ -224,7 +224,22 @@ export function getCurrentUser() {
  * Set active user
  */
 export function setCurrentUser(user) {
-  localStorage.setItem('ayush_current_user', JSON.stringify(user));
+  try {
+    localStorage.setItem('ayush_current_user', JSON.stringify(user));
+  } catch (e) {
+    console.warn('[setCurrentUser] localStorage quota or write exception caught safely:', e);
+    try {
+      // If quota exceeded, strip large avatar_url data URI and try storing clean profile
+      const cleanUser = { ...user };
+      if (cleanUser.avatar_url && cleanUser.avatar_url.startsWith('data:')) {
+        cleanUser.avatar_url = null;
+      }
+      localStorage.removeItem('ayush_saved_profile');
+      localStorage.setItem('ayush_current_user', JSON.stringify(cleanUser));
+    } catch (e2) {
+      console.warn('[setCurrentUser] Secondary storage write skipped:', e2);
+    }
+  }
 }
 
 /**
@@ -312,7 +327,7 @@ export async function routeUserAfterAuth() {
 
     let targetDashboard = '/complete-profile.html';
     if (role === 'student') {
-      targetDashboard = '/dashboard-student.html';
+      targetDashboard = '/student/portfolio.html';
     } else if (role === 'industry') {
       targetDashboard = '/dashboard-industry.html';
     } else if (role === 'academician') {
@@ -1364,19 +1379,27 @@ export function initResponsiveNavigation() {
     // 2. Create or get mobile header inside dashboard-main
     let mobileHeader = main.querySelector('.dashboard-mobile-header');
     if (!mobileHeader) {
-      const user = getCurrentUser();
+      const user = getCurrentUser() || {};
       mobileHeader = document.createElement('div');
       mobileHeader.className = 'dashboard-mobile-header';
+      
+      const initials = computeUserInitials(user.full_name || user.name, user.role);
+      const savedCandidatePhoto = localStorage.getItem('ayush_candidate_photo');
+      const effectiveAvatar = savedCandidatePhoto || user.avatar_url;
+      const avatarHtml = (effectiveAvatar && (effectiveAvatar.startsWith('data:image') || effectiveAvatar.startsWith('http://') || effectiveAvatar.startsWith('https://')))
+        ? `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer">`
+        : initials;
+
       mobileHeader.innerHTML = `
         <button class="mobile-sidebar-toggle" id="sidebar-toggle-btn" aria-label="Toggle Navigation">
           <span>☰</span>
           <span>Menu</span>
         </button>
-        <a href="/index.html" style="display: flex; align-items: center;">
-          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 30px;">
+        <a href="/index.html" style="display: flex; align-items: center; justify-content: center; flex: 1; min-width: 0; padding: 0 0.5rem; text-decoration: none;">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 28px; max-width: 150px; width: auto; object-fit: contain;">
         </a>
-        <div class="user-avatar-circle" style="width: 34px; height: 34px; font-size: 0.8rem;">
-          ${user.avatar || 'AC'}
+        <div class="user-avatar-circle" style="width: 36px; height: 36px; font-size: 0.82rem; overflow: hidden; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;">
+          ${avatarHtml}
         </div>
       `;
       main.insertBefore(mobileHeader, main.firstChild);

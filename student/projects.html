@@ -124,7 +124,7 @@
           <input type="text" id="proj-tech" class="form-input" placeholder="e.g. Python, Dravyaguna, Molecular Docking, SQL" required>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
           <div class="form-group" style="margin: 0;">
             <label class="form-label"><i class="fa-brands fa-github"></i> GitHub Repository URL</label>
             <input type="url" id="proj-github" class="form-input" placeholder="https://github.com/username/repo">
@@ -135,9 +135,15 @@
           </div>
         </div>
 
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label"><i class="fa-solid fa-file-arrow-up"></i> Project Attachment / Documentation <span style="font-weight: normal; color: var(--text-muted); font-size: 0.8rem;">(Optional - PDF, DOCX, ZIP, Max 25MB)</span></label>
+          <input type="file" id="proj-file" class="form-input" style="padding: 0.35rem 0.5rem; font-size: 0.82rem;" accept=".pdf,.doc,.docx,.zip,.tar.gz,.png,.jpg,.jpeg">
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">Stored securely in private portfolio-files storage. Accessible via temporary signed links.</div>
+        </div>
+
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
           <button type="button" class="btn btn-sm btn-secondary" onclick="window.closeAddProjectModal()">Cancel</button>
-          <button type="submit" class="btn btn-sm btn-primary">
+          <button type="submit" class="btn btn-sm btn-primary" id="btn-save-project">
             <i class="fa-solid fa-floppy-disk"></i> Save Project
           </button>
         </div>
@@ -147,7 +153,13 @@
 
   <script type="module">
     import { getCurrentUser, syncUserHeader, showToast } from '/js/auth.js';
-    import { isDemoMode, fetchStudentProjectsData, saveProjectToSupabase } from '/js/supabase.js';
+    import { 
+      isDemoMode, 
+      fetchStudentProjectsData, 
+      saveProjectToSupabase,
+      uploadPortfolioFile,
+      getPortfolioFileSignedUrl
+    } from '/js/supabase.js';
 
     window.openAddProjectModal = function() {
       const m = document.getElementById('project-modal-backdrop');
@@ -159,15 +171,72 @@
       if (m) m.classList.remove('active');
     };
 
+    // Download/View Project Attachment using signed URLs (TASK 3)
+    window.downloadProjectFile = async function(filePath, fileName) {
+      if (!filePath) {
+        showToast('No file path associated with this project.', 'warning');
+        return;
+      }
+      try {
+        showToast('Generating secure temporary access link...', 'info');
+        const signedUrl = await getPortfolioFileSignedUrl(filePath, 3600);
+        if (signedUrl) {
+          window.open(signedUrl, '_blank');
+        } else {
+          showToast('Failed to generate project file link. Storage bucket may still be initializing.', 'error');
+        }
+      } catch (err) {
+        console.error('Download project file error:', err);
+        showToast('Error retrieving file: ' + (err.message || 'Error'), 'error');
+      }
+    };
+
     window.handleAddProject = async function(e) {
       e.preventDefault();
       const title = document.getElementById('proj-title').value.trim();
       const desc = document.getElementById('proj-desc').value.trim();
       const techStr = document.getElementById('proj-tech').value.trim();
-      const github = document.getElementById('proj-github').value.trim() || 'https://github.com';
-      const demo = document.getElementById('proj-demo').value.trim() || 'https://ayushconnect.gov.in';
+      const github = document.getElementById('proj-github').value.trim() || '';
+      const demo = document.getElementById('proj-demo').value.trim() || '';
+
+      const fileInput = document.getElementById('proj-file');
+      const attachedFile = fileInput?.files && fileInput.files[0];
 
       const user = getCurrentUser();
+      const saveBtn = document.getElementById('btn-save-project');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Project...`;
+      }
+
+      let filePath = null;
+      let fileName = null;
+      let fileSize = null;
+
+      if (attachedFile) {
+        if (attachedFile.size > 25 * 1024 * 1024) {
+          showToast('Project attachment exceeds 25MB limit.', 'error');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Project`;
+          }
+          return;
+        }
+
+        try {
+          showToast('Uploading attachment to secure storage...', 'info');
+          const uploadRes = await uploadPortfolioFile(user?.id || 'usr_guest', attachedFile);
+          if (uploadRes?.path) {
+            filePath = uploadRes.path;
+            fileName = attachedFile.name;
+            fileSize = `${(attachedFile.size / 1024).toFixed(1)} KB`;
+          }
+        } catch (uploadErr) {
+          console.warn('[Projects] File upload warning:', uploadErr);
+          showToast('Attachment upload notice: ' + (uploadErr.message || 'Continuing without attachment'), 'warning');
+        }
+      }
+
       const newProj = {
         id: 'proj_' + Date.now(),
         student_id: user?.id || 'usr_student_01',
@@ -176,13 +245,20 @@
         date: new Date().getFullYear().toString(),
         technologies: techStr.split(',').map(s => s.trim()).filter(Boolean),
         github_url: github,
-        live_demo_url: demo
+        live_demo_url: demo,
+        file_path: filePath,
+        file_name: fileName,
+        file_size: fileSize
       };
 
       await saveProjectToSupabase(newProj);
       showToast(`Added project "${title}" to your portfolio!`, 'success');
       document.getElementById('add-project-form').reset();
       window.closeAddProjectModal();
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Project`;
+      }
       await loadAndRenderProjects();
     };
 

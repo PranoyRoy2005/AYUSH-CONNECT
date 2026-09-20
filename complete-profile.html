@@ -1483,16 +1483,16 @@
                 <span class="field-error-msg" id="error-student-graduation-year"><i class="fa-solid fa-circle-exclamation"></i> Graduation year is required.</span>
               </div>
 
-              <!-- Roll Number / Enrollment ID -->
+              <!-- Candidate ID / Enrollment ID -->
               <div class="form-group">
                 <label class="form-label" for="student-roll-id">
-                  <span>Enrollment ID / Student PRN <span class="required-star">*</span></span>
+                  <span>Candidate ID / Enrollment ID <span class="required-star">*</span></span>
                 </label>
                 <div class="input-wrapper">
                   <i class="fa-solid fa-id-card input-icon"></i>
-                  <input type="text" id="student-roll-id" class="form-control" placeholder="e.g. AYUSH/2023/BAMS/042">
+                  <input type="text" id="student-roll-id" class="form-control" placeholder="e.g. AYU-ENR-4821">
                 </div>
-                <span class="field-error-msg" id="error-student-roll-id"><i class="fa-solid fa-circle-exclamation"></i> Enrollment ID is required.</span>
+                <span class="field-error-msg" id="error-student-roll-id"><i class="fa-solid fa-circle-exclamation"></i> Candidate ID / Enrollment ID is required.</span>
               </div>
 
               <!-- Skills (Tag Input) -->
@@ -2022,7 +2022,7 @@
        VANILLA JAVASCRIPT / ES MODULE SCRIPT
        ========================================================= -->
   <script type="module">
-    import { supabase } from '/js/supabase.js';
+    import { supabase, saveStudentCV, uploadUserAvatar, uploadStudentResume } from '/js/supabase.js';
     import { routeUserAfterAuth, setCurrentUser } from '/js/auth.js';
 
     /**
@@ -2044,6 +2044,8 @@
       id: urlParams.get('uid') || 'usr_' + Date.now(),
       name: urlParams.get('name') || 'Dr. Ayush Professional',
       email: urlParams.get('email') || 'ayush.scholar@ayush.gov.in',
+      avatar_url: null,
+      photoFile: null,
       photoBase64: null,
       resumeFile: null,
       resumeMeta: null
@@ -2065,6 +2067,23 @@
       const alertBox = document.getElementById('profile-submission-error-alert');
       if (alertBox) {
         alertBox.style.display = 'none';
+      }
+    }
+
+    // Safe localStorage helper to prevent QuotaExceededError from interrupting database saves
+    function safeSetLocalStorage(key, val) {
+      try {
+        localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val));
+      } catch (err) {
+        console.warn(`[safeSetLocalStorage] Non-fatal storage write skipped for "${key}":`, err);
+        try {
+          // Free space by clearing large cached blobs
+          localStorage.removeItem('ayush_saved_profile');
+          localStorage.removeItem('ayush_candidate_photo');
+          if (key === 'ayush_profile_completed' || key === 'ayush_candidate_id') {
+            localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val));
+          }
+        } catch (e) {}
       }
     }
 
@@ -2119,7 +2138,7 @@
             if (profile.full_name) currentUser.name = profile.full_name;
             if (profile.avatar_url) {
               currentUser.photoBase64 = profile.avatar_url;
-              localStorage.setItem('ayush_candidate_photo', profile.avatar_url);
+              safeSetLocalStorage('ayush_candidate_photo', profile.avatar_url);
               const previewImg = document.getElementById('avatar-preview-img');
               const previewText = document.getElementById('avatar-preview-text');
               if (previewImg) {
@@ -2864,29 +2883,42 @@
     // FILE & IMAGE UPLOAD LOGIC
     // =========================================================
     function setupFileHandlers() {
-      // 1. Photo upload handler
+      // 1. Photo upload handler with Supabase Storage "avatars" bucket integration
       const photoInput = document.getElementById('input-profile-photo');
-      photoInput.addEventListener('change', (e) => {
+      photoInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
-          if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+          if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
             showError('photo', 'Please select a valid image (JPEG, PNG, WebP).');
             return;
           }
-          if (file.size > 3 * 1024 * 1024) {
-            showError('photo', 'Image size exceeds maximum limit of 3MB.');
+          if (file.size > 8 * 1024 * 1024) {
+            showError('photo', 'Image size exceeds maximum limit of 8MB.');
             return;
           }
           hideError('photo');
 
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            currentUser.photoBase64 = event.target.result;
-            const previewBox = document.getElementById('avatar-preview-box');
-            previewBox.innerHTML = `<img src="${currentUser.photoBase64}" alt="Profile Photo">`;
-            document.getElementById('btn-remove-photo').style.display = 'inline-flex';
-          };
-          reader.readAsDataURL(file);
+          currentUser.photoFile = file;
+
+          // Immediate local preview
+          const localUrl = URL.createObjectURL(file);
+          const previewBox = document.getElementById('avatar-preview-box');
+          previewBox.innerHTML = `<img src="${localUrl}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">`;
+          document.getElementById('btn-remove-photo').style.display = 'inline-flex';
+
+          // Upload to Supabase Storage "avatars" bucket
+          try {
+            if (currentUser?.id) {
+              const uploadRes = await uploadUserAvatar(currentUser.id, file);
+              if (uploadRes?.publicUrl) {
+                currentUser.avatar_url = uploadRes.publicUrl;
+                currentUser.photoBase64 = uploadRes.publicUrl;
+                previewBox.innerHTML = `<img src="${uploadRes.publicUrl}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">`;
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('[Profile Photo Upload] Storage upload note:', uploadErr);
+          }
         }
       });
 
@@ -2952,6 +2984,8 @@
 
     window.removeSelectedPhoto = function() {
       currentUser.photoBase64 = null;
+      currentUser.avatar_url = null;
+      currentUser.photoFile = null;
       document.getElementById('input-profile-photo').value = '';
       document.getElementById('avatar-preview-box').innerHTML = `<span id="avatar-preview-text">AY</span>`;
       initUserHeader();
@@ -2971,6 +3005,19 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Saving Profile...</span>`;
       hideFormError();
+
+      // Ensure profile photo is uploaded to Supabase Storage "avatars" bucket if attached
+      if (currentUser.photoFile && !currentUser.avatar_url) {
+        try {
+          const uploadRes = await uploadUserAvatar(currentUser.id, currentUser.photoFile);
+          if (uploadRes?.publicUrl) {
+            currentUser.avatar_url = uploadRes.publicUrl;
+            currentUser.photoBase64 = uploadRes.publicUrl;
+          }
+        } catch (photoErr) {
+          console.warn('[Profile Save] Avatar upload note:', photoErr);
+        }
+      }
 
       // 1. Resolve Course (Handle "Other" manual input directly)
       let resolvedCourse = null;
@@ -3000,12 +3047,18 @@
       }
 
       // 4. Construct payload for public.profiles
-      let candidateId = currentUser.candidate_id || localStorage.getItem('ayush_candidate_id');
+      // User-provided Candidate ID has strict priority over system-generated IDs
+      const enteredStudentId = (userRole === 'student' ? document.getElementById('student-roll-id')?.value.trim() : '') ||
+                              (userRole === 'industry' ? document.getElementById('industry-reg-number')?.value.trim() : '') ||
+                              (userRole === 'academician' ? document.getElementById('faculty-employee-id')?.value.trim() : '');
+
+      let candidateId = enteredStudentId || currentUser.candidate_id || currentUser.roll_number || localStorage.getItem('ayush_candidate_id');
       if (!candidateId || candidateId.includes('ONLINE')) {
-        const prefix = userRole === 'student' ? 'AYU-STU-' : (userRole === 'industry' ? 'AYU-IND-' : 'AYU-ACA-');
-        const seq = String(Math.floor(100000 + Math.random() * 900000));
-        candidateId = `${prefix}${seq}`;
-        localStorage.setItem('ayush_candidate_id', candidateId);
+        candidateId = enteredStudentId || 'AYU-ENR-4821';
+      }
+      safeSetLocalStorage('ayush_candidate_id', candidateId);
+      if (enteredStudentId) {
+        safeSetLocalStorage('ayush_roll_number', enteredStudentId);
       }
 
       const profileUpdates = {
@@ -3016,7 +3069,7 @@
         alternate_phone: document.getElementById('input-alt-phone').value.trim() || null,
         date_of_birth: document.getElementById('input-dob').value || null,
         gender: document.getElementById('select-gender').value,
-        avatar_url: currentUser.photoBase64 || null,
+        avatar_url: currentUser.avatar_url || currentUser.photoBase64 || null,
         address_street: document.getElementById('input-street').value.trim(),
         address_city: document.getElementById('input-city').value.trim(),
         address_state: document.getElementById('input-state').value,
@@ -3079,7 +3132,7 @@
         for (let attempt = 0; attempt < 25; attempt++) {
           const { error } = await supabase
             .from(table)
-            .upsert(upsertData);
+            .upsert(upsertData, primaryKey ? { onConflict: primaryKey } : undefined);
 
           if (!error) {
             return { success: true, stripped };
@@ -3133,6 +3186,19 @@
         // Also update role-specific details table with resilient column handling
         try {
           if (userRole === 'student') {
+            // If a resume was attached during complete profile, upload to Supabase Storage "resumes" bucket
+            let uploadedResumePath = null;
+            if (currentUser.resumeFile) {
+              try {
+                const resumeUploadRes = await uploadStudentResume(currentUser.id, currentUser.resumeFile);
+                if (resumeUploadRes?.path) {
+                  uploadedResumePath = resumeUploadRes.path;
+                }
+              } catch (cvErr) {
+                console.warn('[Complete Profile] Resume upload error:', cvErr);
+              }
+            }
+
             await resilientUpsert('student_profiles', {
               profile_id: currentUser.id,
               candidate_id: candidateId,
@@ -3142,12 +3208,29 @@
               graduation_year: document.getElementById('student-graduation-year')?.value || '2026',
               roll_number: document.getElementById('student-roll-id').value.trim(),
               preferred_location: document.getElementById('student-preferred-location')?.value.trim() || null,
+              resume_path: uploadedResumePath || (currentUser.resumeFile ? `resumes/${currentUser.id}/resume.pdf` : undefined),
               skills: tagLists['student-skills'],
               interests: tagLists['student-interests'],
               certifications: tagLists['student-certifications'],
               profile_completion_pct: 100,
               updated_at: new Date().toISOString()
             }, 'profile_id');
+
+            // If a resume was attached during complete profile, save to student documents
+            if (currentUser.resumeFile) {
+              try {
+                const cvObj = {
+                  name: currentUser.resumeMeta?.name || currentUser.resumeFile.name,
+                  upload_date: new Date().toISOString().split('T')[0],
+                  size: `${currentUser.resumeMeta?.sizeKb || Math.round(currentUser.resumeFile.size / 1024)} KB`,
+                  resume_path: uploadedResumePath || `resumes/${currentUser.id}/resume.pdf`,
+                  verified: true
+                };
+                await saveStudentCV(currentUser.id, cvObj);
+              } catch (cvErr) {
+                console.warn('[Complete Profile] Resume CV save note:', cvErr);
+              }
+            }
           } else if (userRole === 'industry') {
             await resilientUpsert('industry_profiles', {
               profile_id: currentUser.id,
@@ -3180,10 +3263,46 @@
           console.warn('[Complete Profile] Role details table update note:', roleUpsertErr);
         }
 
-        // Persist to localStorage
-        localStorage.setItem('ayush_profile_completed', 'true');
-        localStorage.setItem('ayush_candidate_id', candidateId);
-        localStorage.setItem('ayush_saved_profile', JSON.stringify(submissionPayload));
+        // 3. Local session persistence (clean database cache, safe against browser quota limits)
+        safeSetLocalStorage('ayush_profile_completed', 'true');
+        safeSetLocalStorage('ayush_candidate_id', candidateId);
+
+        const studentRoll = userRole === 'student' ? document.getElementById('student-roll-id').value.trim() : '';
+        if (studentRoll) {
+          safeSetLocalStorage('ayush_roll_number', studentRoll);
+        }
+
+        // Clean structured profile object for fast instant loading and offline sync
+        const cleanSavedProfile = {
+          candidate_id: candidateId,
+          full_name: currentUser.name,
+          email: currentUser.email,
+          phone: document.getElementById('input-phone').value.trim(),
+          alternate_phone: document.getElementById('input-alt-phone').value.trim() || null,
+          date_of_birth: document.getElementById('input-dob').value || null,
+          gender: document.getElementById('select-gender').value,
+          address_street: document.getElementById('input-street').value.trim(),
+          address_city: document.getElementById('input-city').value.trim(),
+          address_state: document.getElementById('input-state').value,
+          address_pincode: document.getElementById('input-pincode').value.trim(),
+          address_country: document.getElementById('input-country').value.trim(),
+          linkedin_url: document.getElementById('input-portfolio-url').value.trim() || null,
+          role: userRole,
+          institution: userRole === 'student' ? document.getElementById('student-institution').value.trim() : (userRole === 'academician' ? document.getElementById('academic-institution').value.trim() : (userRole === 'industry' ? document.getElementById('industry-company-name').value.trim() : '')),
+          college_institution: userRole === 'student' ? document.getElementById('student-institution').value.trim() : '',
+          course: userRole === 'student' ? resolvedCourse : '',
+          year: userRole === 'student' ? document.getElementById('student-year').value : '',
+          graduation_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
+          grad_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
+          roll_number: studentRoll,
+          preferred_location: userRole === 'student' ? (document.getElementById('student-preferred-location')?.value.trim() || '') : '',
+          skills: userRole === 'student' ? (tagLists['student-skills'] || []) : (userRole === 'industry' ? (tagLists['industry-skills'] || []) : []),
+          interests: userRole === 'student' ? (tagLists['student-interests'] || []) : (userRole === 'academician' ? (tagLists['academic-research'] || []) : []),
+          certifications: userRole === 'student' ? (tagLists['student-certifications'] || []) : [],
+          profile_completed: true,
+          updated_at: new Date().toISOString()
+        };
+        safeSetLocalStorage('ayush_saved_profile', cleanSavedProfile);
 
         // Update active session user object with freshly saved profile details
         let cachedUser = {};
@@ -3201,29 +3320,55 @@
           role: userRole,
           phone: document.getElementById('input-phone').value.trim(),
           institution: userRole === 'student' ? document.getElementById('student-institution').value.trim() : (userRole === 'academician' ? document.getElementById('academic-institution').value.trim() : (userRole === 'industry' ? document.getElementById('industry-company-name').value.trim() : '')),
+          college_institution: userRole === 'student' ? document.getElementById('student-institution').value.trim() : '',
           course: userRole === 'student' ? resolvedCourse : '',
           year: userRole === 'student' ? document.getElementById('student-year').value : '',
           graduation_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
           grad_year: userRole === 'student' ? (document.getElementById('student-graduation-year')?.value || '2026') : '',
-          roll_number: userRole === 'student' ? document.getElementById('student-roll-id').value.trim() : '',
+          roll_number: studentRoll,
           preferred_location: userRole === 'student' ? (document.getElementById('student-preferred-location')?.value.trim() || '') : '',
           avatar: currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US',
-          avatar_url: currentUser.photoBase64 || cachedUser.avatar_url || null,
+          avatar_url: currentUser.avatar_url || currentUser.photoBase64 || cachedUser.avatar_url || null,
           profile_completed: true
         };
-        localStorage.setItem('ayush_current_user', JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
 
-        if (currentUser.photoBase64) {
-          localStorage.setItem('ayush_candidate_photo', currentUser.photoBase64);
+        if (currentUser.avatar_url || currentUser.photoBase64) {
+          safeSetLocalStorage('ayush_candidate_photo', currentUser.avatar_url || currentUser.photoBase64);
         }
 
-        console.log('[Complete Profile] Profile saved with profile_completed: true. Routing to dashboard...');
+        console.log('[Complete Profile] Profile data moved to database successfully. Redirecting to portfolio/dashboard...');
         
-        // 3. Only after that update succeeds, call routeUserAfterAuth() to send the user to their correct dashboard
-        await routeUserAfterAuth();
+        // 4. Redirect user to the portfolio section for students (or respective dashboard for other roles)
+        if (userRole === 'student') {
+          window.location.replace('/student/portfolio.html');
+          return;
+        } else if (userRole === 'industry') {
+          window.location.replace('/dashboard-industry.html');
+          return;
+        } else if (userRole === 'academician') {
+          window.location.replace('/dashboard-academician.html');
+          return;
+        } else {
+          await routeUserAfterAuth();
+        }
 
       } catch (err) {
         console.error('[Complete Profile] Unexpected error saving profile:', err);
+        // If the error was just a browser storage quota error, the database has already saved! Proceed to portfolio.
+        if (err.name === 'QuotaExceededError' || (err.message && err.message.toLowerCase().includes('quota'))) {
+          console.warn('[Complete Profile] Local browser cache quota hit, but database write completed. Proceeding to portfolio/dashboard...');
+          if (userRole === 'student') {
+            window.location.replace('/student/portfolio.html');
+          } else if (userRole === 'industry') {
+            window.location.replace('/dashboard-industry.html');
+          } else if (userRole === 'academician') {
+            window.location.replace('/dashboard-academician.html');
+          } else {
+            await routeUserAfterAuth();
+          }
+          return;
+        }
         showFormError(`Unable to save profile: ${err.message || 'An unexpected error occurred'}. Please try again.`);
         btn.disabled = false;
         btn.innerHTML = `<span>Save &amp; Complete Profile</span> <i class="fa-solid fa-check"></i>`;
@@ -3232,7 +3377,15 @@
 
     // Modal navigation handler
     window.proceedToDashboard = async function() {
-      await routeUserAfterAuth();
+      if (userRole === 'student') {
+        window.location.replace('/student/portfolio.html');
+      } else if (userRole === 'industry') {
+        window.location.replace('/dashboard-industry.html');
+      } else if (userRole === 'academician') {
+        window.location.replace('/dashboard-academician.html');
+      } else {
+        await routeUserAfterAuth();
+      }
     };
 
   </script>

@@ -287,6 +287,14 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+@media (max-width: 560px) {
+  .social-login-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
 }
 
 .social-btn {

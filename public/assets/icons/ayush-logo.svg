@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none">
+  <!-- AYUSH CONNECT Logo Mark -->
+  <g transform="translate(4, 6)">
+    <!-- Outer Balance Ring -->
+    <circle cx="26" cy="26" r="24" stroke="#134e3f" stroke-width="2" stroke-dasharray="3 3" opacity="0.4"/>
+    <circle cx="26" cy="26" r="21" stroke="url(#logo-gradient)" stroke-width="2.5" fill="#faf9f5"/>
+    
+    <!-- Central Organic Leaf & Connection Nodes -->
+    <!-- Left Leaf / Petal -->
+    <path d="M26 9 C18 16 16 26 26 37 C26 37 20 28 22 18 Z" fill="#134e3f"/>
+    <!-- Right Leaf / Node Wave -->
+    <path d="M26 9 C34 16 36 26 26 37 C26 37 32 28 30 18 Z" fill="#0d9488"/>
+    <!-- Center Saffron Accent Sprout/Flame of Knowledge -->
+    <path d="M26 14 C24.5 19 24.5 24 26 29 C27.5 24 27.5 19 26 14 Z" fill="#e07a2c"/>
+    
+    <!-- Network Connection Nodes -->
+    <circle cx="16" cy="18" r="2.5" fill="#0d9488"/>
+    <circle cx="36" cy="18" r="2.5" fill="#134e3f"/>
+    <circle cx="26" cy="41" r="3" fill="#e07a2c"/>
+    <line x1="26" y1="37" x2="26" y2="41" stroke="#e07a2c" stroke-width="1.5"/>
+    <line x1="22" y1="18" x2="16" y2="18" stroke="#0d9488" stroke-width="1.2" stroke-dasharray="2 1"/>
+    <line x1="30" y1="18" x2="36" y2="18" stroke="#134e3f" stroke-width="1.2" stroke-dasharray="2 1"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="68" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" letter-spacing="1.5" fill="#134e3f">
+    AYUSH<tspan fill="#e07a2c"> </tspan><tspan fill="#0d9488">CONNECT</tspan>
+  </text>
+  <text x="69" y="47" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="8.5" letter-spacing="2.2" fill="#475569">
+    SKILLS • OPPORTUNITIES • CAREERS
+  </text>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="logo-gradient" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#134e3f"/>
+      <stop offset="50%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#e07a2c"/>
+    </linearGradient>
+  </defs>
+</svg>

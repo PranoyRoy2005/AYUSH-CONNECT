@@ -439,12 +439,17 @@
               </select>
             </div>
             <div class="form-group" style="margin: 0;">
-              <label class="form-label" style="font-size: 0.82rem;">Roll Number / Student ID</label>
-              <input type="text" id="edit-roll-id" class="form-input" placeholder="e.g. AIIA/BAMS/2022/041">
+              <label class="form-label" style="font-size: 0.82rem;">Candidate ID / Roll Number</label>
+              <input type="text" id="edit-roll-id" class="form-input" placeholder="e.g. AYU-ENR-4821">
             </div>
             <div class="form-group" style="margin: 0;">
               <label class="form-label" style="font-size: 0.82rem;">Preferred Placement Location</label>
               <input type="text" id="edit-location" class="form-input" placeholder="e.g. New Delhi, Mumbai, or Remote">
+            </div>
+            <div class="form-group" style="margin: 0; grid-column: 1 / -1;">
+              <label class="form-label" style="font-size: 0.82rem;"><i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> Resume / CV <span style="font-weight: normal; color: var(--text-muted); font-size: 0.8rem;">(PDF only, max 5MB)</span></label>
+              <input type="file" id="edit-resume-file" class="form-input" accept="application/pdf,.pdf" style="padding: 0.35rem 0.5rem; font-size: 0.82rem;">
+              <div id="edit-current-resume-info" style="font-size: 0.8rem; color: var(--secondary-teal); margin-top: 0.25rem; display: none;"></div>
             </div>
           </div>
 
@@ -494,12 +499,12 @@
         <h4 style="font-size: 1rem; color: var(--primary-deep); margin: 0 0 0.5rem 0;">
           <i class="fa-solid fa-file-pdf" style="color: #ef4444; margin-right: 0.4rem;"></i> Upload Verified CV / Resume
         </h4>
-        <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 0.75rem 0;">Supported format: PDF, DOCX (Max: 10MB). Automatically attached when applying for opportunities.</p>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 0.75rem 0;">Supported format: PDF only (Max: 5MB). Stored securely in private cloud storage and auto-attached to applications.</p>
         
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-          <input type="file" id="modal-cv-file" accept=".pdf,.doc,.docx" style="display: none;">
+          <input type="file" id="modal-cv-file" accept="application/pdf,.pdf" style="display: none;">
           <label for="modal-cv-file" class="btn btn-sm btn-secondary" style="cursor: pointer;">
-            <i class="fa-solid fa-file-arrow-up"></i> Choose Resume File
+            <i class="fa-solid fa-file-arrow-up"></i> Choose Resume File (PDF)
           </label>
           <span id="modal-cv-filename" style="font-size: 0.82rem; color: var(--text-muted);">No file selected</span>
           <button type="button" class="btn btn-sm btn-primary" id="btn-save-cv" onclick="window.uploadCandidateCV()">
@@ -564,7 +569,9 @@
       saveStudentCertificate, 
       deleteStudentCertificate,
       saveCandidatePhotoToSupabase,
-      fetchSkillImprovementRecommendation
+      fetchSkillImprovementRecommendation,
+      uploadStudentResume,
+      getResumeSignedUrl
     } from '/js/supabase.js';
     import { initCandidatePhoto } from '/js/student.js';
 
@@ -599,23 +606,70 @@
         showToast('Please select a CV or resume file to upload.', 'warning');
         return;
       }
+
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        showToast('Only PDF format is permitted for resumes.', 'error');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Resume size exceeds maximum limit of 5MB.', 'error');
+        return;
+      }
+
       const user = getCurrentUser();
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const dataUrl = e.target.result;
+      const saveBtn = document.getElementById('btn-save-cv');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
+      }
+
+      try {
+        showToast('Uploading resume to secure storage...', 'info');
+        const uploadRes = await uploadStudentResume(user?.id, file);
+        const resumePath = uploadRes?.path || `resumes/${user?.id}/resume.pdf`;
+
         const cvObj = {
           name: file.name,
           upload_date: new Date().toISOString().split('T')[0],
           size: `${(file.size / 1024).toFixed(1)} KB`,
-          data_url: dataUrl,
+          resume_path: resumePath,
           verified: true
         };
         await saveStudentCV(user?.id, cvObj);
-        showToast('CV successfully uploaded and saved to your database profile!', 'success');
+        showToast('Resume successfully uploaded to private storage!', 'success');
+        window.closeDocumentsModal();
         await loadAndRenderDocuments();
         await loadCompletionMetrics();
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error('Upload CV error:', err);
+        showToast('Failed to upload resume: ' + (err.message || 'Error'), 'error');
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = `<i class="fa-solid fa-upload"></i> Save CV`;
+        }
+      }
+    };
+
+    // Download/View Resume using Signed URL (TASK 2)
+    window.downloadResume = async function(resumePath) {
+      try {
+        const user = getCurrentUser();
+        const effectivePath = resumePath || (activeDocuments?.cv?.resume_path) || `resumes/${user?.id}/resume.pdf`;
+        showToast('Generating secure download link...', 'info');
+        const signedUrl = await getResumeSignedUrl(effectivePath, 3600);
+        if (signedUrl) {
+          window.open(signedUrl, '_blank');
+        } else if (activeDocuments?.cv?.data_url) {
+          window.open(activeDocuments.cv.data_url, '_blank');
+        } else {
+          showToast('Could not generate download URL. Please re-upload your resume.', 'error');
+        }
+      } catch (err) {
+        console.error('Download resume error:', err);
+        showToast('Failed to generate resume link: ' + (err.message || 'Error'), 'error');
+      }
     };
 
     // Save Certificate
@@ -701,10 +755,10 @@
               </div>
               <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> Active</span>
             </div>
-            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-              <a href="${activeDocuments.cv.data_url || '#'}" download="${activeDocuments.cv.name}" class="btn btn-sm btn-secondary">
-                <i class="fa-solid fa-download"></i> Download
-              </a>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-primary" onclick="window.downloadResume('${activeDocuments.cv.resume_path || ''}')" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <i class="fa-solid fa-file-arrow-down"></i> View / Download Resume
+              </button>
               <button class="btn btn-sm btn-secondary" onclick="window.openDocumentsModal()">
                 <i class="fa-solid fa-arrows-rotate"></i> Replace
               </button>
@@ -715,9 +769,11 @@
         html += `
           <div class="ayush-card" style="border: 1px dashed var(--border-color); background: #fdfaf6; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 1rem;">
             <i class="fa-solid fa-file-arrow-up" style="font-size: 2rem; color: var(--secondary-teal); margin-bottom: 0.5rem;"></i>
-            <h4 style="font-size: 1rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">No CV Uploaded Yet</h4>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0;">Attach your resume to enable 1-click applications.</p>
-            <button class="btn btn-sm btn-primary" onclick="window.openDocumentsModal()">Upload CV</button>
+            <h4 style="font-size: 1rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">No Resume Uploaded Yet</h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0;">Attach your resume (PDF only, max 5MB) to enable 1-click applications.</p>
+            <button class="btn btn-sm btn-primary" onclick="window.openDocumentsModal()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload Resume
+            </button>
           </div>
         `;
       }
@@ -791,41 +847,66 @@
       let profile = null;
       let sp = null;
 
-      // Check database if user logged in
-      if (user.id && supabase) {
+      // 1. Resolve true authenticated user ID from Supabase session if available
+      let userId = user.id;
+      if (supabase) {
         try {
-          const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-          if (prof) profile = prof;
-          const { data: stud } = await supabase.from('student_profiles').select('*').eq('profile_id', user.id).maybeSingle();
-          if (stud) sp = stud;
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (sessionData?.session?.user) {
+            userId = sessionData.session.user.id;
+            user.id = userId;
+            if (sessionData.session.user.email && !user.email) {
+              user.email = sessionData.session.user.email;
+            }
+          }
+        } catch (e) {
+          console.warn('[Portfolio] Session query note:', e);
+        }
+      }
+
+      // 2. Query both profiles and student_profiles tables from database
+      if (userId && supabase) {
+        try {
+          const [profRes, studRes] = await Promise.all([
+            supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
+            supabase.from('student_profiles').select('*').eq('profile_id', userId).maybeSingle()
+          ]);
+          if (profRes?.data) profile = profRes.data;
+          if (studRes?.data) sp = studRes.data;
         } catch (e) {
           console.warn('[Portfolio] DB query fallback:', e);
         }
       }
 
-      // Fallbacks from localStorage
+      // Fallbacks from localStorage cache
       const localSaved = JSON.parse(localStorage.getItem('ayush_saved_profile') || '{}');
       const merged = { ...user, ...localSaved, ...(profile || {}), ...(sp || {}) };
       cachedProfileData = profile || {};
       cachedStudentData = sp || {};
 
-      // 1. Resolve Unique Candidate ID (Task 2)
-      let resolvedCandidateId = merged.candidate_id;
-      if (!resolvedCandidateId || resolvedCandidateId.includes('ONLINE')) {
-        resolvedCandidateId = localStorage.getItem('ayush_candidate_id');
+      // 1. Resolve Unique Candidate ID
+      // Prioritize the ID entered by the user on the profile completion page (roll_number / student-roll-id)
+      const userProvidedId = merged.roll_number || merged.roll_id || localStorage.getItem('ayush_roll_number');
+      let resolvedCandidateId = userProvidedId || merged.candidate_id || localStorage.getItem('ayush_candidate_id');
+      
+      // If candidate_id was previously auto-generated with random prefix AYU-STU-..., but user entered their real ID, use their real ID!
+      if (userProvidedId && resolvedCandidateId && resolvedCandidateId !== userProvidedId && resolvedCandidateId.startsWith('AYU-STU-')) {
+        resolvedCandidateId = userProvidedId;
       }
+      
       if (!resolvedCandidateId || resolvedCandidateId.includes('ONLINE')) {
-        const randomDigits = String(Math.floor(100000 + Math.random() * 900000));
-        resolvedCandidateId = `AYU-STU-${randomDigits}`;
-        localStorage.setItem('ayush_candidate_id', resolvedCandidateId);
-        user.candidate_id = resolvedCandidateId;
-        setCurrentUser(user);
+        resolvedCandidateId = userProvidedId || 'AYU-ENR-4821';
+      }
 
-        // Async save to DB if logged in
-        if (user.id && supabase) {
-          supabase.from('profiles').update({ candidate_id: resolvedCandidateId }).eq('id', user.id).then();
-          supabase.from('student_profiles').update({ candidate_id: resolvedCandidateId }).eq('profile_id', user.id).then();
-        }
+      localStorage.setItem('ayush_candidate_id', resolvedCandidateId);
+      user.candidate_id = resolvedCandidateId;
+      setCurrentUser(user);
+
+      // Async save to DB if logged in
+      const rollId = merged.roll_number || merged.roll_id || userProvidedId || resolvedCandidateId;
+      if (userId && supabase) {
+        supabase.from('profiles').update({ candidate_id: resolvedCandidateId }).eq('id', userId).then();
+        supabase.from('student_profiles').update({ candidate_id: resolvedCandidateId, roll_number: rollId }).eq('profile_id', userId).then();
       }
 
       const candIdEl = document.getElementById('candidate-id-display');
@@ -835,12 +916,42 @@
       const fullName = merged.full_name || user.name || 'AYUSH Scholar';
       const candNameEl = document.getElementById('candidate-card-name');
       if (candNameEl) candNameEl.textContent = fullName;
+      const sideNameEl = document.getElementById('sidebar-user-name');
+      if (sideNameEl) sideNameEl.textContent = fullName;
+
+      // Sync avatar photo in header and sidebar
+      const avatarPhoto = localStorage.getItem('ayush_candidate_photo') || profile?.avatar_url || user.avatar_url;
+      const photoImg = document.getElementById('candidate-photo-img');
+      const initialsFallback = document.getElementById('candidate-avatar-initials');
+      const userAvatarSide = document.getElementById('sidebar-avatar-display');
+      const removeBtn = document.getElementById('btn-remove-photo');
+      const initials = (fullName.split(' ').map(n => n[0]).join('').substring(0, 2) || 'ST').toUpperCase();
+
+      if (avatarPhoto) {
+        if (photoImg) {
+          photoImg.src = avatarPhoto;
+          photoImg.style.display = 'block';
+        }
+        if (initialsFallback) initialsFallback.style.display = 'none';
+        if (userAvatarSide) {
+          userAvatarSide.innerHTML = `<img src="${avatarPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        }
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
+      } else {
+        if (photoImg) photoImg.style.display = 'none';
+        if (initialsFallback) {
+          initialsFallback.textContent = initials;
+          initialsFallback.style.display = 'block';
+        }
+        if (userAvatarSide) {
+          userAvatarSide.textContent = initials;
+        }
+      }
 
       const course = merged.course || 'BAMS (Ayurveda)';
       const year = merged.year || 'Final Year';
       const gradYear = merged.graduation_year || merged.grad_year || '2026';
       const inst = merged.college_institution || merged.institution || 'All India Institute of Ayurveda';
-      const rollId = merged.roll_number || merged.roll_id || 'AYU-ENR-4821';
       const location = merged.preferred_location || 'All India (Flexible)';
 
       const courseBadge = document.getElementById('candidate-course-badge');
@@ -884,9 +995,10 @@
       const dgen = document.getElementById('display-gender');
       if (dgen) dgen.textContent = gender;
 
-      const cityState = [merged.address_city || 'New Delhi', merged.address_state || 'Delhi'].filter(Boolean).join(', ');
+      const cityStateParts = [merged.address_city, merged.address_state].filter(Boolean);
+      const cityState = cityStateParts.length > 0 ? cityStateParts.join(', ') : 'New Delhi, Delhi';
       const da = document.getElementById('display-address');
-      if (da) da.textContent = cityState || 'New Delhi, Delhi';
+      if (da) da.textContent = cityState;
 
       const dlink = document.getElementById('display-linkedin');
       if (dlink) {
@@ -980,6 +1092,17 @@
         const locField = document.getElementById('edit-location');
         if (locField) locField.value = m.preferred_location || '';
 
+        const resumeInfo = document.getElementById('edit-current-resume-info');
+        if (resumeInfo) {
+          const cvName = activeDocuments?.cv?.name || (m.resume_path ? 'resume.pdf' : null);
+          if (cvName) {
+            resumeInfo.style.display = 'block';
+            resumeInfo.innerHTML = `<i class="fa-solid fa-circle-check"></i> Current Saved Resume: <strong>${cvName}</strong> (Selecting a new file will overwrite)`;
+          } else {
+            resumeInfo.style.display = 'none';
+          }
+        }
+
         editCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     };
@@ -1003,6 +1126,38 @@
       const rollNumber = document.getElementById('edit-roll-id')?.value.trim();
       const location = document.getElementById('edit-location')?.value.trim();
 
+      // Check resume upload
+      const resumeFileInput = document.getElementById('edit-resume-file');
+      const resumeFile = resumeFileInput?.files && resumeFileInput.files[0];
+      let updatedResumePath = null;
+      if (resumeFile) {
+        if (resumeFile.type !== 'application/pdf' && !resumeFile.name.toLowerCase().endsWith('.pdf')) {
+          showToast('Resume file must be in PDF format.', 'error');
+          return;
+        }
+        if (resumeFile.size > 5 * 1024 * 1024) {
+          showToast('Resume size exceeds 5MB limit.', 'error');
+          return;
+        }
+        try {
+          showToast('Uploading resume to storage...', 'info');
+          const uploadRes = await uploadStudentResume(user.id, resumeFile);
+          if (uploadRes?.path) {
+            updatedResumePath = uploadRes.path;
+          }
+          const cvObj = {
+            name: resumeFile.name,
+            upload_date: new Date().toISOString().split('T')[0],
+            size: `${(resumeFile.size / 1024).toFixed(1)} KB`,
+            resume_path: updatedResumePath || `resumes/${user.id}/resume.pdf`,
+            verified: true
+          };
+          await saveStudentCV(user.id, cvObj);
+        } catch (resErr) {
+          console.warn('[Edit Profile] Resume upload error:', resErr);
+        }
+      }
+
       // Update local storage models
       user.full_name = fullName;
       user.name = fullName;
@@ -1014,6 +1169,11 @@
       user.graduation_year = gradYear;
       user.grad_year = gradYear;
       user.roll_number = rollNumber;
+      if (rollNumber) {
+        user.candidate_id = rollNumber;
+        localStorage.setItem('ayush_candidate_id', rollNumber);
+        localStorage.setItem('ayush_roll_number', rollNumber);
+      }
       user.preferred_location = location;
       setCurrentUser(user);
 
@@ -1032,9 +1192,14 @@
         graduation_year: gradYear,
         roll_number: rollNumber,
         preferred_location: location,
+        resume_path: updatedResumePath || savedProf.resume_path || undefined,
         updated_at: new Date().toISOString()
       };
-      localStorage.setItem('ayush_saved_profile', JSON.stringify(updatedSavedProf));
+      try {
+        localStorage.setItem('ayush_saved_profile', JSON.stringify(updatedSavedProf));
+      } catch (storageErr) {
+        console.warn('[savePortfolioProfile] localStorage cache warning:', storageErr);
+      }
 
       // Persist to Supabase if logged in
       if (user.id && supabase) {
@@ -1049,7 +1214,7 @@
             updated_at: new Date().toISOString()
           }).eq('id', user.id);
 
-          await supabase.from('student_profiles').upsert({
+          const studentPayload = {
             profile_id: user.id,
             college_institution: college,
             course,
@@ -1058,7 +1223,12 @@
             roll_number: rollNumber || null,
             preferred_location: location || null,
             updated_at: new Date().toISOString()
-          }, { onConflict: 'profile_id' });
+          };
+          if (updatedResumePath) {
+            studentPayload.resume_path = updatedResumePath;
+          }
+
+          await supabase.from('student_profiles').upsert(studentPayload, { onConflict: 'profile_id' });
         } catch (dbErr) {
           console.warn('[Portfolio] DB update warning:', dbErr);
         }

@@ -982,6 +982,321 @@ export async function fetchStudentDashboardMetrics(userId) {
 }
 
 /**
+ * Upload User Avatar to "avatars" bucket
+ * Path: avatars/{user_id}/profile.{file_extension}
+ * Retrieves public URL and updates profiles.avatar_url
+ */
+export async function uploadUserAvatar(userId, file) {
+  if (!file) throw new Error('No file provided');
+
+  let effectiveUserId = userId;
+  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    } catch (e) {}
+  }
+  if (!effectiveUserId) {
+    const cur = getCurrentUser();
+    effectiveUserId = cur?.id || 'usr_student_01';
+  }
+
+  const rawExt = (file.name?.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const ext = ['jpeg', 'jpg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg';
+  const uploadPath = `avatars/${effectiveUserId}/profile.${ext}`;
+
+  let publicUrl = null;
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const mimeType = file.type || (ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(uploadPath, file, {
+          upsert: true,
+          contentType: mimeType
+        });
+
+      if (uploadError) {
+        console.warn('[Supabase Storage] Avatar upload note:', uploadError.message);
+      }
+
+      // Always query public URL
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(uploadPath);
+
+      if (urlData?.publicUrl) {
+        // Append cache-buster timestamp so refreshed avatar is instantly visible
+        publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      }
+    } catch (err) {
+      console.warn('[Supabase Storage] Avatar upload exception:', err);
+    }
+  }
+
+  // Fallback if offline/demo
+  if (!publicUrl) {
+    publicUrl = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = () => resolve(URL.createObjectURL(file));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 3. Save that URL into the avatar_url column in the profiles table, overwriting any existing avatar_url
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      await supabase
+        .from('profiles')
+        .update({
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', effectiveUserId);
+    } catch (dbErr) {
+      console.warn('[Supabase DB] Failed to save avatar_url in profiles:', dbErr);
+    }
+  }
+
+  // 4. Update the avatar display everywhere it's shown (navbar, portfolio, dashboard)
+  localStorage.setItem('ayush_candidate_photo', publicUrl);
+  const cur = getCurrentUser();
+  if (cur) {
+    cur.avatar_url = publicUrl;
+    cur.avatar = publicUrl;
+    setCurrentUser(cur);
+  }
+
+  if (typeof window !== 'undefined') {
+    // Update any avatar image elements in document
+    const candidateImg = document.getElementById('candidate-photo-img');
+    if (candidateImg) {
+      candidateImg.src = publicUrl;
+      candidateImg.style.display = 'block';
+    }
+    const candidateFallback = document.getElementById('candidate-avatar-initials');
+    if (candidateFallback) {
+      candidateFallback.style.display = 'none';
+    }
+    const removeBtn = document.getElementById('btn-remove-photo');
+    if (removeBtn) {
+      removeBtn.style.display = 'inline-flex';
+    }
+
+    if (typeof window.syncUserHeader === 'function') {
+      window.syncUserHeader();
+    }
+  }
+
+  return { success: true, publicUrl, path: uploadPath };
+}
+
+/**
+ * Upload Student Resume to "resumes" bucket
+ * Path: resumes/{user_id}/resume.pdf (PDF only, max 5MB)
+ * Saves storage path into student_profiles.resume_path
+ */
+export async function uploadStudentResume(userId, file) {
+  if (!file) throw new Error('No resume file provided');
+  if (file.type !== 'application/pdf' && !file.name?.toLowerCase().endsWith('.pdf')) {
+    throw new Error('Only PDF format is accepted for resume upload.');
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error('Resume PDF exceeds maximum allowed size of 5MB.');
+  }
+
+  let effectiveUserId = userId;
+  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    } catch (e) {}
+  }
+  if (!effectiveUserId) {
+    const cur = getCurrentUser();
+    effectiveUserId = cur?.id || 'usr_student_01';
+  }
+
+  const uploadPath = `resumes/${effectiveUserId}/resume.pdf`;
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { error: uploadErr } = await supabase.storage
+        .from('resumes')
+        .upload(uploadPath, file, {
+          upsert: true,
+          contentType: 'application/pdf'
+        });
+
+      if (uploadErr) {
+        console.warn('[Supabase Storage] Resume upload note:', uploadErr.message);
+      }
+    } catch (err) {
+      console.warn('[Supabase Storage] Resume upload exception:', err);
+    }
+  }
+
+  // 2. Save storage path into student_profiles.resume_path
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      await supabase
+        .from('student_profiles')
+        .update({
+          resume_path: uploadPath,
+          updated_at: new Date().toISOString()
+        })
+        .eq('profile_id', effectiveUserId);
+    } catch (dbErr) {
+      console.warn('[Supabase DB] Failed to save resume_path in student_profiles:', dbErr);
+    }
+  }
+
+  // Update local document cache
+  const docs = await fetchStudentDocuments(effectiveUserId);
+  docs.cv = {
+    name: file.name || 'resume.pdf',
+    upload_date: new Date().toISOString().split('T')[0],
+    size: `${(file.size / 1024).toFixed(1)} KB`,
+    resume_path: uploadPath,
+    verified: true
+  };
+  localStorage.setItem('ayush_documents_' + effectiveUserId, JSON.stringify(docs));
+
+  return { success: true, path: uploadPath, name: file.name, size: file.size };
+}
+
+/**
+ * Generate temporary download URL for student resume using createSignedUrl (valid for 1 hour = 3600 seconds)
+ */
+export async function getResumeSignedUrl(userId, customPath = null) {
+  let effectiveUserId = userId;
+  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    } catch (e) {}
+  }
+  if (!effectiveUserId) {
+    const cur = getCurrentUser();
+    effectiveUserId = cur?.id || 'usr_student_01';
+  }
+
+  let path = customPath;
+  if (!path) {
+    if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+      try {
+        const { data } = await supabase
+          .from('student_profiles')
+          .select('resume_path')
+          .eq('profile_id', effectiveUserId)
+          .maybeSingle();
+        if (data?.resume_path) {
+          path = data.resume_path;
+        }
+      } catch (e) {}
+    }
+    if (!path) {
+      const docs = await fetchStudentDocuments(effectiveUserId);
+      path = docs?.cv?.resume_path || `resumes/${effectiveUserId}/resume.pdf`;
+    }
+  }
+
+  if (!path) return null;
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data, error } = await supabase.storage
+        .from('resumes')
+        .createSignedUrl(path, 3600); // valid for 1 hour
+
+      if (!error && data?.signedUrl) {
+        return data.signedUrl;
+      }
+      console.warn('[Supabase Storage] Resume signed URL note:', error?.message);
+    } catch (e) {
+      console.warn('[Supabase Storage] Signed URL exception:', e);
+    }
+  }
+
+  // Fallback
+  const docs = await fetchStudentDocuments(effectiveUserId);
+  return docs?.cv?.data_url || null;
+}
+
+/**
+ * Upload Project File to "portfolio-files" bucket
+ * Path: portfolio-files/{user_id}/{project_id}/{filename} (max 25MB)
+ */
+export async function uploadPortfolioFile(userId, projectId, file) {
+  if (!file) throw new Error('No project file provided');
+  if (file.size > 25 * 1024 * 1024) {
+    throw new Error('Project file exceeds maximum allowed limit of 25MB.');
+  }
+
+  let effectiveUserId = userId;
+  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    } catch (e) {}
+  }
+  if (!effectiveUserId) {
+    const cur = getCurrentUser();
+    effectiveUserId = cur?.id || 'usr_student_01';
+  }
+
+  const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const uploadPath = `portfolio-files/${effectiveUserId}/${projectId}/${cleanFileName}`;
+
+  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const { error: uploadErr } = await supabase.storage
+        .from('portfolio-files')
+        .upload(uploadPath, file, {
+          upsert: true,
+          contentType: file.type || 'application/octet-stream'
+        });
+
+      if (uploadErr) {
+        console.warn('[Supabase Storage] Portfolio file upload note:', uploadErr.message);
+      }
+    } catch (err) {
+      console.warn('[Supabase Storage] Portfolio file upload exception:', err);
+    }
+  }
+
+  return {
+    success: true,
+    file_path: uploadPath,
+    file_name: file.name,
+    file_size: file.size
+  };
+}
+
+/**
+ * Generate temporary signed URL for project file (valid for 1 hour = 3600 seconds)
+ */
+export async function getPortfolioFileSignedUrl(filePath) {
+  if (!filePath) return null;
+
+  try {
+    const { data, error } = await supabase.storage
+      .from('portfolio-files')
+      .createSignedUrl(filePath, 3600); // 1 hour validity
+
+    if (!error && data?.signedUrl) {
+      return data.signedUrl;
+    }
+    console.warn('[Supabase Storage] Project signed URL note:', error?.message);
+  } catch (e) {
+    console.warn('[Supabase Storage] Project signed URL exception:', e);
+  }
+  return null;
+}
+
+/**
  * Save candidate profile photo to Supabase & localStorage
  */
 export async function saveCandidatePhotoToSupabase(userId, photoDataUrl) {
@@ -1057,12 +1372,31 @@ export async function fetchStudentDocuments(userId) {
     try {
       const { data } = await supabase
         .from('student_profiles')
-        .select('resume_url, verification_documents')
+        .select('resume_path, resume_url, verification_documents')
         .eq('profile_id', uid)
         .maybeSingle();
 
       if (data) {
-        if (data.resume_url && !cv) {
+        if (data.resume_path) {
+          // Generate signed URL (1 hour validity)
+          let signedUrl = null;
+          try {
+            const { data: signData } = await supabase.storage
+              .from('resumes')
+              .createSignedUrl(data.resume_path, 3600);
+            signedUrl = signData?.signedUrl || null;
+          } catch (se) {}
+
+          cv = {
+            name: 'resume.pdf',
+            upload_date: new Date().toISOString().split('T')[0],
+            resume_path: data.resume_path,
+            signed_url: signedUrl,
+            data_url: signedUrl || data.resume_url || null,
+            verified: true,
+            size: 'Verified PDF'
+          };
+        } else if (data.resume_url && !cv) {
           cv = {
             name: 'Uploaded_Candidate_Resume.pdf',
             upload_date: new Date().toISOString().split('T')[0],
@@ -1665,6 +1999,9 @@ export async function fetchStudentProjectsData(userId) {
       technologies: Array.isArray(p.technologies) ? p.technologies : [],
       github_url: p.github_url || '#',
       live_demo_url: p.live_demo_url || '#',
+      file_path: p.file_path || null,
+      file_name: p.file_name || null,
+      file_size: p.file_size || null,
       date: p.created_at ? new Date(p.created_at).getFullYear().toString() : '2026'
     }));
   } catch (e) {
@@ -1684,11 +2021,23 @@ export async function saveProjectToSupabase(project) {
   }
 
   try {
-    const { data, error } = await supabase
+    let payload = { ...project };
+    let { data, error } = await supabase
       .from('projects')
-      .insert([project])
+      .insert([payload])
       .select()
       .single();
+
+    if (error && (error.message?.includes('column') || error.message?.includes('schema'))) {
+      const fallbackPayload = { ...payload };
+      delete fallbackPayload.file_path;
+      delete fallbackPayload.file_name;
+      delete fallbackPayload.file_size;
+      const res = await supabase.from('projects').insert([fallbackPayload]).select().single();
+      if (!res.error) {
+        return { success: true, data: { ...res.data, file_path: project.file_path, file_name: project.file_name } };
+      }
+    }
 
     if (error) {
       console.warn('Error saving project to Supabase:', error.message);
@@ -2828,6 +3177,11 @@ export default {
   saveSkillToSupabase,
   fetchStudentDashboardMetrics,
   saveCandidatePhotoToSupabase,
+  uploadUserAvatar,
+  uploadStudentResume,
+  getResumeSignedUrl,
+  uploadPortfolioFile,
+  getPortfolioFileSignedUrl,
   fetchStudentDocuments,
   saveStudentCV,
   saveStudentCertificate,

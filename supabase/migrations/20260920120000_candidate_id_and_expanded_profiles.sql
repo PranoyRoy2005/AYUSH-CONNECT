@@ -7,10 +7,13 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS candidate_id TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_candidate_id ON public.profiles(candidate_id) WHERE candidate_id IS NOT NULL;
 
 ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS candidate_id TEXT;
+ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS roll_number TEXT;
 ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS graduation_year TEXT;
 ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS interests TEXT[] DEFAULT '{}';
 ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS preferred_location TEXT;
+ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS skills TEXT[] DEFAULT '{}';
 ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS certifications TEXT[] DEFAULT '{}';
+ALTER TABLE public.student_profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 ALTER TABLE public.industry_profiles ADD COLUMN IF NOT EXISTS candidate_id TEXT;
 ALTER TABLE public.industry_profiles ADD COLUMN IF NOT EXISTS work_email TEXT;
