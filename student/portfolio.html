@@ -357,6 +357,27 @@
           <div style="font-weight: 700; font-size: 0.85rem; color: var(--primary-deep); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
             1. Personal &amp; Contact Details
           </div>
+
+          <!-- Profile Photo in Edit Form -->
+          <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.25rem; padding: 1rem; background: var(--bg-cream); border: 1px solid var(--border-color); border-radius: var(--radius-md); flex-wrap: wrap;">
+            <div id="edit-photo-preview-circle" class="user-avatar-circle" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #475569; border: 2px solid var(--primary-deep); flex-shrink: 0;">
+              <span id="edit-photo-preview-initials">AY</span>
+            </div>
+            <div style="flex: 1; min-width: 220px;">
+              <label class="form-label" style="font-size: 0.82rem; margin-bottom: 0.25rem; font-weight: 600;">Profile Photo</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <label for="edit-profile-photo-input" class="btn btn-sm btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; margin: 0;">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+                </label>
+                <input type="file" id="edit-profile-photo-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                <button type="button" class="btn btn-sm btn-secondary" id="edit-btn-remove-photo" style="display: none; padding: 0.25rem 0.6rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);" onclick="window.removeCandidatePhoto()">
+                  <i class="fa-solid fa-trash-can"></i> Remove
+                </button>
+                <span id="edit-photo-status" style="font-size: 0.78rem; color: var(--text-muted);">Max 8MB (JPG, PNG, WebP)</span>
+              </div>
+            </div>
+          </div>
+
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
             <div class="form-group" style="margin: 0;">
               <label class="form-label" style="font-size: 0.82rem;">Full Name *</label>
@@ -480,6 +501,30 @@
         </div>
       </div>
 
+      <!-- PORTFOLIO & PROJECTS SECTION (TASK 3) -->
+      <div id="portfolio-projects-section" style="margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">
+              <i class="fa-solid fa-code-branch" style="color: var(--secondary-teal); margin-right: 0.4rem;"></i> Projects &amp; Research Portfolio
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Showcase interdisciplinary AYUSH projects, clinical datasets, and repository links with verified file attachments.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn btn-primary btn-sm" onclick="window.openAddProjectModal()">
+              <i class="fa-solid fa-plus"></i> Add Project
+            </button>
+            <a href="/student/projects.html" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Full Screen
+            </a>
+          </div>
+        </div>
+
+        <div id="portfolio-projects-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -553,10 +598,126 @@
     </div>
   </div>
 
+  <!-- ADD PROJECT MODAL (WITH SECURE FILE UPLOAD) (TASK 3) -->
+  <div class="docs-modal-backdrop" id="project-modal-backdrop">
+    <div class="docs-modal-card" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+        <div>
+          <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin: 0;">Add Interdisciplinary Project</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.25rem 0 0;">Include technical stack, external links, and optional file attachments</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="window.closeAddProjectModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="portfolio-add-project-form" onsubmit="window.handlePortfolioAddProject(event)">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Project Title</label>
+          <input type="text" id="modal-proj-title" class="form-input" placeholder="e.g. AI-Assisted Ayurvedic Diagnostic Assistant" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Description &amp; Abstract</label>
+          <textarea id="modal-proj-desc" class="form-input" rows="3" placeholder="Summary of methodology, clinical insights, or engineering implementation..." required></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Technologies &amp; Domain Areas (Comma-separated)</label>
+          <input type="text" id="modal-proj-tech" class="form-input" placeholder="e.g. Python, Dravyaguna, Molecular Docking, SQL" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label"><i class="fa-brands fa-github"></i> GitHub Repository URL</label>
+            <input type="url" id="modal-proj-github" class="form-input" placeholder="https://github.com/username/repo">
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label"><i class="fa-solid fa-globe"></i> Live Demo / Paper URL</label>
+            <input type="url" id="modal-proj-demo" class="form-input" placeholder="https://doi.org/10.1016/...">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label"><i class="fa-solid fa-file-arrow-up"></i> Project Attachment / Certificate / Document <span style="font-weight: normal; color: var(--text-muted); font-size: 0.8rem;">(Optional - PDF, JPG, PNG, DOCX, ZIP, Max 25MB)</span></label>
+          <input type="file" id="modal-proj-file" class="form-input" style="padding: 0.35rem 0.5rem; font-size: 0.82rem;" accept=".pdf,.doc,.docx,.zip,.tar.gz,.png,.jpg,.jpeg,image/*,application/pdf">
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">Stored securely in private Supabase Storage ("portfolio-files" bucket). Accessible via 1-hour signed download links.</div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="window.closeAddProjectModal()">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-primary" id="btn-modal-save-project">
+            <i class="fa-solid fa-floppy-disk"></i> Save Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT PROJECT MODAL -->
+  <div class="docs-modal-backdrop" id="edit-project-modal-backdrop">
+    <div class="docs-modal-card" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+        <div>
+          <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin: 0;">Edit Project &amp; Research Paper</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.25rem 0 0;">Update project title, description, research links, or attached files</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="window.closeEditProjectModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="portfolio-edit-project-form" onsubmit="window.handleSaveEditProject(event)">
+        <input type="hidden" id="edit-proj-id">
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Project Title</label>
+          <input type="text" id="edit-proj-title" class="form-input" placeholder="Exact project name" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Description &amp; Abstract</label>
+          <textarea id="edit-proj-desc" class="form-input" rows="3" placeholder="Summary of methodology, clinical insights, or engineering implementation..." required></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Technologies &amp; Domain Areas (Comma-separated)</label>
+          <input type="text" id="edit-proj-tech" class="form-input" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label"><i class="fa-brands fa-github"></i> GitHub Repository URL</label>
+            <input type="url" id="edit-proj-github" class="form-input" placeholder="https://github.com/username/repo">
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label"><i class="fa-solid fa-globe"></i> Live Demo / Paper URL</label>
+            <input type="url" id="edit-proj-demo" class="form-input" placeholder="https://doi.org/10.1016/...">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label"><i class="fa-solid fa-file-arrow-up"></i> Update Attached Document / Slide / Paper <span style="font-weight: normal; color: var(--text-muted); font-size: 0.8rem;">(Optional - PDF, JPG, PNG, DOCX, ZIP, Max 25MB)</span></label>
+          <input type="file" id="edit-proj-file" class="form-input" style="padding: 0.35rem 0.5rem; font-size: 0.82rem;" accept=".pdf,.doc,.docx,.zip,.tar.gz,.png,.jpg,.jpeg,image/*,application/pdf">
+          <div id="edit-proj-current-file" style="font-size: 0.8rem; color: #059669; margin-top: 0.35rem;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button type="button" class="btn btn-sm btn-secondary" style="color: #ef4444; border-color: #fca5a5;" onclick="window.handleDeleteProject()">
+            <i class="fa-solid fa-trash-can"></i> Delete Project
+          </button>
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="window.closeEditProjectModal()">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary" id="btn-save-edit-project">
+              <i class="fa-solid fa-floppy-disk"></i> Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { 
       getCurrentUser, 
       setCurrentUser, 
+      computeUserInitials,
       syncUserHeader, 
       showToast 
     } from '/js/auth.js';
@@ -571,7 +732,14 @@
       saveCandidatePhotoToSupabase,
       fetchSkillImprovementRecommendation,
       uploadStudentResume,
-      getResumeSignedUrl
+      getResumeSignedUrl,
+      uploadUserAvatar,
+      fetchStudentProjectsData,
+      saveProjectToSupabase,
+      updateProjectInSupabase,
+      deleteProjectFromSupabase,
+      uploadPortfolioFile,
+      getPortfolioFileSignedUrl
     } from '/js/supabase.js';
     import { initCandidatePhoto } from '/js/student.js';
 
@@ -653,16 +821,15 @@
     };
 
     // Download/View Resume using Signed URL (TASK 2)
-    window.downloadResume = async function(resumePath) {
+    window.downloadResume = async function(event, resumePath) {
+      if (event && event.preventDefault) event.preventDefault();
       try {
         const user = getCurrentUser();
         const effectivePath = resumePath || (activeDocuments?.cv?.resume_path) || `resumes/${user?.id}/resume.pdf`;
-        showToast('Generating secure download link...', 'info');
+        showToast('Opening verified resume...', 'info');
         const signedUrl = await getResumeSignedUrl(effectivePath, 3600);
         if (signedUrl) {
-          window.open(signedUrl, '_blank');
-        } else if (activeDocuments?.cv?.data_url) {
-          window.open(activeDocuments.cv.data_url, '_blank');
+          window.location.assign(signedUrl);
         } else {
           showToast('Could not generate download URL. Please re-upload your resume.', 'error');
         }
@@ -756,9 +923,9 @@
               <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> Active</span>
             </div>
             <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-primary" onclick="window.downloadResume('${activeDocuments.cv.resume_path || ''}')" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <i class="fa-solid fa-file-arrow-down"></i> View / Download Resume
-              </button>
+              <a href="${activeDocuments.cv.signed_url || 'javascript:void(0)'}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary" onclick="if (!this.getAttribute('href') || this.getAttribute('href') === 'javascript:void(0)') { window.downloadResume(event, '${activeDocuments.cv.resume_path || ''}'); return false; }" style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
+                <i class="fa-solid fa-file-pdf"></i> View / Download Resume
+              </a>
               <button class="btn btn-sm btn-secondary" onclick="window.openDocumentsModal()">
                 <i class="fa-solid fa-arrows-rotate"></i> Replace
               </button>
@@ -925,16 +1092,33 @@
       const initialsFallback = document.getElementById('candidate-avatar-initials');
       const userAvatarSide = document.getElementById('sidebar-avatar-display');
       const removeBtn = document.getElementById('btn-remove-photo');
-      const initials = (fullName.split(' ').map(n => n[0]).join('').substring(0, 2) || 'ST').toUpperCase();
+      const initials = computeUserInitials(fullName, user.role);
 
-      if (avatarPhoto) {
+      if (initialsFallback) {
+        initialsFallback.textContent = initials;
+      }
+
+      if (photoImg) {
+        photoImg.onerror = function() {
+          console.warn('Candidate photo failed to load in portfolio, falling back to name initials logo');
+          photoImg.style.display = 'none';
+          photoImg.src = '';
+          if (initialsFallback) {
+            initialsFallback.textContent = initials;
+            initialsFallback.style.display = 'block';
+          }
+          localStorage.removeItem('ayush_candidate_photo');
+        };
+      }
+
+      if (avatarPhoto && (avatarPhoto.startsWith('data:image') || avatarPhoto.startsWith('http://') || avatarPhoto.startsWith('https://'))) {
         if (photoImg) {
           photoImg.src = avatarPhoto;
           photoImg.style.display = 'block';
         }
         if (initialsFallback) initialsFallback.style.display = 'none';
         if (userAvatarSide) {
-          userAvatarSide.innerHTML = `<img src="${avatarPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          userAvatarSide.innerHTML = `<img src="${avatarPhoto}" alt="${fullName}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.textContent='${initials}';">`;
         }
         if (removeBtn) removeBtn.style.display = 'inline-flex';
       } else {
@@ -1092,6 +1276,26 @@
         const locField = document.getElementById('edit-location');
         if (locField) locField.value = m.preferred_location || '';
 
+        const photoCircle = document.getElementById('edit-photo-preview-circle');
+        const photoStatus = document.getElementById('edit-photo-status');
+        const editRemoveBtn = document.getElementById('edit-btn-remove-photo');
+        const currentPhoto = localStorage.getItem('ayush_candidate_photo') || m.avatar_url || user.avatar_url;
+        const initials = computeUserInitials(m.full_name || m.name, user.role);
+        
+        if (photoCircle) {
+          if (currentPhoto && (currentPhoto.startsWith('data:image') || currentPhoto.startsWith('http://') || currentPhoto.startsWith('https://'))) {
+            photoCircle.innerHTML = `<img src="${currentPhoto}" alt="${m.full_name || 'User'}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span>${initials}</span>';">`;
+            if (editRemoveBtn) editRemoveBtn.style.display = 'inline-flex';
+          } else {
+            photoCircle.innerHTML = `<span>${initials}</span>`;
+            if (editRemoveBtn) editRemoveBtn.style.display = 'none';
+          }
+        }
+        if (photoStatus) {
+          photoStatus.textContent = 'Max 8MB (JPG, PNG, WebP)';
+          photoStatus.style.color = 'var(--text-muted)';
+        }
+
         const resumeInfo = document.getElementById('edit-current-resume-info');
         if (resumeInfo) {
           const cvName = activeDocuments?.cv?.name || (m.resume_path ? 'resume.pdf' : null);
@@ -1226,9 +1430,17 @@
           };
           if (updatedResumePath) {
             studentPayload.resume_path = updatedResumePath;
+            studentPayload.resume_url = updatedResumePath;
           }
 
-          await supabase.from('student_profiles').upsert(studentPayload, { onConflict: 'profile_id' });
+          let { error: studErr } = await supabase.from('student_profiles').upsert(studentPayload, { onConflict: 'profile_id' });
+          if (studErr && (studErr.code === '42703' || studErr.code === 'PGRST204' || studErr.message?.includes('column'))) {
+            // Strip missing columns if migration hasn't been run yet
+            delete studentPayload.roll_number;
+            delete studentPayload.preferred_location;
+            delete studentPayload.resume_path;
+            await supabase.from('student_profiles').upsert(studentPayload, { onConflict: 'profile_id' });
+          }
         } catch (dbErr) {
           console.warn('[Portfolio] DB update warning:', dbErr);
         }
@@ -1392,10 +1604,372 @@
       const user = getCurrentUser();
       initCandidatePhoto(user);
 
+      // Edit Profile Photo input handler
+      const editPhotoInput = document.getElementById('edit-profile-photo-input');
+      if (editPhotoInput) {
+        editPhotoInput.addEventListener('change', async (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+
+          if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+            showToast('Please select a valid image file (JPEG, PNG, WebP).', 'error');
+            return;
+          }
+          if (file.size > 8 * 1024 * 1024) {
+            showToast('Image size exceeds 8MB. Please choose a smaller image.', 'error');
+            return;
+          }
+
+          const photoCircle = document.getElementById('edit-photo-preview-circle');
+          const photoStatus = document.getElementById('edit-photo-status');
+          const editRemoveBtn = document.getElementById('edit-btn-remove-photo');
+          if (photoStatus) {
+            photoStatus.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading to Supabase avatars...`;
+            photoStatus.style.color = 'var(--secondary-teal)';
+          }
+
+          try {
+            showToast('Uploading profile photo to avatars bucket...', 'info');
+            const uploadRes = await uploadUserAvatar(user?.id, file);
+            const publicUrl = uploadRes?.publicUrl;
+
+            if (publicUrl && photoCircle) {
+              const currentInitials = computeUserInitials(user?.full_name, user?.role);
+              photoCircle.innerHTML = `<img src="${publicUrl}" alt="${user?.full_name || 'User'}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span>${currentInitials}</span>';">`;
+            }
+            if (editRemoveBtn) editRemoveBtn.style.display = 'inline-flex';
+            if (photoStatus) {
+              photoStatus.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Saved to profiles!`;
+              photoStatus.style.color = '#10b981';
+            }
+            showToast('Profile photo updated in Supabase avatars and saved to profiles table!', 'success');
+            syncUserHeader();
+          } catch (err) {
+            console.error('Edit photo upload failed:', err);
+            if (photoStatus) {
+              photoStatus.textContent = 'Upload failed: ' + (err.message || 'Error');
+              photoStatus.style.color = '#ef4444';
+            }
+            showToast('Failed to upload photo: ' + (err.message || 'Error'), 'error');
+          }
+        });
+      }
+
       await loadAndRenderFullProfile();
       await loadAndRenderDocuments();
+      await loadAndRenderProjects();
       await loadCompletionMetrics();
     });
+
+    window.openAddProjectModal = function() {
+      const modal = document.getElementById('project-modal-backdrop');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.closeAddProjectModal = function() {
+      const modal = document.getElementById('project-modal-backdrop');
+      if (modal) modal.classList.remove('active');
+    };
+
+    // Download/View Project Attachment using signed URLs (TASK 3)
+    window.downloadProjectFile = async function(filePath, fileName, event) {
+      if (event && event.preventDefault) event.preventDefault();
+      if (!filePath) {
+        showToast('No file path associated with this project.', 'warning');
+        return;
+      }
+      // For mobile Safari / Chrome popup-blocker safety, open window immediately on gesture
+      let targetTab = null;
+      try {
+        targetTab = window.open('about:blank', '_blank');
+      } catch (e) {}
+
+      try {
+        showToast('Opening verified project file in new tab...', 'info');
+        const signedUrl = await getPortfolioFileSignedUrl(filePath, 3600);
+        if (signedUrl) {
+          if (targetTab && !targetTab.closed) {
+            targetTab.location.href = signedUrl;
+          } else {
+            window.location.assign(signedUrl);
+          }
+        } else {
+          if (targetTab && !targetTab.closed) targetTab.close();
+          showToast('Unable to open file. Please verify bucket connection or re-upload.', 'warning');
+        }
+      } catch (err) {
+        if (targetTab && !targetTab.closed) targetTab.close();
+        console.error('Download project file error:', err);
+        showToast('Error opening file: ' + (err.message || 'Error'), 'error');
+      }
+    };
+
+    let currentEditingProjectId = null;
+    let cachedProjectsList = [];
+
+    window.openEditProjectModal = function(projectId) {
+      const proj = cachedProjectsList.find(p => p.id === projectId);
+      if (!proj) return;
+      currentEditingProjectId = projectId;
+
+      document.getElementById('edit-proj-id').value = proj.id;
+      document.getElementById('edit-proj-title').value = proj.title || '';
+      document.getElementById('edit-proj-desc').value = proj.description || '';
+      document.getElementById('edit-proj-tech').value = (proj.technologies || []).join(', ');
+      document.getElementById('edit-proj-github').value = proj.github_url || '';
+      document.getElementById('edit-proj-demo').value = proj.live_demo_url || '';
+      
+      const fileInfo = document.getElementById('edit-proj-current-file');
+      if (fileInfo) {
+        if (proj.file_name) {
+          fileInfo.innerHTML = `<i class="fa-solid fa-check"></i> Current Attached File: <strong>${proj.file_name}</strong>`;
+        } else {
+          fileInfo.textContent = 'No file currently attached.';
+        }
+      }
+
+      const modal = document.getElementById('edit-project-modal-backdrop');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.closeEditProjectModal = function() {
+      const modal = document.getElementById('edit-project-modal-backdrop');
+      if (modal) modal.classList.remove('active');
+      currentEditingProjectId = null;
+    };
+
+    window.handleSaveEditProject = async function(e) {
+      e.preventDefault();
+      if (!currentEditingProjectId) return;
+
+      const title = document.getElementById('edit-proj-title').value.trim();
+      const desc = document.getElementById('edit-proj-desc').value.trim();
+      const techStr = document.getElementById('edit-proj-tech').value.trim();
+      const github = document.getElementById('edit-proj-github').value.trim() || null;
+      const demo = document.getElementById('edit-proj-demo').value.trim() || null;
+
+      const fileInput = document.getElementById('edit-proj-file');
+      const attachedFile = fileInput?.files && fileInput.files[0];
+
+      const saveBtn = document.getElementById('btn-save-edit-project');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+      }
+
+      const user = getCurrentUser();
+      const updates = {
+        title,
+        description: desc,
+        technologies: techStr.split(',').map(s => s.trim()).filter(Boolean),
+        github_url: github,
+        live_demo_url: demo
+      };
+
+      if (attachedFile) {
+        try {
+          showToast('Uploading new attachment...', 'info');
+          const uploadRes = await uploadPortfolioFile(user?.id || 'usr_guest', currentEditingProjectId, attachedFile);
+          if (uploadRes?.path || uploadRes?.file_path) {
+            updates.file_path = uploadRes.path || uploadRes.file_path;
+            updates.file_name = uploadRes.file_name || attachedFile.name;
+            updates.file_size = uploadRes.file_size ? `${(uploadRes.file_size / 1024).toFixed(1)} KB` : `${(attachedFile.size / 1024).toFixed(1)} KB`;
+            updates.file_type = uploadRes.file_type || attachedFile.type;
+          }
+        } catch (err) {
+          console.warn('File upload error during edit:', err);
+        }
+      }
+
+      await updateProjectInSupabase(currentEditingProjectId, updates);
+      showToast(`Updated project "${title}" successfully!`, 'success');
+      window.closeEditProjectModal();
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Changes`;
+      }
+      await loadAndRenderProjects();
+    };
+
+    window.handleDeleteProject = async function() {
+      if (!currentEditingProjectId) return;
+      if (confirm('Are you sure you want to delete this project from your portfolio?')) {
+        await deleteProjectFromSupabase(currentEditingProjectId);
+        showToast('Project deleted.', 'info');
+        window.closeEditProjectModal();
+        await loadAndRenderProjects();
+      }
+    };
+
+    window.handlePortfolioAddProject = async function(e) {
+      e.preventDefault();
+      const title = document.getElementById('modal-proj-title').value.trim();
+      const desc = document.getElementById('modal-proj-desc').value.trim();
+      const techStr = document.getElementById('modal-proj-tech').value.trim();
+      const github = document.getElementById('modal-proj-github').value.trim() || '';
+      const demo = document.getElementById('modal-proj-demo').value.trim() || '';
+
+      const fileInput = document.getElementById('modal-proj-file');
+      const attachedFile = fileInput?.files && fileInput.files[0];
+
+      const user = getCurrentUser();
+      const saveBtn = document.getElementById('btn-modal-save-project');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Project...`;
+      }
+
+      const newProjId = 'proj_' + Date.now();
+      let filePath = null;
+      let fileName = null;
+      let fileSize = null;
+      let fileType = null;
+
+      if (attachedFile) {
+        if (attachedFile.size > 25 * 1024 * 1024) {
+          showToast('Project attachment exceeds 25MB limit.', 'error');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Project`;
+          }
+          return;
+        }
+
+        try {
+          showToast('Uploading attachment to "portfolio-files" bucket...', 'info');
+          const uploadRes = await uploadPortfolioFile(user?.id || 'usr_guest', newProjId, attachedFile);
+          if (uploadRes?.path || uploadRes?.file_path) {
+            filePath = uploadRes.path || uploadRes.file_path;
+            fileName = uploadRes.file_name || attachedFile.name;
+            fileSize = uploadRes.file_size ? `${(uploadRes.file_size / 1024).toFixed(1)} KB` : `${(attachedFile.size / 1024).toFixed(1)} KB`;
+            fileType = uploadRes.file_type || attachedFile.type;
+          }
+        } catch (uploadErr) {
+          console.warn('[Portfolio] File upload warning:', uploadErr);
+          showToast('Attachment upload notice: ' + (uploadErr.message || 'Continuing without attachment'), 'warning');
+        }
+      }
+
+      const newProj = {
+        id: newProjId,
+        student_id: user?.id || 'usr_student_01',
+        title,
+        description: desc,
+        date: new Date().getFullYear().toString(),
+        technologies: techStr.split(',').map(s => s.trim()).filter(Boolean),
+        github_url: github,
+        live_demo_url: demo,
+        file_path: filePath,
+        file_name: fileName,
+        file_size: fileSize,
+        file_type: fileType
+      };
+
+      await saveProjectToSupabase(newProj);
+      showToast(`Added project "${title}" to your portfolio!`, 'success');
+      document.getElementById('portfolio-add-project-form').reset();
+      window.closeAddProjectModal();
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Project`;
+      }
+      await loadAndRenderProjects();
+    };
+
+    async function loadAndRenderProjects() {
+      const container = document.getElementById('portfolio-projects-grid');
+      if (!container) return;
+
+      const user = getCurrentUser();
+      const projects = await fetchStudentProjectsData(user?.id);
+      cachedProjectsList = projects || [];
+
+      if (!projects || projects.length === 0) {
+        container.innerHTML = `
+          <div class="ayush-card" style="text-align: center; padding: 3rem 1.5rem; grid-column: 1 / -1; border: 1px dashed var(--border-color); background: #fffcf7;">
+            <div style="font-size: 2.25rem; color: var(--secondary-teal); margin-bottom: 0.75rem;"><i class="fa-solid fa-code-branch"></i></div>
+            <h4 style="color: var(--primary-deep); font-size: 1.15rem; margin: 0 0 0.5rem 0;">No Projects Added Yet</h4>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; max-width: 460px; margin: 0 auto 1.25rem;">
+              Attach your bioinformatics code, botanical research, or clinical trials with downloadable documentation.
+            </p>
+            <button class="btn btn-primary btn-sm" onclick="window.openAddProjectModal()"><i class="fa-solid fa-plus"></i> Add Your First Project</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = projects.map(p => {
+        const fileUrl = p.file_signed_url || '';
+        const hasFile = !!p.file_path;
+        const fileName = p.file_name || 'Project Document / Paper';
+
+        return `
+        <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--primary-deep); position: relative;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; gap: 0.5rem;">
+              <h4 style="font-size: 1.15rem; color: var(--primary-deep); font-weight: 700; margin: 0;">${p.title}</h4>
+              <span class="badge badge-primary">${p.date || '2026'}</span>
+            </div>
+            <p style="font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem; color: var(--text-secondary);">${p.description || ''}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem;">
+              ${(p.technologies || []).map(t => `<span class="badge badge-teal">${t}</span>`).join('')}
+            </div>
+          </div>
+
+          <!-- DEDICATED ATTACHED PROJECT DOCUMENT SECTION -->
+          <div style="margin-bottom: 1rem;">
+            ${hasFile ? `
+              <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.55rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+                    <i class="fa-solid fa-file-pdf" style="color: #16a34a; font-size: 1.35rem; flex-shrink: 0;"></i>
+                    <div style="min-width: 0;">
+                      <div style="font-weight: 700; color: #166534; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${fileName}">
+                        ${fileName}
+                      </div>
+                      <div style="font-size: 0.75rem; color: #15803d;">
+                        Verified Project Work &bull; ${p.file_size ? `${p.file_size}` : 'Attached PDF'}
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge badge-teal" style="font-size: 0.72rem; padding: 0.2rem 0.55rem; background: #dcfce7; color: #15803d; border-color: #86efac;">
+                    <i class="fa-solid fa-circle-check"></i> Attached
+                  </span>
+                </div>
+                <a href="${fileUrl || 'javascript:void(0)'}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary" onclick="if (!this.getAttribute('href') || this.getAttribute('href') === 'javascript:void(0)') { window.downloadProjectFile('${p.file_path}', '${fileName.replace(/'/g, "\\'")}', event); return false; }" style="width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; padding: 0.55rem 0.75rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <i class="fa-solid fa-file-pdf"></i> View / Download ${fileName}
+                </a>
+              </div>
+            ` : `
+              <div style="background: #fafaf9; border: 1px dashed var(--border-color); border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-paperclip"></i> No document attached</span>
+                <button type="button" class="btn btn-xs btn-outline-primary" onclick="window.openEditProjectModal('${p.id}')" style="font-size: 0.78rem; padding: 0.25rem 0.5rem;">
+                  <i class="fa-solid fa-file-arrow-up"></i> Attach PDF / Paper
+                </button>
+              </div>
+            `}
+          </div>
+
+          <!-- ACTION BUTTONS: LIVE DEMO, GITHUB REPO, EDIT -->
+          <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; flex-wrap: wrap; align-items: center;">
+            ${p.live_demo_url ? `
+              <a href="${p.live_demo_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary" style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;" title="Open Project Live Demo">
+                <i class="fa-solid fa-globe"></i> Live Demo
+              </a>
+            ` : ''}
+            ${p.github_url ? `
+              <a href="${p.github_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;" title="View Source Code on GitHub">
+                <i class="fa-brands fa-github"></i> GitHub Repo
+              </a>
+            ` : ''}
+            <button type="button" class="btn btn-sm btn-secondary" onclick="window.openEditProjectModal('${p.id}')" title="Edit project title, description, or attached paper" style="margin-left: auto;">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
   </script>
 </body>
 </html>

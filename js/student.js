@@ -3,7 +3,7 @@
  * SIH 2026: Career Pathway, Skill Taxonomy & Application Tracker
  */
 
-import { getCurrentUser, showToast, computeUserInitials } from './auth.js';
+import { getCurrentUser, setCurrentUser, showToast, computeUserInitials } from './auth.js';
 import { 
   MOCK_DB, 
   isDemoMode, 
@@ -15,7 +15,8 @@ import {
   calculateMatch,
   saveProjectToSupabase,
   saveSkillToSupabase,
-  uploadUserAvatar
+  uploadUserAvatar,
+  getPortfolioFileSignedUrl
 } from './supabase.js';
 
 export const STUDENT_STATE = {
@@ -350,18 +351,32 @@ export function initCandidatePhoto(user) {
     initialsFallback.textContent = initials;
   }
 
+  if (photoImg) {
+    photoImg.onerror = function() {
+      console.warn('Candidate photo failed to load, falling back to name initials logo');
+      photoImg.style.display = 'none';
+      photoImg.src = '';
+      if (initialsFallback) {
+        initialsFallback.textContent = initials;
+        initialsFallback.style.display = 'block';
+      }
+      localStorage.removeItem('ayush_candidate_photo');
+    };
+  }
+
   const savedPhoto = localStorage.getItem('ayush_candidate_photo') || user?.avatar_url;
-  if (savedPhoto) {
+  if (savedPhoto && (savedPhoto.startsWith('data:image') || savedPhoto.startsWith('http://') || savedPhoto.startsWith('https://'))) {
     if (photoImg) {
       photoImg.src = savedPhoto;
       photoImg.style.display = 'block';
     }
     if (initialsFallback) initialsFallback.style.display = 'none';
     if (userAvatarSide) {
-      userAvatarSide.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      userAvatarSide.innerHTML = `<img src="${savedPhoto}" alt="${user?.full_name || 'User'}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.textContent='${initials}';">`;
     }
     if (removeBtn) removeBtn.style.display = 'inline-flex';
   } else {
+    if (photoImg) photoImg.style.display = 'none';
     if (initialsFallback) initialsFallback.style.display = 'block';
     if (userAvatarSide) {
       userAvatarSide.textContent = initials;
@@ -394,9 +409,12 @@ export function initCandidatePhoto(user) {
         }
         if (initialsFallback) initialsFallback.style.display = 'none';
         if (userAvatarSide && publicUrl) {
-          userAvatarSide.innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          userAvatarSide.innerHTML = `<img src="${publicUrl}" alt="${user?.full_name || 'User'}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.textContent='${initials}';">`;
         }
         if (removeBtn) removeBtn.style.display = 'inline-flex';
+        if (typeof window.syncUserHeader === 'function') {
+          window.syncUserHeader();
+        }
         showToast('Candidate photo updated and verified!', 'success');
       } catch (err) {
         console.error('Candidate photo upload failed:', err);
@@ -405,8 +423,19 @@ export function initCandidatePhoto(user) {
     });
   }
 
-  window.removeCandidatePhoto = function() {
+  window.removeCandidatePhoto = async function() {
     localStorage.removeItem('ayush_candidate_photo');
+    const cur = getCurrentUser();
+    if (cur) {
+      cur.avatar_url = null;
+      cur.avatar = initials;
+      setCurrentUser(cur);
+    }
+    if (user?.id && !String(user.id).startsWith('usr_')) {
+      try {
+        await supabase.from('profiles').update({ avatar_url: null, updated_at: new Date().toISOString() }).eq('id', user.id);
+      } catch (e) {}
+    }
     if (photoImg) {
       photoImg.src = '';
       photoImg.style.display = 'none';
@@ -419,6 +448,9 @@ export function initCandidatePhoto(user) {
       userAvatarSide.textContent = initials;
     }
     if (removeBtn) removeBtn.style.display = 'none';
+    if (typeof window.syncUserHeader === 'function') {
+      window.syncUserHeader();
+    }
     showToast('Candidate photo removed.', 'info');
   };
 }
@@ -612,28 +644,109 @@ export async function renderPortfolio() {
     return;
   }
 
-  projContainer.innerHTML = projects.map(p => `
-    <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+  projContainer.innerHTML = projects.map(p => {
+    const fileUrl = p.file_signed_url || '';
+    const hasFile = !!p.file_path;
+    const fileName = p.file_name || (p.file_path ? p.file_path.split('/').pop() : 'Project Document / Paper');
+
+    return `
+    <div class="ayush-card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--primary-deep); position: relative;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem;">
-          <h4 style="font-size: 1.05rem; color: var(--primary-deep);">${p.title}</h4>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; gap: 0.5rem;">
+          <h4 style="font-size: 1.15rem; color: var(--primary-deep); font-weight: 700; margin: 0;">${p.title}</h4>
           <span class="badge badge-primary">${p.date || '2026'}</span>
         </div>
-        <p style="font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem;">${p.description || ''}</p>
+        <p style="font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem; color: var(--text-secondary);">${p.description || ''}</p>
         <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem;">
           ${(p.technologies || []).map(t => `<span class="badge badge-teal">${t}</span>`).join('')}
         </div>
       </div>
-      <div style="display: flex; gap: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
-        <a href="${p.github_url || '#'}" target="_blank" class="btn btn-sm btn-secondary">
-          GitHub Repo
-        </a>
-        <a href="${p.live_demo_url || '#'}" target="_blank" class="btn btn-sm btn-primary">
-          Live Demo
-        </a>
+
+      <!-- DEDICATED ATTACHED PROJECT DOCUMENT SECTION -->
+      <div style="margin-bottom: 1rem;">
+        ${hasFile ? `
+          <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.55rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+                <i class="fa-solid fa-file-pdf" style="color: #16a34a; font-size: 1.35rem; flex-shrink: 0;"></i>
+                <div style="min-width: 0;">
+                  <div style="font-weight: 700; color: #166534; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${fileName}">
+                    ${fileName}
+                  </div>
+                  <div style="font-size: 0.75rem; color: #15803d;">
+                    Verified Project Work &bull; ${p.file_size ? `${p.file_size}` : 'Attached PDF'}
+                  </div>
+                </div>
+              </div>
+              <span class="badge badge-teal" style="font-size: 0.72rem; padding: 0.2rem 0.55rem; background: #dcfce7; color: #15803d; border-color: #86efac;">
+                <i class="fa-solid fa-circle-check"></i> Attached
+              </span>
+            </div>
+            <a href="${fileUrl || 'javascript:void(0)'}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary" onclick="if (!this.getAttribute('href') || this.getAttribute('href') === 'javascript:void(0)') { window.downloadProjectFile('${p.file_path}', '${fileName.replace(/'/g, "\\'")}', event); return false; }" style="width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; padding: 0.55rem 0.75rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+              <i class="fa-solid fa-file-pdf"></i> View / Download ${fileName}
+            </a>
+          </div>
+        ` : `
+          <div style="background: #fafaf9; border: 1px dashed var(--border-color); border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-paperclip"></i> No document attached</span>
+            <button type="button" class="btn btn-xs btn-outline-primary" onclick="window.addProjectPrompt ? window.addProjectPrompt() : (window.openAddProjectModal && window.openAddProjectModal())" style="font-size: 0.78rem; padding: 0.25rem 0.5rem;">
+              <i class="fa-solid fa-file-arrow-up"></i> Attach PDF / Paper
+            </button>
+          </div>
+        `}
+      </div>
+
+      <!-- ACTION BUTTONS: LIVE DEMO, GITHUB REPO, EDIT -->
+      <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; flex-wrap: wrap; align-items: center;">
+        ${p.live_demo_url ? `
+          <a href="${p.live_demo_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary" style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;" title="Open Project Live Demo">
+            <i class="fa-solid fa-globe"></i> Live Demo
+          </a>
+        ` : ''}
+        ${p.github_url ? `
+          <a href="${p.github_url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;" title="View Source Code on GitHub">
+            <i class="fa-brands fa-github"></i> GitHub Repo
+          </a>
+        ` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+// Global project file download helper with 1-hour signed URL (TASK 3)
+if (typeof window !== 'undefined') {
+  window.downloadProjectFile = async function(filePath, fileName, event) {
+    if (event && event.preventDefault) event.preventDefault();
+    if (!filePath) {
+      showToast('No file path associated with this project.', 'warning');
+      return;
+    }
+    // For mobile Safari / Chrome popup-blocker safety, open window immediately on gesture
+    let targetTab = null;
+    try {
+      targetTab = window.open('about:blank', '_blank');
+    } catch (e) {}
+
+    try {
+      showToast('Opening verified project file in new tab...', 'info');
+      const signedUrl = await getPortfolioFileSignedUrl(filePath, 3600);
+      if (signedUrl) {
+        if (targetTab && !targetTab.closed) {
+          targetTab.location.href = signedUrl;
+        } else {
+          window.location.assign(signedUrl);
+        }
+      } else {
+        if (targetTab && !targetTab.closed) targetTab.close();
+        showToast('Unable to open file. Please verify bucket connection or re-upload.', 'warning');
+      }
+    } catch (err) {
+      if (targetTab && !targetTab.closed) targetTab.close();
+      console.error('Download project file error:', err);
+      showToast('Error opening file: ' + (err.message || 'Error'), 'error');
+    }
+  };
 }
 
 /**

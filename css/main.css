@@ -587,6 +587,7 @@ a:hover {
   justify-content: center;
   border: 2px solid var(--primary-deep);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .sidebar-footer {

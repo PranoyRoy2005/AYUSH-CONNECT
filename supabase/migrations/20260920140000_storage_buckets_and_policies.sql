@@ -71,6 +71,12 @@ CREATE POLICY "Users can update own avatar"
       (storage.foldername(name))[1] = auth.uid()::text OR
       ((storage.foldername(name))[1] = 'avatars' AND (storage.foldername(name))[2] = auth.uid()::text)
     )
+  )
+  WITH CHECK (
+    bucket_id = 'avatars' AND (
+      (storage.foldername(name))[1] = auth.uid()::text OR
+      ((storage.foldername(name))[1] = 'avatars' AND (storage.foldername(name))[2] = auth.uid()::text)
+    )
   );
 
 CREATE POLICY "Users can delete own avatar"
@@ -116,6 +122,12 @@ CREATE POLICY "Users can update own resume"
       (storage.foldername(name))[1] = auth.uid()::text OR
       ((storage.foldername(name))[1] = 'resumes' AND (storage.foldername(name))[2] = auth.uid()::text)
     )
+  )
+  WITH CHECK (
+    bucket_id = 'resumes' AND (
+      (storage.foldername(name))[1] = auth.uid()::text OR
+      ((storage.foldername(name))[1] = 'resumes' AND (storage.foldername(name))[2] = auth.uid()::text)
+    )
   );
 
 CREATE POLICY "Users can delete own resume"
@@ -157,6 +169,12 @@ CREATE POLICY "Users can update own portfolio files"
   ON storage.objects FOR UPDATE
   TO authenticated
   USING (
+    bucket_id = 'portfolio-files' AND (
+      (storage.foldername(name))[1] = auth.uid()::text OR
+      ((storage.foldername(name))[1] = 'portfolio-files' AND (storage.foldername(name))[2] = auth.uid()::text)
+    )
+  )
+  WITH CHECK (
     bucket_id = 'portfolio-files' AND (
       (storage.foldername(name))[1] = auth.uid()::text OR
       ((storage.foldername(name))[1] = 'portfolio-files' AND (storage.foldername(name))[2] = auth.uid()::text)

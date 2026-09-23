@@ -75,6 +75,38 @@ export const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKe
   }
 });
 
+/**
+ * Synchronously retrieves the current user session cached in localStorage.
+ * Used internally across Supabase query layers when userId is not explicitly supplied.
+ */
+export function getCurrentUser() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = localStorage.getItem('ayush_current_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Synchronously sets the active user in localStorage
+ */
+export function setCurrentUser(user) {
+  if (typeof window === 'undefined' || !user) return;
+  try {
+    localStorage.setItem('ayush_current_user', JSON.stringify(user));
+  } catch (e) {
+    try {
+      const clean = { ...user };
+      if (clean.avatar_url && clean.avatar_url.startsWith('data:')) {
+        clean.avatar_url = null;
+      }
+      localStorage.setItem('ayush_current_user', JSON.stringify(clean));
+    } catch (e2) {}
+  }
+}
+
 // Cache key for persistent local state
 const LOCAL_DB_STORAGE_KEY = 'ayush_supabase_cache_v2';
 
@@ -992,8 +1024,15 @@ export async function uploadUserAvatar(userId, file) {
   let effectiveUserId = userId;
   if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) effectiveUserId = session.user.id;
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id) {
+        effectiveUserId = userData.user.id;
+      } else {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.user?.id) {
+          effectiveUserId = sessionData.session.user.id;
+        }
+      }
     } catch (e) {}
   }
   if (!effectiveUserId) {
@@ -1007,35 +1046,81 @@ export async function uploadUserAvatar(userId, file) {
 
   let publicUrl = null;
 
-  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
-    try {
-      const mimeType = file.type || (ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
+  try {
+    const mimeType = file.type || (ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
+    
+    // Support both 'avatars' (plural) and 'avatar' (singular) bucket names seamlessly
+    const bucketNamesToTry = ['avatars', 'avatar'];
+    let chosenBucket = null;
+    let uploadSuccess = false;
+    let finalPath = `${effectiveUserId}/profile.${ext}`;
+
+    for (const bucket of bucketNamesToTry) {
+      // Clean up previous avatar files with other extensions
+      const allExts = ['jpeg', 'jpg', 'png', 'webp', 'gif'];
+      const oldKeysToDelete = allExts
+        .filter(e => e !== ext)
+        .flatMap(e => [
+          `${effectiveUserId}/profile.${e}`,
+          `avatars/${effectiveUserId}/profile.${e}`
+        ]);
+      try {
+        await supabase.storage.from(bucket).remove(oldKeysToDelete);
+      } catch (cleanErr) {}
+
+      // Try primary path: `${effectiveUserId}/profile.${ext}`
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(uploadPath, file, {
+        .from(bucket)
+        .upload(finalPath, file, {
           upsert: true,
           contentType: mimeType
         });
 
-      if (uploadError) {
-        console.warn('[Supabase Storage] Avatar upload note:', uploadError.message);
+      if (!uploadError) {
+        uploadSuccess = true;
+        chosenBucket = bucket;
+        break;
+      } else {
+        if (uploadError.statusCode === '404' || uploadError.message?.includes('not found') || uploadError.code === 'NoSuchBucket') {
+          // Bucket doesn't exist, try next candidate
+          continue;
+        }
+        console.warn(`[Supabase Storage] Avatar upload to bucket '${bucket}' note:`, uploadError.message);
+        // Try fallback subfolder path: `avatars/${effectiveUserId}/profile.${ext}`
+        const altPath = `avatars/${effectiveUserId}/profile.${ext}`;
+        const { error: altError } = await supabase.storage
+          .from(bucket)
+          .upload(altPath, file, {
+            upsert: true,
+            contentType: mimeType
+          });
+        if (!altError) {
+          uploadSuccess = true;
+          chosenBucket = bucket;
+          finalPath = altPath;
+          break;
+        } else {
+          console.warn(`[Supabase Storage] Supabase Storage RLS note (${bucket}): ` + altError.message);
+        }
       }
+    }
 
-      // Always query public URL
+    if (uploadSuccess && chosenBucket) {
       const { data: urlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(uploadPath);
+        .from(chosenBucket)
+        .getPublicUrl(finalPath);
 
       if (urlData?.publicUrl) {
         // Append cache-buster timestamp so refreshed avatar is instantly visible
         publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+        console.log(`[Supabase Storage] File successfully stored in '${chosenBucket}' bucket at:`, finalPath, 'Public URL:', publicUrl);
       }
-    } catch (err) {
-      console.warn('[Supabase Storage] Avatar upload exception:', err);
     }
+  } catch (err) {
+    console.warn('[Supabase Storage] Avatar upload exception:', err);
   }
 
-  // Fallback if offline/demo
+  // Fallback to Data URL if offline/demo or if remote storage failed
   if (!publicUrl) {
     publicUrl = await new Promise((resolve) => {
       const reader = new FileReader();
@@ -1045,16 +1130,27 @@ export async function uploadUserAvatar(userId, file) {
     });
   }
 
-  // 3. Save that URL into the avatar_url column in the profiles table, overwriting any existing avatar_url
+  // 3. Save that URL into the avatar_url column in the profiles table, overwriting any existing avatar_url (including Google OAuth avatar)
   if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
     try {
-      await supabase
+      const { data: updateData, error: updateErr } = await supabase
         .from('profiles')
         .update({
           avatar_url: publicUrl,
           updated_at: new Date().toISOString()
         })
-        .eq('id', effectiveUserId);
+        .eq('id', effectiveUserId)
+        .select();
+
+      if (updateErr || !updateData || updateData.length === 0) {
+        await supabase
+          .from('profiles')
+          .upsert({
+            id: effectiveUserId,
+            avatar_url: publicUrl,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' });
+      }
     } catch (dbErr) {
       console.warn('[Supabase DB] Failed to save avatar_url in profiles:', dbErr);
     }
@@ -1066,17 +1162,34 @@ export async function uploadUserAvatar(userId, file) {
   if (cur) {
     cur.avatar_url = publicUrl;
     cur.avatar = publicUrl;
-    setCurrentUser(cur);
+    try {
+      setCurrentUser(cur);
+    } catch (e) {}
+  }
+  const regUser = localStorage.getItem('ayush_registered_user');
+  if (regUser) {
+    try {
+      const parsedReg = JSON.parse(regUser);
+      parsedReg.avatar_url = publicUrl;
+      parsedReg.avatar = publicUrl;
+      localStorage.setItem('ayush_registered_user', JSON.stringify(parsedReg));
+    } catch (e) {}
   }
 
   if (typeof window !== 'undefined') {
     // Update any avatar image elements in document
     const candidateImg = document.getElementById('candidate-photo-img');
+    const candidateFallback = document.getElementById('candidate-avatar-initials');
     if (candidateImg) {
+      candidateImg.onerror = function() {
+        candidateImg.style.display = 'none';
+        candidateImg.src = '';
+        if (candidateFallback) candidateFallback.style.display = 'block';
+        localStorage.removeItem('ayush_candidate_photo');
+      };
       candidateImg.src = publicUrl;
       candidateImg.style.display = 'block';
     }
-    const candidateFallback = document.getElementById('candidate-avatar-initials');
     if (candidateFallback) {
       candidateFallback.style.display = 'none';
     }
@@ -1110,8 +1223,15 @@ export async function uploadStudentResume(userId, file) {
   let effectiveUserId = userId;
   if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) effectiveUserId = session.user.id;
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id) {
+        effectiveUserId = userData.user.id;
+      } else {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.user?.id) {
+          effectiveUserId = sessionData.session.user.id;
+        }
+      }
     } catch (e) {}
   }
   if (!effectiveUserId) {
@@ -1121,35 +1241,52 @@ export async function uploadStudentResume(userId, file) {
 
   const uploadPath = `resumes/${effectiveUserId}/resume.pdf`;
 
-  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+  try {
+    // Clean up any legacy unprefixed file if it exists
     try {
-      const { error: uploadErr } = await supabase.storage
-        .from('resumes')
-        .upload(uploadPath, file, {
-          upsert: true,
-          contentType: 'application/pdf'
-        });
+      await supabase.storage.from('resumes').remove([`${effectiveUserId}/resume.pdf`]);
+    } catch (cleanErr) {}
 
-      if (uploadErr) {
-        console.warn('[Supabase Storage] Resume upload note:', uploadErr.message);
-      }
-    } catch (err) {
-      console.warn('[Supabase Storage] Resume upload exception:', err);
+    const { error: uploadErr } = await supabase.storage
+      .from('resumes')
+      .upload(uploadPath, file, {
+        upsert: true,
+        contentType: 'application/pdf'
+      });
+
+    if (uploadErr) {
+      console.warn('[Supabase Storage] Resume upload note:', uploadErr.message);
+    } else {
+      console.log('[Supabase Storage] Resume successfully uploaded to resumes bucket at:', uploadPath);
     }
+  } catch (err) {
+    console.warn('[Supabase Storage] Resume upload exception:', err);
   }
 
-  // 2. Save storage path into student_profiles.resume_path
-  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+  // 2. Save storage path into student_profiles
+  if (!String(effectiveUserId).startsWith('usr_')) {
     try {
-      await supabase
+      const { error: updErr } = await supabase
         .from('student_profiles')
         .update({
           resume_path: uploadPath,
+          resume_url: uploadPath,
           updated_at: new Date().toISOString()
         })
         .eq('profile_id', effectiveUserId);
+
+      if (updErr && (updErr.code === '42703' || updErr.code === 'PGRST204' || updErr.message?.includes('column'))) {
+        // Fallback if resume_path column does not exist yet: save to resume_url column
+        await supabase
+          .from('student_profiles')
+          .update({
+            resume_url: uploadPath,
+            updated_at: new Date().toISOString()
+          })
+          .eq('profile_id', effectiveUserId);
+      }
     } catch (dbErr) {
-      console.warn('[Supabase DB] Failed to save resume_path in student_profiles:', dbErr);
+      console.warn('[Supabase DB] Failed to save resume in student_profiles:', dbErr);
     }
   }
 
@@ -1169,23 +1306,50 @@ export async function uploadStudentResume(userId, file) {
 
 /**
  * Generate temporary download URL for student resume using createSignedUrl (valid for 1 hour = 3600 seconds)
+ * Supports signatures: getResumeSignedUrl(filePath, expiresIn) OR getResumeSignedUrl(userId, customPath, expiresIn)
  */
-export async function getResumeSignedUrl(userId, customPath = null) {
-  let effectiveUserId = userId;
-  if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) effectiveUserId = session.user.id;
-    } catch (e) {}
-  }
-  if (!effectiveUserId) {
-    const cur = getCurrentUser();
-    effectiveUserId = cur?.id || 'usr_student_01';
+export async function getResumeSignedUrl(userIdOrPath, customPathOrExpires = null, maybeExpires = 3600) {
+  let effectiveUserId = null;
+  let path = null;
+  let expiresIn = 3600;
+
+  if (typeof userIdOrPath === 'string' && (userIdOrPath.includes('/') || userIdOrPath.endsWith('.pdf'))) {
+    path = userIdOrPath;
+    if (typeof customPathOrExpires === 'number') {
+      expiresIn = customPathOrExpires;
+    }
+  } else {
+    effectiveUserId = userIdOrPath;
+    if (typeof customPathOrExpires === 'string') {
+      path = customPathOrExpires;
+    } else if (typeof customPathOrExpires === 'number') {
+      expiresIn = customPathOrExpires;
+    }
+    if (typeof maybeExpires === 'number') {
+      expiresIn = maybeExpires;
+    }
   }
 
-  let path = customPath;
+  if (!effectiveUserId && (!path || !path.includes('/'))) {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id) {
+        effectiveUserId = userData.user.id;
+      } else {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.user?.id) {
+          effectiveUserId = sessionData.session.user.id;
+        }
+      }
+    } catch (e) {}
+    if (!effectiveUserId) {
+      const cur = getCurrentUser();
+      effectiveUserId = cur?.id || 'usr_student_01';
+    }
+  }
+
   if (!path) {
-    if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
+    if (!isDemoMode() && effectiveUserId && !String(effectiveUserId).startsWith('usr_')) {
       try {
         const { data } = await supabase
           .from('student_profiles')
@@ -1197,7 +1361,7 @@ export async function getResumeSignedUrl(userId, customPath = null) {
         }
       } catch (e) {}
     }
-    if (!path) {
+    if (!path && effectiveUserId) {
       const docs = await fetchStudentDocuments(effectiveUserId);
       path = docs?.cv?.resume_path || `resumes/${effectiveUserId}/resume.pdf`;
     }
@@ -1205,31 +1369,62 @@ export async function getResumeSignedUrl(userId, customPath = null) {
 
   if (!path) return null;
 
-  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
-    try {
-      const { data, error } = await supabase.storage
-        .from('resumes')
-        .createSignedUrl(path, 3600); // valid for 1 hour
-
-      if (!error && data?.signedUrl) {
-        return data.signedUrl;
+  if (!isDemoMode() && (!effectiveUserId || !String(effectiveUserId).startsWith('usr_'))) {
+    const candidatePaths = [];
+    if (effectiveUserId && !String(effectiveUserId).startsWith('usr_')) {
+      candidatePaths.push(`resumes/${effectiveUserId}/resume.pdf`);
+      candidatePaths.push(`${effectiveUserId}/resume.pdf`);
+    }
+    if (path) {
+      candidatePaths.push(path);
+      if (path.startsWith('resumes/')) {
+        candidatePaths.push(path.replace(/^resumes\//, ''));
+      } else {
+        candidatePaths.push(`resumes/${path}`);
       }
-      console.warn('[Supabase Storage] Resume signed URL note:', error?.message);
-    } catch (e) {
-      console.warn('[Supabase Storage] Signed URL exception:', e);
+      if (effectiveUserId) {
+        candidatePaths.push(`resumes/${effectiveUserId}/${path.split('/').pop()}`);
+      }
+    }
+
+    for (const cand of candidatePaths) {
+      try {
+        const { data, error } = await supabase.storage
+          .from('resumes')
+          .createSignedUrl(cand, expiresIn);
+
+        if (!error && data?.signedUrl) {
+          return data.signedUrl;
+        }
+      } catch (e) {}
     }
   }
 
   // Fallback
-  const docs = await fetchStudentDocuments(effectiveUserId);
-  return docs?.cv?.data_url || null;
+  if (effectiveUserId) {
+    const docs = await fetchStudentDocuments(effectiveUserId);
+    if (docs?.cv?.data_url) return docs.cv.data_url;
+  }
+  return null;
 }
 
 /**
  * Upload Project File to "portfolio-files" bucket
  * Path: portfolio-files/{user_id}/{project_id}/{filename} (max 25MB)
+ * Supports signatures: (userId, projectId, file, oldFilePath) OR (userId, file)
  */
-export async function uploadPortfolioFile(userId, projectId, file) {
+export async function uploadPortfolioFile(userId, projectIdOrFile, maybeFile, maybeOldFilePath = null) {
+  let projectId;
+  let file;
+  let oldFilePath = maybeOldFilePath;
+  if (maybeFile) {
+    projectId = projectIdOrFile;
+    file = maybeFile;
+  } else {
+    file = projectIdOrFile;
+    projectId = 'proj_' + Date.now();
+  }
+
   if (!file) throw new Error('No project file provided');
   if (file.size > 25 * 1024 * 1024) {
     throw new Error('Project file exceeds maximum allowed limit of 25MB.');
@@ -1238,8 +1433,15 @@ export async function uploadPortfolioFile(userId, projectId, file) {
   let effectiveUserId = userId;
   if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) effectiveUserId = session.user.id;
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id) {
+        effectiveUserId = userData.user.id;
+      } else {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.user?.id) {
+          effectiveUserId = sessionData.session.user.id;
+        }
+      }
     } catch (e) {}
   }
   if (!effectiveUserId) {
@@ -1250,46 +1452,112 @@ export async function uploadPortfolioFile(userId, projectId, file) {
   const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const uploadPath = `portfolio-files/${effectiveUserId}/${projectId}/${cleanFileName}`;
 
-  if (!isDemoMode() && !String(effectiveUserId).startsWith('usr_')) {
-    try {
-      const { error: uploadErr } = await supabase.storage
-        .from('portfolio-files')
-        .upload(uploadPath, file, {
-          upsert: true,
-          contentType: file.type || 'application/octet-stream'
-        });
-
-      if (uploadErr) {
-        console.warn('[Supabase Storage] Portfolio file upload note:', uploadErr.message);
+  try {
+    // Clean up previous file for this project if different filename or oldFilePath given
+    if (oldFilePath && oldFilePath !== uploadPath) {
+      const toRemove = [oldFilePath];
+      if (oldFilePath.startsWith('portfolio-files/')) {
+        toRemove.push(oldFilePath.replace(/^portfolio-files\//, ''));
       }
-    } catch (err) {
-      console.warn('[Supabase Storage] Portfolio file upload exception:', err);
+      try {
+        await supabase.storage.from('portfolio-files').remove(toRemove);
+      } catch (e) {}
+    } else {
+      // Look for existing files in this project directory to avoid orphaned files
+      try {
+        const { data: existingFiles } = await supabase.storage
+          .from('portfolio-files')
+          .list(`${effectiveUserId}/${projectId}`);
+        if (existingFiles && existingFiles.length > 0) {
+          const orphaned = existingFiles
+            .filter(f => f.name !== cleanFileName)
+            .flatMap(f => [
+              `portfolio-files/${effectiveUserId}/${projectId}/${f.name}`,
+              `${effectiveUserId}/${projectId}/${f.name}`
+            ]);
+          if (orphaned.length > 0) {
+            await supabase.storage.from('portfolio-files').remove(orphaned);
+          }
+        }
+      } catch (e) {}
     }
+
+    const { error: uploadErr } = await supabase.storage
+      .from('portfolio-files')
+      .upload(uploadPath, file, {
+        upsert: true,
+        contentType: file.type || 'application/octet-stream'
+      });
+
+    if (uploadErr) {
+      console.warn('[Supabase Storage] Portfolio file upload note:', uploadErr.message);
+    } else {
+      console.log('[Supabase Storage] Project file successfully uploaded to portfolio-files bucket at:', uploadPath);
+    }
+  } catch (err) {
+    console.warn('[Supabase Storage] Portfolio file upload exception:', err);
+  }
+
+  // Demo fallback caching
+  if (isDemoMode() || String(effectiveUserId).startsWith('usr_')) {
+    try {
+      const demoUrl = URL.createObjectURL(file);
+      localStorage.setItem('ayush_portfolio_file_' + uploadPath, demoUrl);
+    } catch (e) {}
   }
 
   return {
     success: true,
+    path: uploadPath,
     file_path: uploadPath,
     file_name: file.name,
-    file_size: file.size
+    file_size: file.size,
+    file_type: file.type || 'application/octet-stream'
   };
 }
 
 /**
  * Generate temporary signed URL for project file (valid for 1 hour = 3600 seconds)
  */
-export async function getPortfolioFileSignedUrl(filePath) {
+export async function getPortfolioFileSignedUrl(filePath, expiresIn = 3600) {
   if (!filePath) return null;
 
+  // Check demo fallback first
+  const demoUrl = localStorage.getItem('ayush_portfolio_file_' + filePath);
+  if (demoUrl) return demoUrl;
+
   try {
+    // 1. Try direct path lookup in portfolio-files bucket
     const { data, error } = await supabase.storage
       .from('portfolio-files')
-      .createSignedUrl(filePath, 3600); // 1 hour validity
+      .createSignedUrl(filePath, expiresIn);
 
     if (!error && data?.signedUrl) {
       return data.signedUrl;
     }
-    console.warn('[Supabase Storage] Project signed URL note:', error?.message);
+
+    // 2. Try variant paths (with or without 'portfolio-files/' prefix)
+    if (filePath.startsWith('portfolio-files/')) {
+      const stripped = filePath.replace(/^portfolio-files\//, '');
+      const retry = await supabase.storage
+        .from('portfolio-files')
+        .createSignedUrl(stripped, expiresIn);
+      if (!retry.error && retry.data?.signedUrl) {
+        return retry.data.signedUrl;
+      }
+    } else {
+      const prepended = `portfolio-files/${filePath}`;
+      const retry = await supabase.storage
+        .from('portfolio-files')
+        .createSignedUrl(prepended, expiresIn);
+      if (!retry.error && retry.data?.signedUrl) {
+        return retry.data.signedUrl;
+      }
+    }
+
+    if (error) {
+      console.warn('[Supabase Storage] Project signed URL note:', error.message);
+    }
   } catch (e) {
     console.warn('[Supabase Storage] Project signed URL exception:', e);
   }
@@ -1370,44 +1638,67 @@ export async function fetchStudentDocuments(userId) {
 
   if (uid && !String(uid).startsWith('usr_')) {
     try {
-      const { data } = await supabase
+      // Query with select('*') so it succeeds whether or not new migration columns exist yet
+      const { data, error: qErr } = await supabase
         .from('student_profiles')
-        .select('resume_path, resume_url, verification_documents')
+        .select('*')
         .eq('profile_id', uid)
         .maybeSingle();
 
       if (data) {
-        if (data.resume_path) {
-          // Generate signed URL (1 hour validity)
+        const resumeRef = data.resume_path || data.resume_url;
+        if (resumeRef) {
+          const candidates = [
+            `resumes/${uid}/resume.pdf`,
+            data.resume_path,
+            resumeRef.startsWith('resumes/') ? resumeRef : `resumes/${resumeRef}`
+          ].filter(Boolean);
+
           let signedUrl = null;
-          try {
-            const { data: signData } = await supabase.storage
-              .from('resumes')
-              .createSignedUrl(data.resume_path, 3600);
-            signedUrl = signData?.signedUrl || null;
-          } catch (se) {}
+          let validStoragePath = `resumes/${uid}/resume.pdf`;
+
+          for (const cand of candidates) {
+            try {
+              const { data: signData, error: sErr } = await supabase.storage
+                .from('resumes')
+                .createSignedUrl(cand, 3600);
+              if (!sErr && signData?.signedUrl) {
+                signedUrl = signData.signedUrl;
+                validStoragePath = cand;
+                break;
+              }
+            } catch (se) {}
+          }
+
+          // If resume_path column was empty in DB, heal it in the background
+          if (!data.resume_path && validStoragePath) {
+            try {
+              await supabase
+                .from('student_profiles')
+                .update({ resume_path: validStoragePath })
+                .eq('profile_id', uid);
+            } catch (healErr) {}
+          }
+
+          const fileName = data.resume_url && !data.resume_url.includes('/')
+            ? data.resume_url
+            : (resumeRef.split('/').pop() || 'resume.pdf');
 
           cv = {
-            name: 'resume.pdf',
-            upload_date: new Date().toISOString().split('T')[0],
-            resume_path: data.resume_path,
+            name: fileName,
+            upload_date: data.updated_at ? data.updated_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            resume_path: validStoragePath,
             signed_url: signedUrl,
-            data_url: signedUrl || data.resume_url || null,
+            data_url: signedUrl || null,
             verified: true,
-            size: 'Verified PDF'
-          };
-        } else if (data.resume_url && !cv) {
-          cv = {
-            name: 'Uploaded_Candidate_Resume.pdf',
-            upload_date: new Date().toISOString().split('T')[0],
-            data_url: data.resume_url,
-            verified: true,
-            size: 'Verified File'
+            size: 'Verified Document'
           };
         }
         if (data.verification_documents) {
           try {
-            const parsed = JSON.parse(data.verification_documents);
+            const parsed = typeof data.verification_documents === 'string'
+              ? JSON.parse(data.verification_documents)
+              : data.verification_documents;
             if (Array.isArray(parsed)) {
               certificates = parsed;
             }
@@ -1977,36 +2268,89 @@ export async function applyForOpportunity(studentId, opportunityId, customMatchP
  * Fetch Student Portfolio Projects
  */
 export async function fetchStudentProjectsData(userId) {
+  let localProjects = [];
+  try {
+    localProjects = JSON.parse(localStorage.getItem('ayush_saved_projects') || '[]');
+  } catch (e) {}
+
   if (isDemoMode()) {
-    return MOCK_DB.projects;
+    return localProjects.length > 0 ? localProjects : MOCK_DB.projects;
   }
 
   try {
+    let effectiveUserId = userId;
+    if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    }
+    if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+      const cur = getCurrentUser();
+      if (cur?.id && !String(cur.id).startsWith('usr_')) {
+        effectiveUserId = cur.id;
+      } else if (cur?.email) {
+        try {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', cur.email.trim().toLowerCase())
+            .maybeSingle();
+          if (prof?.id) effectiveUserId = prof.id;
+        } catch (pe) {}
+      }
+    }
+
     const { data, error } = await supabase
       .from('projects')
       .select('*')
-      .eq('student_id', userId)
+      .eq('student_id', effectiveUserId)
       .order('created_at', { ascending: false });
 
-    if (error || !Array.isArray(data)) {
-      return [];
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const dbMapped = await Promise.all(data.map(async (p) => {
+        let signedUrl = null;
+        if (p.file_path) {
+          try {
+            signedUrl = await getPortfolioFileSignedUrl(p.file_path, 3600);
+          } catch (se) {}
+        }
+        return {
+          id: p.id,
+          student_id: p.student_id,
+          title: p.title,
+          description: p.description || '',
+          technologies: Array.isArray(p.technologies) ? p.technologies : (typeof p.technologies === 'string' ? p.technologies.split(',').map(s => s.trim()) : []),
+          github_url: p.github_url || '',
+          live_demo_url: p.live_demo_url || '',
+          file_path: p.file_path || null,
+          file_name: p.file_name || (p.file_path ? p.file_path.split('/').pop() : null),
+          file_size: p.file_size || null,
+          file_type: p.file_type || null,
+          file_signed_url: signedUrl,
+          date: p.created_at ? new Date(p.created_at).getFullYear().toString() : '2026'
+        };
+      }));
+
+      // Cache to local storage for instant offline and transition access
+      localStorage.setItem('ayush_saved_projects', JSON.stringify(dbMapped));
+      return dbMapped;
     }
 
-    return data.map(p => ({
-      id: p.id,
-      title: p.title,
-      description: p.description || '',
-      technologies: Array.isArray(p.technologies) ? p.technologies : [],
-      github_url: p.github_url || '#',
-      live_demo_url: p.live_demo_url || '#',
-      file_path: p.file_path || null,
-      file_name: p.file_name || null,
-      file_size: p.file_size || null,
-      date: p.created_at ? new Date(p.created_at).getFullYear().toString() : '2026'
-    }));
+    if (localProjects.length > 0) {
+      if (effectiveUserId && !String(effectiveUserId).startsWith('usr_')) {
+        for (const lp of localProjects) {
+          const alreadyInDb = Array.isArray(data) && data.some(dp => dp.title === lp.title || dp.id === lp.id);
+          if (!alreadyInDb) {
+            saveProjectToSupabase({ ...lp, student_id: effectiveUserId }).catch(() => {});
+          }
+        }
+      }
+      return localProjects;
+    }
+
+    return [];
   } catch (e) {
     console.warn('Error fetching live projects:', e);
-    return [];
+    return localProjects.length > 0 ? localProjects : [];
   }
 }
 
@@ -2014,6 +2358,20 @@ export async function fetchStudentProjectsData(userId) {
  * Save Project to Supabase
  */
 export async function saveProjectToSupabase(project) {
+  // Always update local cache so changes are instantly reflected
+  let currentSaved = [];
+  try {
+    currentSaved = JSON.parse(localStorage.getItem('ayush_saved_projects') || '[]');
+  } catch (e) {}
+
+  const existingIdx = currentSaved.findIndex(p => p.id === project.id || (p.title === project.title && p.student_id === project.student_id));
+  if (existingIdx >= 0) {
+    currentSaved[existingIdx] = { ...currentSaved[existingIdx], ...project };
+  } else {
+    currentSaved.unshift(project);
+  }
+  localStorage.setItem('ayush_saved_projects', JSON.stringify(currentSaved));
+
   if (isDemoMode()) {
     MOCK_DB.projects.unshift(project);
     saveLocalDatabase();
@@ -2022,17 +2380,46 @@ export async function saveProjectToSupabase(project) {
 
   try {
     let payload = { ...project };
+
+    // Resolve real student UUID if guest or demo ID passed
+    let effectiveUserId = payload.student_id;
+    if (!effectiveUserId || String(effectiveUserId).startsWith('usr_')) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) effectiveUserId = session.user.id;
+    }
+    if (!effectiveUserId) {
+      const cur = getCurrentUser();
+      effectiveUserId = cur?.id;
+    }
+    payload.student_id = effectiveUserId;
+
+    // If ID is not a valid UUID (e.g. 'proj_1727...'), remove it so database generates UUID
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.id);
+    if (!isUuid) {
+      delete payload.id;
+    }
+
+    // Strip frontend-only fields that are not database columns
+    delete payload.date;
+
+    // Convert file_size to integer if present (or null)
+    if (payload.file_size && typeof payload.file_size === 'string') {
+      const numBytes = parseInt(payload.file_size.replace(/\D/g, ''), 10);
+      payload.file_size = isNaN(numBytes) ? null : numBytes;
+    }
+
     let { data, error } = await supabase
       .from('projects')
       .insert([payload])
       .select()
       .single();
 
-    if (error && (error.message?.includes('column') || error.message?.includes('schema'))) {
+    if (error && (error.message?.includes('column') || error.message?.includes('schema') || error.code === '42703' || error.code === 'PGRST204')) {
       const fallbackPayload = { ...payload };
+      delete fallbackPayload.file_type;
+      delete fallbackPayload.file_size;
       delete fallbackPayload.file_path;
       delete fallbackPayload.file_name;
-      delete fallbackPayload.file_size;
       const res = await supabase.from('projects').insert([fallbackPayload]).select().single();
       if (!res.error) {
         return { success: true, data: { ...res.data, file_path: project.file_path, file_name: project.file_name } };
@@ -2041,11 +2428,67 @@ export async function saveProjectToSupabase(project) {
 
     if (error) {
       console.warn('Error saving project to Supabase:', error.message);
-      return { success: false, error };
+      // Saved in localStorage cache above, so return success for UI resilience
+      return { success: true, data: project, warning: error.message };
     }
     return { success: true, data };
   } catch (e) {
     console.warn('Exception saving project to Supabase:', e);
+    return { success: true, data: project, error: e };
+  }
+}
+
+/**
+ * Update Project in Supabase
+ */
+export async function updateProjectInSupabase(projectId, updates) {
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', projectId)
+      .select()
+      .single();
+
+    // Update local cache
+    try {
+      const current = JSON.parse(localStorage.getItem('ayush_saved_projects') || '[]');
+      const idx = current.findIndex(p => p.id === projectId);
+      if (idx >= 0) {
+        current[idx] = { ...current[idx], ...updates };
+        localStorage.setItem('ayush_saved_projects', JSON.stringify(current));
+      }
+    } catch (ce) {}
+
+    if (error) {
+      console.warn('Error updating project:', error.message);
+      return { success: false, error };
+    }
+    return { success: true, data };
+  } catch (e) {
+    return { success: false, error: e };
+  }
+}
+
+/**
+ * Delete Project from Supabase
+ */
+export async function deleteProjectFromSupabase(projectId) {
+  try {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
+
+    // Update local cache
+    try {
+      const current = JSON.parse(localStorage.getItem('ayush_saved_projects') || '[]');
+      const filtered = current.filter(p => p.id !== projectId);
+      localStorage.setItem('ayush_saved_projects', JSON.stringify(filtered));
+    } catch (ce) {}
+
+    return { success: !error, error };
+  } catch (e) {
     return { success: false, error: e };
   }
 }
@@ -3169,6 +3612,8 @@ export default {
   isDemoMode,
   setDemoMode,
   DEMO_MODE,
+  getCurrentUser,
+  setCurrentUser,
   checkSupabaseConnection,
   syncOpportunitiesFromSupabase,
   saveOpportunityToSupabase,

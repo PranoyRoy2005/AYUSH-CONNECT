@@ -423,6 +423,23 @@ export async function guardDashboardPage(expectedRole) {
       return false;
     }
 
+    // 5. Sync latest profile data and avatar_url from database across page refresh and session
+    if (profile) {
+      if (profile.avatar_url) {
+        localStorage.setItem('ayush_candidate_photo', profile.avatar_url);
+      }
+      const cur = getCurrentUser();
+      if (cur) {
+        if (profile.avatar_url) {
+          cur.avatar_url = profile.avatar_url;
+          cur.avatar = profile.avatar_url;
+        }
+        if (profile.full_name) cur.full_name = profile.full_name;
+        setCurrentUser(cur);
+      }
+      syncUserHeader();
+    }
+
     return true;
   } catch (err) {
     console.error('[Dashboard Guard] Unexpected error:', err);
@@ -579,11 +596,14 @@ export async function redirectUserByRole(sbUser, { forceRedirect = false } = {})
   };
 
   const activeUser = getCurrentUser();
-  const isDemoActive = isDemoMode() || (activeUser?.id && String(activeUser.id).startsWith('usr_'));
+  const isDemoActive = isDemoMode();
 
   if (!isDemoActive) {
     setCurrentUser(authUser);
     saveRegisteredUser(authUser);
+    if (avatarUrl) {
+      localStorage.setItem('ayush_candidate_photo', avatarUrl);
+    }
     syncUserHeader();
   }
 
@@ -1320,14 +1340,43 @@ export function syncUserHeader() {
   const effectiveAvatar = savedCandidatePhoto || user.avatar_url;
   const initials = computeUserInitials(user.full_name || user.name, user.role);
 
-  const avatarEls = document.querySelectorAll('.user-avatar-circle, .user-avatar-text, #user-avatar, #sidebar-avatar-display, #candidate-avatar-initials');
+  const avatarEls = document.querySelectorAll('.user-avatar-circle, .user-avatar-text, #user-avatar, #sidebar-avatar-display, #edit-photo-preview-circle');
   avatarEls.forEach(el => {
     if (effectiveAvatar && (effectiveAvatar.startsWith('data:image') || effectiveAvatar.startsWith('http://') || effectiveAvatar.startsWith('https://'))) {
-      el.innerHTML = `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer">`;
+      el.innerHTML = `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer" onerror="this.onerror=null; this.parentElement.textContent='${initials}'; localStorage.removeItem('ayush_candidate_photo');">`;
     } else {
       el.textContent = initials;
     }
   });
+
+  const photoImg = document.getElementById('candidate-photo-img');
+  const candidateInitials = document.getElementById('candidate-avatar-initials');
+  const removeBtn = document.getElementById('btn-remove-photo');
+  if (photoImg) {
+    photoImg.onerror = function() {
+      photoImg.style.display = 'none';
+      photoImg.src = '';
+      if (candidateInitials) {
+        candidateInitials.style.display = 'block';
+        candidateInitials.textContent = initials;
+      }
+      localStorage.removeItem('ayush_candidate_photo');
+    };
+    if (effectiveAvatar && (effectiveAvatar.startsWith('data:image') || effectiveAvatar.startsWith('http://') || effectiveAvatar.startsWith('https://'))) {
+      photoImg.src = effectiveAvatar;
+      photoImg.style.display = 'block';
+      if (candidateInitials) candidateInitials.style.display = 'none';
+      if (removeBtn) removeBtn.style.display = 'inline-flex';
+    } else {
+      photoImg.src = '';
+      photoImg.style.display = 'none';
+      if (candidateInitials) {
+        candidateInitials.style.display = 'block';
+        candidateInitials.textContent = initials;
+      }
+      if (removeBtn) removeBtn.style.display = 'none';
+    }
+  }
 
   const nameEls = document.querySelectorAll('.user-name-text, #user-name-display, .sidebar-user-name, #sidebar-user-name, #candidate-card-name');
   nameEls.forEach(el => {
@@ -1387,7 +1436,7 @@ export function initResponsiveNavigation() {
       const savedCandidatePhoto = localStorage.getItem('ayush_candidate_photo');
       const effectiveAvatar = savedCandidatePhoto || user.avatar_url;
       const avatarHtml = (effectiveAvatar && (effectiveAvatar.startsWith('data:image') || effectiveAvatar.startsWith('http://') || effectiveAvatar.startsWith('https://')))
-        ? `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer">`
+        ? `<img src="${effectiveAvatar}" alt="${user.full_name || 'User'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" referrerpolicy="no-referrer" onerror="this.onerror=null; this.parentElement.textContent='${initials}';">`
         : initials;
 
       mobileHeader.innerHTML = `
