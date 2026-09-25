@@ -73,6 +73,7 @@
         <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
         <li><a href="/student/portfolio.html" class="active"><span class="menu-icon"><i class="fa-solid fa-id-card-clip"></i></span> Student Portfolio</a></li>
         <li><a href="/student/projects.html"><span class="menu-icon"><i class="fa-solid fa-code-branch"></i></span> Projects</a></li>
+        <li><a href="/student/mentorship.html"><span class="menu-icon"><i class="fa-solid fa-user-graduate"></i></span> Mentorship</a></li>
         <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
         <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
         <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
@@ -167,7 +168,7 @@
           <div style="flex: 1; min-width: 260px;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
               <h2 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0;" id="candidate-card-name" class="user-name-text">Scholar</h2>
-              <span class="badge badge-teal"><i class="fa-solid fa-circle-check"></i> Verified Candidate</span>
+              <span id="candidate-verification-badge-container"></span>
             </div>
             <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.35rem;">
               <span id="candidate-course-badge"><i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> AYUSH Scholar</span>
@@ -739,7 +740,8 @@
       updateProjectInSupabase,
       deleteProjectFromSupabase,
       uploadPortfolioFile,
-      getPortfolioFileSignedUrl
+      getPortfolioFileSignedUrl,
+      fetchStudentMentorshipStatus
     } from '/js/supabase.js';
     import { initCandidatePhoto } from '/js/student.js';
 
@@ -1146,6 +1148,40 @@
       const instBadge = document.getElementById('candidate-institution-badge');
       if (instBadge) {
         instBadge.innerHTML = `<i class="fa-solid fa-building-columns"></i> ${inst}`;
+      }
+
+      // Render Dynamic Verification Badge (TASK 4)
+      const verBadgeContainer = document.getElementById('candidate-verification-badge-container');
+      if (verBadgeContainer) {
+        try {
+          const mStatus = await fetchStudentMentorshipStatus(userId || user.id);
+          if (mStatus.is_verified) {
+            verBadgeContainer.innerHTML = `
+              <span class="badge-verified verified-tooltip-wrapper" style="font-size: 0.8rem;">
+                <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Faculty Verified
+                <i class="fa-solid fa-circle-info verified-tooltip-trigger" data-tooltip="This student is enrolled at a recognized AYUSH institution and has an accepted mentor from that institution's faculty." tabindex="0"></i>
+              </span>
+            `;
+          } else if (mStatus.pending_request) {
+            verBadgeContainer.innerHTML = `
+              <a href="/student/mentorship.html" class="badge badge-saffron" style="font-size: 0.8rem; text-decoration: none;">
+                <i class="fa-solid fa-hourglass-half"></i> Verification Pending
+              </a>
+            `;
+          } else {
+            verBadgeContainer.innerHTML = `
+              <a href="/student/mentorship.html" class="badge-not-verified" style="font-size: 0.8rem; text-decoration: none;" title="Connect with faculty mentor to get verified">
+                <i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified (Get Verified)
+              </a>
+            `;
+          }
+        } catch (verErr) {
+          verBadgeContainer.innerHTML = `
+            <a href="/student/mentorship.html" class="badge-not-verified" style="font-size: 0.8rem; text-decoration: none;">
+              <i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified
+            </a>
+          `;
+        }
       }
 
       // 3. Academic Card

@@ -1605,3 +1605,223 @@ body.mode-production-active .quick-demo-access {
   }
 }
 
+/* ==============================================================================
+   MENTORSHIP VERIFICATION & VERIFIED BADGES SYSTEM
+   ============================================================================== */
+.badge-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  white-space: nowrap;
+}
+
+.badge-not-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+/* Tooltip container and trigger */
+.verified-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.verified-tooltip-trigger {
+  margin-left: 0.35rem;
+  font-size: 0.75rem;
+  color: inherit;
+  opacity: 0.75;
+  cursor: help;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.verified-tooltip-trigger:hover,
+.verified-tooltip-trigger:focus {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* CSS Tooltip on [data-tooltip] */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  width: max-content;
+  max-width: 250px;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s ease;
+  z-index: 10000;
+}
+
+[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s ease;
+  z-index: 10000;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-within::after,
+[data-tooltip].active-tooltip::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-within::before,
+[data-tooltip].active-tooltip::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Tooltip alignment for table edges */
+[data-tooltip-align="right"]::after {
+  left: auto;
+  right: 0;
+  transform: translateY(4px);
+}
+[data-tooltip-align="right"]:hover::after,
+[data-tooltip-align="right"]:focus-within::after {
+  transform: translateY(0);
+}
+[data-tooltip-align="right"]::before {
+  left: auto;
+  right: 12px;
+  transform: translateY(4px);
+}
+[data-tooltip-align="right"]:hover::before,
+[data-tooltip-align="right"]:focus-within::before {
+  transform: translateY(0);
+}
+
+/* Mentorship Status Cards */
+.mentorship-status-card {
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mentorship-status-card.state-verified {
+  border-left: 6px solid #10b981;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.mentorship-status-card.state-pending {
+  border-left: 6px solid var(--accent-saffron);
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.mentorship-status-card.state-rejected {
+  border-left: 6px solid #f43f5e;
+  background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%);
+}
+
+.mentorship-status-card.state-not-verified {
+  border-left: 6px solid #64748b;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Mentee Management Tabs */
+.mentee-tabs-bar {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.mentee-tab-btn {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.mentee-tab-btn:hover {
+  color: var(--primary-deep);
+}
+
+.mentee-tab-btn.active {
+  color: var(--primary-deep);
+  border-bottom-color: var(--primary-deep);
+  font-weight: 700;
+}
+
+.mentee-tab-badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+.mentee-tab-btn.active .mentee-tab-badge {
+  background: var(--primary-deep);
+  color: #ffffff;
+}
+
+.mentee-tab-btn:not(.active) .mentee-tab-badge {
+  background: var(--border-color);
+  color: var(--text-secondary);
+}
+
+

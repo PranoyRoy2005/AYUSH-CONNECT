@@ -56,6 +56,135 @@
   margin-bottom: 0.85rem;
 }
 
+/* ==========================================================================
+   Academician Portfolio Styles
+   ========================================================================== */
+.acad-identity-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.acad-identity-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary-deep) 0%, var(--secondary-teal) 50%, var(--accent-saffron) 100%);
+}
+
+.acad-completion-bar-wrapper {
+  background: #e2e8f0;
+  border-radius: 9999px;
+  height: 12px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+
+.acad-completion-bar-fill {
+  background: linear-gradient(90deg, #10b981 0%, #0d9488 100%);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease-in-out;
+}
+
+.acad-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.acad-modal-backdrop.active {
+  display: flex;
+}
+
+.acad-modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg, 12px);
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  position: relative;
+}
+
+.spec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #166534;
+}
+
+.spec-badge-saffron {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.spec-badge-teal {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #115e59;
+}
+
+.spec-badge-purple {
+  background: #faf5ff;
+  border-color: #e9d5ff;
+  color: #6b21a8;
+}
+
+.publication-item {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.publication-item:hover {
+  border-color: var(--secondary-teal);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.grant-item {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.1rem 1.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-left: 4px solid var(--primary-deep);
+}
+
+.grant-item:hover {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
 @media (max-width: 860px) {
   .academic-grid-2 {
     grid-template-columns: 1fr;

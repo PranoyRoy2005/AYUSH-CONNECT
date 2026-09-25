@@ -36,6 +36,7 @@
         <li><a href="/student/assessment.html"><span class="menu-icon"><i class="fa-solid fa-clipboard-check"></i></span> Skill Assessment</a></li>
         <li><a href="/student/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-id-card-clip"></i></span> Student Portfolio</a></li>
         <li><a href="/student/projects.html"><span class="menu-icon"><i class="fa-solid fa-code-branch"></i></span> Projects</a></li>
+        <li><a href="/student/mentorship.html"><span class="menu-icon"><i class="fa-solid fa-user-graduate"></i></span> Mentorship</a></li>
         <li><a href="/student/opportunities.html"><span class="menu-icon"><i class="fa-solid fa-compass"></i></span> Opportunities</a></li>
         <li><a href="/student/recommendations.html"><span class="menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Recommendations</a></li>
         <li><a href="/student/applications.html"><span class="menu-icon"><i class="fa-solid fa-folder-open"></i></span> My Applications</a></li>
@@ -64,7 +65,10 @@
       <!-- Top Bar -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h1 style="font-size: 1.75rem; color: var(--primary-deep);" id="student-greeting">Welcome back!</h1>
+          <h1 style="font-size: 1.75rem; color: var(--primary-deep); display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <span id="student-greeting">Welcome back!</span>
+            <span id="student-verification-badge-top"></span>
+          </h1>
           <p style="font-size: 0.9rem; color: var(--text-secondary);">Track your verified competencies, opportunity matches, and application pipeline.</p>
         </div>
         <div class="student-header-actions" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
@@ -179,7 +183,7 @@
   <script type="module">
     import { guardDashboardPage, handleLogout, showToast, getCurrentUser, syncUserHeader } from '/js/auth.js';
     import { initStudentDashboard, renderSkillProfile } from '/js/student.js';
-    import { isDemoMode } from '/js/supabase.js';
+    import { isDemoMode, fetchStudentMentorshipStatus } from '/js/supabase.js';
 
     window.studentLogout = handleLogout;
 
@@ -205,6 +209,53 @@
 
       await initStudentDashboard();
       renderSkillProfile('skills-container-null');
+
+      // Fetch and display real verification status
+      try {
+        const status = await fetchStudentMentorshipStatus(user?.id);
+        const topBadge = document.getElementById('student-verification-badge-top');
+        const journeySubProfile = document.getElementById('journey-sub-profile');
+
+        if (status.is_verified) {
+          if (topBadge) {
+            topBadge.innerHTML = `
+              <span class="badge-verified verified-tooltip-wrapper" style="font-size: 0.78rem;">
+                <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Faculty Verified
+                <i class="fa-solid fa-circle-info verified-tooltip-trigger" data-tooltip="This student is enrolled at a recognized AYUSH institution and has an accepted mentor from that institution's faculty." tabindex="0"></i>
+              </span>
+            `;
+          }
+          if (journeySubProfile) {
+            journeySubProfile.textContent = 'Faculty Verified';
+            journeySubProfile.style.color = '#10b981';
+          }
+        } else if (status.pending_request) {
+          if (topBadge) {
+            topBadge.innerHTML = `
+              <a href="/student/mentorship.html" class="badge badge-saffron" style="font-size: 0.78rem; text-decoration: none;">
+                <i class="fa-solid fa-hourglass-half"></i> Verification Pending
+              </a>
+            `;
+          }
+          if (journeySubProfile) {
+            journeySubProfile.textContent = 'Verification Pending';
+            journeySubProfile.style.color = '#d97706';
+          }
+        } else {
+          if (topBadge) {
+            topBadge.innerHTML = `
+              <a href="/student/mentorship.html" class="badge-not-verified" style="font-size: 0.78rem; text-decoration: none;" title="Connect with faculty mentor to get verified">
+                <i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified (Get Verified)
+              </a>
+            `;
+          }
+          if (journeySubProfile) {
+            journeySubProfile.innerHTML = '<a href="/student/mentorship.html" style="color:var(--text-muted); text-decoration:underline;">Unverified</a>';
+          }
+        }
+      } catch (verErr) {
+        console.warn('Dashboard mentorship status note:', verErr);
+      }
 
       const savedPhoto = localStorage.getItem('ayush_candidate_photo');
       const avatarEl = document.getElementById('user-avatar');

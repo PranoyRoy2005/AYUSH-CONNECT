@@ -217,11 +217,14 @@ export async function renderIndustryActivePostings(containerId = 'industry-activ
 /**
  * Render Recent Applicants Table
  */
+/**
+ * Render Recent Applicants Table
+ */
 export async function renderRecentApplicants(containerId = 'recent-applicants-table') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const applicants = await fetchIndustryApplicantsData();
+  const applicants = await fetchIndustryApplicantsData('All', '', 'all', 'verified_first');
 
   if (!applicants || applicants.length === 0) {
     container.innerHTML = `
@@ -241,11 +244,21 @@ export async function renderRecentApplicants(containerId = 'recent-applicants-ta
     <tr>
       <td style="padding: 1.1rem 1.25rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="user-avatar-circle" style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--primary-deep); flex-shrink: 0;">
+          <div class="user-avatar-circle" style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--primary-deep); color: #fff; flex-shrink: 0;">
             ${(app.student_name || 'Ayush').split(' ').map(n=>n[0]).join('')}
           </div>
           <div>
-            <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;">${app.student_name}</div>
+            <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+              <span style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;">${app.student_name}</span>
+              ${app.is_verified ? `
+                <span class="badge-verified verified-tooltip-wrapper">
+                  <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Verified
+                  <i class="fa-solid fa-circle-info verified-tooltip-trigger" data-tooltip="This student is enrolled at a recognized AYUSH institution and has an accepted mentor from that institution's faculty." tabindex="0"></i>
+                </span>
+              ` : `
+                <span class="badge-not-verified"><i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified</span>
+              `}
+            </div>
             <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.3;">${app.college}</div>
           </div>
         </div>
@@ -275,16 +288,16 @@ export async function renderRecentApplicants(containerId = 'recent-applicants-ta
 }
 
 /**
- * Render Full Applicants Table with Filters
+ * Render Full Applicants Table with Filters & Sorting (TASK 4 & TASK 5)
  */
-export async function renderAllApplicants(statusFilter = 'All', search = '') {
+export async function renderAllApplicants(statusFilter = 'All', search = '', verificationFilter = 'all', sortBy = 'verified_first') {
   const container = document.getElementById('all-applicants-table');
   if (!container) return;
 
-  const list = await fetchIndustryApplicantsData(statusFilter, search);
+  const list = await fetchIndustryApplicantsData(statusFilter, search, verificationFilter, sortBy);
 
   if (!list || list.length === 0) {
-    container.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2.5rem; color: var(--text-muted);"><i class="fa-solid fa-magnifying-glass"></i> No applicants found matching your filter criteria.</td></tr>`;
+    container.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2.5rem; color: var(--text-muted);"><i class="fa-solid fa-magnifying-glass"></i> No applicants found matching your filter criteria.</td></tr>`;
     return;
   }
 
@@ -292,14 +305,27 @@ export async function renderAllApplicants(statusFilter = 'All', search = '') {
     <tr>
       <td style="padding: 1.1rem 1.25rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="user-avatar-circle" style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--primary-deep); flex-shrink: 0;">
+          <div class="user-avatar-circle" style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--primary-deep); color: #fff; flex-shrink: 0;">
             ${(app.student_name || 'Ayush').split(' ').map(n=>n[0]).join('')}
           </div>
           <div>
             <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;">${app.student_name}</div>
             <div style="font-size: 0.78rem; color: var(--text-muted);">${app.college} &bull; ${app.course}</div>
+            <div style="font-size: 0.75rem; font-family: monospace; color: var(--secondary-teal); font-weight: 600;">ID: ${app.candidate_id || 'AYU-STU-000001'}</div>
           </div>
         </div>
+      </td>
+      <td style="padding: 1.1rem 1.25rem;">
+        ${app.is_verified ? `
+          <span class="badge-verified verified-tooltip-wrapper">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Faculty Verified
+            <i class="fa-solid fa-circle-info verified-tooltip-trigger" data-tooltip="This student is enrolled at a recognized AYUSH institution and has an accepted mentor from that institution's faculty." tabindex="0"></i>
+          </span>
+        ` : `
+          <span class="badge-not-verified">
+            <i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified
+          </span>
+        `}
       </td>
       <td style="padding: 1.1rem 1.25rem;">
         <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">${app.role_applied}</div>
@@ -346,10 +372,74 @@ window.updateApplicantStatus = function(appId, newStatus) {
 };
 
 window.viewCandidateProfile = function(appId) {
-  fetchIndustryApplicantsData().then(applicants => {
+  fetchIndustryApplicantsData('All', '', 'all', 'default').then(applicants => {
     const app = applicants.find(a => a.id === appId);
     if (!app) return;
-    alert(`Candidate: ${app.student_name}\nInstitution: ${app.college}\nDegree: ${app.course}\nRole Applied: ${app.role_applied}\nAssessment Score: ${app.assessment_score}/100\nMatch Score: ${app.match_pct}%\nVerified Skills:\n- ${(app.skills || []).join('\n- ')}`);
+
+    const modal = document.getElementById('industry-candidate-modal');
+    const body = document.getElementById('industry-modal-body');
+
+    if (modal && body) {
+      body.innerHTML = `
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+          <div class="user-avatar-circle" style="width: 58px; height: 58px; font-size: 1.25rem; background: var(--primary-deep); color: #fff;">
+            ${(app.student_name || 'Scholar').split(' ').map(n=>n[0]).join('')}
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <h2 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0;">${app.student_name}</h2>
+              ${app.is_verified ? `
+                <span class="badge-verified verified-tooltip-wrapper">
+                  <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Faculty Verified
+                  <i class="fa-solid fa-circle-info verified-tooltip-trigger" data-tooltip="This student is enrolled at a recognized AYUSH institution and has an accepted mentor from that institution's faculty." tabindex="0"></i>
+                </span>
+              ` : `
+                <span class="badge-not-verified"><i class="fa-solid fa-circle-xmark" style="color: #94a3b8;"></i> Not Verified</span>
+              `}
+            </div>
+            <div style="font-size: 0.82rem; font-family: monospace; color: var(--secondary-teal); font-weight: 700; margin-top: 0.2rem;">
+              Candidate ID: ${app.candidate_id || 'AYU-STU-000001'}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">
+              ${app.college} &bull; ${app.course}
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div style="background: var(--bg-cream); padding: 0.85rem; border-radius: 8px;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Role Applied</div>
+            <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem; margin-top: 0.2rem;">
+              ${app.role_applied}
+            </div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 0.85rem; border-radius: 8px;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Evaluation Score</div>
+            <div style="font-weight: 800; color: var(--secondary-teal); font-size: 1.1rem; margin-top: 0.2rem;">
+              ${app.match_pct}% Fit &bull; ${app.assessment_score}/100
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem;">
+            Verified Competencies &amp; Lab Standards
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+            ${(app.skills || []).map(s => `<span class="badge badge-teal" style="font-size: 0.78rem;"><i class="fa-solid fa-tag"></i> ${s}</span>`).join('')}
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; font-size: 0.82rem; color: #166534;">
+          <i class="fa-solid fa-shield-check"></i> <strong>Institutional Verification:</strong> ${app.is_verified ? 'This candidate is authenticated by institutional AYUSH faculty with verified academic credentials.' : 'Institutional mentorship verification pending. Candidate can be requested to complete verification.'}
+        </div>
+      `;
+      modal.style.display = 'flex';
+      return;
+    }
+
+    // Fallback alert
+    alert(`Candidate: ${app.student_name}\nVerification: ${app.is_verified ? 'Faculty Verified' : 'Not Verified'}\nInstitution: ${app.college}\nDegree: ${app.course}\nRole Applied: ${app.role_applied}\nAssessment Score: ${app.assessment_score}/100\nMatch Score: ${app.match_pct}%\nVerified Skills:\n- ${(app.skills || []).join('\n- ')}`);
   });
 };
 

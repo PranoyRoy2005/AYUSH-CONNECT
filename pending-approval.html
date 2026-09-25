@@ -333,9 +333,11 @@
     };
 
     // Ensure user session doesn't keep active token in memory
-    try {
-      await signOutUserWithSupabase();
-    } catch (e) {}
+    (async () => {
+      try {
+        await signOutUserWithSupabase();
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>

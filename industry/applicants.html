@@ -66,28 +66,58 @@
         </div>
       </div>
 
-      <!-- Filters & Search Toolbar -->
+      <!-- Filters & Search Toolbar (TASK 5) -->
       <div class="ayush-card" style="margin-bottom: 1.75rem; padding: 1.25rem 1.5rem;">
-        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
           <div style="position: relative; flex: 1; min-width: 280px;">
             <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
             <input type="text" id="cand-search-input" class="form-input" placeholder="Search candidate by name, university, or applied role..." style="padding-left: 2.75rem; width: 100%;">
           </div>
 
-          <!-- Filter buttons with generous spacing -->
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-right: 0.25rem;">Filter by:</span>
-            <button class="badge badge-primary" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('All')">
-              <i class="fa-solid fa-layer-group"></i> All (28)
+          <!-- Sort dropdown (TASK 5) -->
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="cand-sort-select" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; white-space: nowrap;">
+              <i class="fa-solid fa-arrow-down-short-wide"></i> Sort:
+            </label>
+            <select id="cand-sort-select" class="form-input" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 600; color: var(--primary-deep); background: #ffffff; min-width: 190px;" onchange="window.handleSortChange(this.value)">
+              <option value="verified_first" selected>Faculty Verified First</option>
+              <option value="match_desc">Highest Match Score</option>
+              <option value="score_desc">Assessment Score</option>
+              <option value="date_desc">Applied Date (Recent)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filter rows: Status & Verification status -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-color);">
+          <!-- Verification Status Filter (TASK 5) -->
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-right: 0.25rem;">Verification:</span>
+            <button class="badge badge-primary active-filter-ver" id="btn-ver-all" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterByVerification('all')">
+              All
             </button>
-            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Interview')">
-              <i class="fa-solid fa-calendar-check"></i> Interview (2)
+            <button class="badge badge-success" id="btn-ver-verified" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterByVerification('verified')">
+              <i class="fa-solid fa-circle-check"></i> Verified Only
             </button>
-            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Shortlisted')">
-              <i class="fa-solid fa-star"></i> Shortlisted (8)
+            <button class="badge badge-not-verified" id="btn-ver-unverified" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterByVerification('unverified')">
+              <i class="fa-solid fa-circle-xmark"></i> Not Verified Only
             </button>
-            <button class="badge badge-teal" style="padding: 0.5rem 0.9rem; font-size: 0.82rem; cursor: pointer;" onclick="window.filterCandidates('Selected')">
-              <i class="fa-solid fa-circle-check"></i> Selected (4)
+          </div>
+
+          <!-- Application status buttons -->
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-right: 0.25rem;">Status:</span>
+            <button class="badge badge-primary" id="btn-status-all" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterCandidates('All')">
+              All Applications
+            </button>
+            <button class="badge badge-teal" id="btn-status-interview" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterCandidates('Interview')">
+              <i class="fa-solid fa-calendar-check"></i> Interview
+            </button>
+            <button class="badge badge-teal" id="btn-status-shortlisted" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterCandidates('Shortlisted')">
+              <i class="fa-solid fa-star"></i> Shortlisted
+            </button>
+            <button class="badge badge-teal" id="btn-status-selected" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer;" onclick="window.filterCandidates('Selected')">
+              <i class="fa-solid fa-circle-check"></i> Selected
             </button>
           </div>
         </div>
@@ -100,6 +130,7 @@
             <thead>
               <tr>
                 <th style="padding: 1.1rem 1.25rem;">Candidate & Academic Background</th>
+                <th style="padding: 1.1rem 1.25rem;">Verification Status</th>
                 <th style="padding: 1.1rem 1.25rem;">Role Applied & Verified Skills</th>
                 <th style="padding: 1.1rem 1.25rem;">Match Score</th>
                 <th style="padding: 1.1rem 1.25rem;">Applied Date</th>
@@ -116,26 +147,78 @@
     </main>
   </div>
 
+  <!-- CANDIDATE PROFILE DOSSIER MODAL -->
+  <div id="industry-candidate-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: #ffffff; border-radius: 14px; max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); animation: fadeIn 0.2s ease;">
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-id-card" style="color: var(--secondary-teal); font-size: 1.2rem;"></i>
+          <h3 style="margin: 0; font-size: 1.15rem; color: var(--primary-deep);">Candidate Evaluation Dossier</h3>
+        </div>
+        <button onclick="window.closeIndustryCandidateModal()" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem 0.5rem;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="industry-modal-body" style="padding: 1.5rem;"></div>
+      <div style="padding: 1rem 1.5rem; background: var(--bg-cream); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary" onclick="window.closeIndustryCandidateModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { renderAllApplicants } from '/js/industry.js';
     import { handleLogout } from '/js/auth.js';
 
     window.industryLogout = handleLogout;
 
-    let currentFilter = 'All';
+    let currentStatus = 'All';
+    let currentVerFilter = 'all';
+    let currentSort = 'verified_first';
 
     window.filterCandidates = function(status) {
-      currentFilter = status;
-      renderAllApplicants(currentFilter, document.getElementById('cand-search-input').value);
+      currentStatus = status;
+      refreshList();
+    };
+
+    window.filterByVerification = function(verStatus) {
+      currentVerFilter = verStatus;
+      ['all', 'verified', 'unverified'].forEach(v => {
+        const btn = document.getElementById(`btn-ver-${v}`);
+        if (btn) {
+          if (v === verStatus) {
+            btn.style.outline = '2px solid var(--primary-deep)';
+            btn.style.outlineOffset = '1px';
+          } else {
+            btn.style.outline = 'none';
+          }
+        }
+      });
+      refreshList();
+    };
+
+    window.handleSortChange = function(sortVal) {
+      currentSort = sortVal;
+      refreshList();
+    };
+
+    function refreshList() {
+      const search = document.getElementById('cand-search-input')?.value || '';
+      renderAllApplicants(currentStatus, search, currentVerFilter, currentSort);
+    }
+
+    window.closeIndustryCandidateModal = function() {
+      const modal = document.getElementById('industry-candidate-modal');
+      if (modal) modal.style.display = 'none';
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-      renderAllApplicants('All');
+      refreshList();
 
       const search = document.getElementById('cand-search-input');
       if (search) {
-        search.addEventListener('input', (e) => {
-          renderAllApplicants(currentFilter, e.target.value);
+        search.addEventListener('input', () => {
+          refreshList();
         });
       }
     });

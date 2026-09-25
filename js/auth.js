@@ -140,10 +140,10 @@ export function getCurrentUser() {
   // Determine portal role from current URL if on a protected portal page
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   let portalRole = null;
-  if (pathname.startsWith('/industry/')) portalRole = 'industry';
-  else if (pathname.startsWith('/academician/')) portalRole = 'academician';
+  if (pathname.startsWith('/industry/') || pathname.includes('industry')) portalRole = 'industry';
+  else if (pathname.startsWith('/academician/') || pathname.includes('academician')) portalRole = 'academician';
   else if (pathname.startsWith('/admin/') && !pathname.includes('/admin/login')) portalRole = 'admin';
-  else if (pathname.startsWith('/student/')) portalRole = 'student';
+  else if (pathname.startsWith('/student/') || pathname.includes('student')) portalRole = 'student';
 
   // If user is accessing the admin portal:
   if (portalRole === 'admin') {
@@ -244,17 +244,17 @@ export function setCurrentUser(user) {
 
 /**
  * Helper to get role redirect path
- *  - student -> /dashboard-student.html
- *  - industry -> /dashboard-industry.html
- *  - academician -> /dashboard-academician.html
+ *  - student -> /student/dashboard.html
+ *  - industry -> /industry/dashboard.html
+ *  - academician -> /academician/dashboard.html
  *  - admin -> /admin/dashboard.html
  */
 export function getRedirectForRole(role) {
   const r = (role || '').toLowerCase().trim();
-  if (r === 'industry') return '/dashboard-industry.html';
-  if (r === 'academician') return '/dashboard-academician.html';
+  if (r === 'industry') return '/industry/dashboard.html';
+  if (r === 'academician') return '/academician/dashboard.html';
   if (r === 'admin') return '/admin/dashboard.html';
-  return '/dashboard-student.html';
+  return '/student/dashboard.html';
 }
 
 /**
@@ -267,9 +267,9 @@ export function getRedirectForRole(role) {
  * 2. Query the profiles table for a row where id equals the logged-in user's id.
  * 3. If no row exists OR profile_completed is false or null -> redirect to /complete-profile.html and STOP. Do not proceed to any dashboard logic.
  * 4. Only if a row exists AND profile_completed is strictly true, THEN redirect based on role:
- *    - "student" -> /dashboard-student.html
- *    - "industry" -> /dashboard-industry.html
- *    - "academician" -> /dashboard-academician.html
+ *    - "student" -> /student/dashboard.html
+ *    - "industry" -> /industry/dashboard.html
+ *    - "academician" -> /academician/dashboard.html
  *    - if role is missing, redirect to /complete-profile.html instead (since role selection likely happens there too).
  */
 export async function routeUserAfterAuth() {
@@ -327,11 +327,13 @@ export async function routeUserAfterAuth() {
 
     let targetDashboard = '/complete-profile.html';
     if (role === 'student') {
-      targetDashboard = '/student/portfolio.html';
+      targetDashboard = '/student/dashboard.html';
     } else if (role === 'industry') {
-      targetDashboard = '/dashboard-industry.html';
+      targetDashboard = '/industry/dashboard.html';
     } else if (role === 'academician') {
-      targetDashboard = '/dashboard-academician.html';
+      targetDashboard = '/academician/dashboard.html';
+    } else if (role === 'admin') {
+      targetDashboard = '/admin/dashboard.html';
     } else {
       // Role is missing, redirect to /complete-profile.html instead
       targetDashboard = '/complete-profile.html';
@@ -488,9 +490,9 @@ export function isPublicAuthPage(path = (typeof window !== 'undefined' ? window.
  */
 export function isProtectedPortalPage(path = (typeof window !== 'undefined' ? window.location.pathname : '')) {
   return (
-    path.startsWith('/student/') ||
-    path.startsWith('/industry/') ||
-    path.startsWith('/academician/') ||
+    path.startsWith('/student/') || path.includes('dashboard-student') ||
+    path.startsWith('/industry/') || path.includes('dashboard-industry') ||
+    path.startsWith('/academician/') || path.includes('academician') ||
     (path.startsWith('/admin/') && !path.includes('/admin/login'))
   );
 }

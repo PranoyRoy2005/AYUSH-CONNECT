@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mentees &amp; Verification Requests — AYUSH CONNECT</title>
+  <meta name="description" content="Review student mentorship and institutional verification requests, endorse verified scholars, and guide clinical research mentees.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/academician_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display" style="background: var(--accent-saffron); font-weight: 700; overflow: hidden;">VR</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);" id="acad-sidebar-name">Dr. V.S. Ramaswamy</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" id="acad-sidebar-desig">Dean of Research</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/academician/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Institutional Analytics</a></li>
+        <li><a href="/academician/portfolio.html"><span class="menu-icon"><i class="fa-solid fa-id-card-clip"></i></span> Academic Portfolio</a></li>
+        <li><a href="/academician/mentees.html" class="active"><span class="menu-icon"><i class="fa-solid fa-user-graduate"></i></span> Mentees &amp; Verification</a></li>
+        <li><a href="/academician/dashboard.html#skill-radar"><span class="menu-icon"><i class="fa-solid fa-satellite-dish"></i></span> Skill Demand Radar</a></li>
+        <li><a href="/academician/dashboard.html#curriculum-gaps"><span class="menu-icon"><i class="fa-solid fa-lightbulb"></i></span> Curriculum Updates</a></li>
+        <li><a href="/academician/dashboard.html#cohorts"><span class="menu-icon"><i class="fa-solid fa-users"></i></span> Student Batches</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.academicLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('student');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/industry/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('industry');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Industry</a> &bull;
+          <a href="/admin/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('admin');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary-subtle); padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-landmark" style="color: var(--secondary-teal);"></i> <span id="acad-institution-header">National Institute of Ayurveda (NIA), Jaipur</span>
+          </div>
+          <h1 style="font-size: 2rem; color: var(--primary-deep); margin: 0 0 0.35rem 0;">Mentee Roster &amp; Verification Requests</h1>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">Review student applications for academic faculty mentorship and endorse verified AYUSH credentials for industry readiness.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span class="badge badge-success" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;" id="faculty-candidate-id-badge">
+            <i class="fa-solid fa-id-badge"></i> Faculty ID: AYU-ACA-000001
+          </span>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Ribbon -->
+      <div class="summary-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 2rem;">
+        <div class="metric-card" style="border-left: 4px solid var(--accent-saffron);">
+          <div class="metric-title">Pending Verification Requests</div>
+          <div class="metric-value" id="stat-pending-count">0</div>
+          <div style="font-size: 0.8rem; color: var(--accent-saffron); font-weight: 600; margin-top: 0.4rem;">
+            <i class="fa-solid fa-hourglass-half"></i> Awaiting Faculty Review
+          </div>
+        </div>
+        <div class="metric-card" style="border-left: 4px solid #10b981;">
+          <div class="metric-title">Accepted Verified Mentees</div>
+          <div class="metric-value" id="stat-accepted-count">0</div>
+          <div style="font-size: 0.8rem; color: #10b981; font-weight: 600; margin-top: 0.4rem;">
+            <i class="fa-solid fa-circle-check"></i> Actively Endorsed
+          </div>
+        </div>
+        <div class="metric-card" style="border-left: 4px solid #64748b;">
+          <div class="metric-title">Archived / Declined Requests</div>
+          <div class="metric-value" id="stat-rejected-count">0</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 0.4rem;">
+            <i class="fa-solid fa-clock-rotate-left"></i> Historic Applications
+          </div>
+        </div>
+      </div>
+
+      <!-- TABBED MENTEE INTERFACE (TASK 3.1) -->
+      <div class="ayush-card" style="padding: 1.5rem;">
+        <!-- Tabs bar -->
+        <div class="mentee-tabs-bar">
+          <button class="mentee-tab-btn active" id="tab-btn-pending" onclick="window.switchMenteeTab('pending')">
+            <i class="fa-solid fa-hourglass-half"></i> Pending Requests
+            <span class="mentee-tab-badge" id="tab-count-pending">0</span>
+          </button>
+          <button class="mentee-tab-btn" id="tab-btn-accepted" onclick="window.switchMenteeTab('accepted')">
+            <i class="fa-solid fa-circle-check"></i> Accepted Mentees
+            <span class="mentee-tab-badge" id="tab-count-accepted">0</span>
+          </button>
+          <button class="mentee-tab-btn" id="tab-btn-rejected" onclick="window.switchMenteeTab('rejected')">
+            <i class="fa-solid fa-circle-xmark"></i> Rejected Requests
+            <span class="mentee-tab-badge" id="tab-count-rejected">0</span>
+          </button>
+        </div>
+
+        <!-- Tab Content Container -->
+        <div id="mentees-table-container" style="overflow-x: auto;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- CANDIDATE PROFILE PREVIEW MODAL -->
+  <div id="candidate-preview-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: #ffffff; border-radius: 14px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); animation: fadeIn 0.2s ease;">
+      <!-- Modal Header -->
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-id-card-clip" style="color: var(--secondary-teal); font-size: 1.25rem;"></i>
+          <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-deep);">Scholar Credential Dossier</h3>
+        </div>
+        <button onclick="window.closeCandidateModal()" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem 0.5rem;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div id="candidate-modal-body" style="padding: 1.5rem;">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding: 1rem 1.5rem; background: var(--bg-cream); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem;" id="candidate-modal-actions">
+        <button class="btn btn-secondary" onclick="window.closeCandidateModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { guardDashboardPage, getCurrentUser, showToast, syncUserHeader } from '/js/auth.js';
+    import { 
+      fetchAcademicianMentorshipRequests, 
+      acceptMentorshipRequest, 
+      rejectMentorshipRequest 
+    } from '/js/supabase.js';
+
+    let currentTab = 'pending';
+    let requestsData = { pending: [], accepted: [], rejected: [] };
+    let currentAcademicianId = null;
+
+    window.switchMenteeTab = function(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll('.mentee-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderTable();
+    };
+
+    window.closeCandidateModal = function() {
+      const modal = document.getElementById('candidate-preview-modal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    window.previewStudentProfile = function(requestId) {
+      const all = [...requestsData.pending, ...requestsData.accepted, ...requestsData.rejected];
+      const req = all.find(r => r.id === requestId);
+      if (!req) return;
+
+      const modal = document.getElementById('candidate-preview-modal');
+      const body = document.getElementById('candidate-modal-body');
+      const actions = document.getElementById('candidate-modal-actions');
+      if (!modal || !body) return;
+
+      body.innerHTML = `
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+          <div class="user-avatar-circle" style="width: 58px; height: 58px; font-size: 1.25rem; background: var(--primary-deep); color: #fff;">
+            ${(req.student_name || 'Scholar').split(' ').map(n=>n[0]).join('')}
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <h2 style="font-size: 1.35rem; color: var(--primary-deep); margin: 0;">${req.student_name}</h2>
+              <span class="badge ${req.is_verified ? 'badge-success' : 'badge-primary'}">
+                <i class="fa-solid ${req.is_verified ? 'fa-circle-check' : 'fa-clock'}"></i> ${req.is_verified ? 'Verified Scholar' : 'Pending Verification'}
+              </span>
+            </div>
+            <div style="font-size: 0.85rem; font-family: monospace; color: var(--secondary-teal); font-weight: 700; margin-top: 0.2rem;">
+              Candidate ID: ${req.candidate_id}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">
+              ${req.course} &bull; ${req.year}
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div style="background: var(--bg-cream); padding: 0.85rem; border-radius: 8px;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Institution</div>
+            <div style="font-weight: 600; color: var(--primary-deep); font-size: 0.9rem; margin-top: 0.2rem;">
+              <i class="fa-solid fa-landmark" style="color: var(--secondary-teal);"></i> ${req.college}
+            </div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 0.85rem; border-radius: 8px;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Verified Skill Score</div>
+            <div style="font-weight: 700; color: #10b981; font-size: 1.15rem; margin-top: 0.2rem;">
+              <i class="fa-solid fa-award"></i> ${req.skill_score}/100
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem;">
+            Assessed Competencies
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+            ${(req.skills || []).map(s => `<span class="badge badge-teal" style="font-size: 0.78rem;"><i class="fa-solid fa-tag"></i> ${s}</span>`).join('')}
+          </div>
+        </div>
+
+        ${req.notes ? `
+          <div style="background: #f8fafc; border: 1px dashed var(--border-color); padding: 0.85rem; border-radius: 8px;">
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">
+              Student's Research Note
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-primary); font-style: italic;">
+              "${req.notes}"
+            </div>
+          </div>
+        ` : ''}
+      `;
+
+      if (req.status === 'pending') {
+        actions.innerHTML = `
+          <button class="btn btn-secondary" onclick="window.closeCandidateModal()">Close</button>
+          <button class="btn btn-sm" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; font-weight:600;" onclick="window.closeCandidateModal(); window.handleMenteeAction('${req.id}', '${req.student_id}', 'reject')">
+            <i class="fa-solid fa-xmark"></i> Reject
+          </button>
+          <button class="btn btn-sm btn-primary" onclick="window.closeCandidateModal(); window.handleMenteeAction('${req.id}', '${req.student_id}', 'accept')">
+            <i class="fa-solid fa-check"></i> Accept &amp; Verify Student
+          </button>
+        `;
+      } else {
+        actions.innerHTML = `
+          <button class="btn btn-secondary" onclick="window.closeCandidateModal()">Close</button>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    };
+
+    window.handleMenteeAction = async function(requestId, studentId, action) {
+      if (!currentAcademicianId) {
+        const u = getCurrentUser();
+        currentAcademicianId = u?.id || 'usr_acad_01';
+      }
+
+      const isAccept = action === 'accept';
+      const actionName = isAccept ? 'accept and verify' : 'reject';
+      if (!confirm(`Are you sure you want to ${actionName} this mentorship verification request?`)) {
+        return;
+      }
+
+      try {
+        if (isAccept) {
+          await acceptMentorshipRequest(requestId, currentAcademicianId, studentId);
+          showToast('Student successfully accepted and verified! Official verified seal has been issued.', 'success');
+        } else {
+          await rejectMentorshipRequest(requestId, currentAcademicianId, studentId);
+          showToast('Mentorship request marked as declined.', 'info');
+        }
+
+        await loadMentees();
+      } catch (err) {
+        showToast(err.message || `Failed to ${action} request`, 'error');
+      }
+    };
+
+    function renderTable() {
+      const container = document.getElementById('mentees-table-container');
+      if (!container) return;
+
+      const list = requestsData[currentTab] || [];
+
+      // Update counters
+      document.getElementById('stat-pending-count').textContent = requestsData.pending.length;
+      document.getElementById('stat-accepted-count').textContent = requestsData.accepted.length;
+      document.getElementById('stat-rejected-count').textContent = requestsData.rejected.length;
+
+      document.getElementById('tab-count-pending').textContent = requestsData.pending.length;
+      document.getElementById('tab-count-accepted').textContent = requestsData.accepted.length;
+      document.getElementById('tab-count-rejected').textContent = requestsData.rejected.length;
+
+      if (list.length === 0) {
+        let emptyMsg = 'No pending verification requests at this time.';
+        if (currentTab === 'accepted') emptyMsg = 'You have not accepted any mentees yet. Pending requests will appear here once verified.';
+        if (currentTab === 'rejected') emptyMsg = 'No rejected requests in historical archive.';
+
+        container.innerHTML = `
+          <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+            <div style="font-size: 2rem; color: var(--secondary-teal); margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div style="font-weight: 700; color: var(--primary-deep); font-size: 1.05rem;">${emptyMsg}</div>
+            <p style="font-size: 0.85rem; margin-top: 0.25rem;">Share your Candidate ID (<code>AYU-ACA-000001</code>) with enrolled scholars so they can submit verification requests.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="bordered-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="padding: 1rem 1.25rem;">Student &amp; Candidate ID</th>
+              <th style="padding: 1rem 1.25rem;">Academic Institution &amp; Degree</th>
+              <th style="padding: 1rem 1.25rem;">Skill Score</th>
+              <th style="padding: 1rem 1.25rem;">Requested Date</th>
+              <th style="padding: 1rem 1.25rem;">Status</th>
+              <th style="padding: 1rem 1.25rem; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(r => {
+              const reqDate = r.requested_at ? new Date(r.requested_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+              let statusBadge = '';
+              if (r.status === 'accepted') {
+                statusBadge = '<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Verified Mentee</span>';
+              } else if (r.status === 'pending') {
+                statusBadge = '<span class="badge badge-saffron"><i class="fa-solid fa-hourglass-half"></i> Pending Review</span>';
+              } else {
+                statusBadge = '<span class="badge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca;"><i class="fa-solid fa-circle-xmark"></i> Declined</span>';
+              }
+
+              return `
+                <tr>
+                  <td style="padding: 1.1rem 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div class="user-avatar-circle" style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--primary-deep); flex-shrink: 0; color: #fff;">
+                        ${(r.student_name || 'Scholar').split(' ').map(n=>n[0]).join('')}
+                      </div>
+                      <div>
+                        <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;">${r.student_name}</div>
+                        <div style="font-size: 0.8rem; font-family: monospace; color: var(--secondary-teal); font-weight: 700;">
+                          ${r.candidate_id}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 1.1rem 1.25rem;">
+                    <div style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">${r.college}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted);">${r.course} &bull; ${r.year}</div>
+                  </td>
+                  <td style="padding: 1.1rem 1.25rem;">
+                    <div style="font-weight: 700; color: #10b981; font-size: 0.95rem;">
+                      <i class="fa-solid fa-award"></i> ${r.skill_score}/100
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">Assessment Validated</div>
+                  </td>
+                  <td style="padding: 1.1rem 1.25rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    ${reqDate}
+                  </td>
+                  <td style="padding: 1.1rem 1.25rem;">
+                    ${statusBadge}
+                  </td>
+                  <td style="padding: 1.1rem 1.25rem; text-align: right;">
+                    <div style="display: inline-flex; gap: 0.4rem; align-items: center;">
+                      <button class="btn btn-sm btn-secondary" onclick="window.previewStudentProfile('${r.id}')" title="Inspect Full Dossier">
+                        <i class="fa-solid fa-user-check"></i> Dossier
+                      </button>
+                      ${r.status === 'pending' ? `
+                        <button class="btn btn-sm" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; font-weight:600; padding: 0.35rem 0.65rem;" onclick="window.handleMenteeAction('${r.id}', '${r.student_id}', 'reject')" title="Decline Request">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" style="padding: 0.35rem 0.75rem;" onclick="window.handleMenteeAction('${r.id}', '${r.student_id}', 'accept')" title="Accept & Verify">
+                          <i class="fa-solid fa-check"></i> Accept
+                        </button>
+                      ` : ''}
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function loadMentees() {
+      const user = getCurrentUser();
+      currentAcademicianId = user?.id || 'usr_acad_01';
+
+      const data = await fetchAcademicianMentorshipRequests(currentAcademicianId);
+      requestsData = data;
+      renderTable();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await guardDashboardPage('academician');
+      syncUserHeader();
+
+      const user = getCurrentUser();
+      const nameEl = document.getElementById('acad-sidebar-name');
+      if (nameEl) nameEl.textContent = user?.full_name || user?.name || 'Dr. V.S. Ramaswamy';
+
+      const desigEl = document.getElementById('acad-sidebar-desig');
+      if (desigEl) desigEl.textContent = user?.designation || 'Professor & Dean of Research';
+
+      const instEl = document.getElementById('acad-institution-header');
+      if (instEl) instEl.textContent = user?.institution || 'National Institute of Ayurveda (NIA), Jaipur';
+
+      const badgeEl = document.getElementById('faculty-candidate-id-badge');
+      if (badgeEl) {
+        const cId = user?.candidate_id || 'AYU-ACA-000001';
+        badgeEl.innerHTML = `<i class="fa-solid fa-id-badge"></i> Faculty ID: <strong>${cId}</strong>`;
+      }
+
+      await loadMentees();
+    });
+
+    window.academicLogout = function() {
+      if (window.handleUniversalSignOut) {
+        window.handleUniversalSignOut();
+      } else {
+        localStorage.removeItem('ayush_current_user');
+        window.location.href = '/login.html';
+      }
+    };
+  </script>
+</body>
+</html>

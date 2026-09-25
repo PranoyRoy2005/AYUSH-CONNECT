@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Portfolio &amp; Faculty Credentials — AYUSH CONNECT</title>
+  <meta name="description" content="View and manage verified AYUSH academician portfolio, faculty credentials, publications, funded research projects, and institutional specifications.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/academician_dashboard.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <a href="/index.html">
+          <img src="/assets/icons/ayush-logo.svg" alt="AYUSH CONNECT" style="height: 36px;">
+        </a>
+      </div>
+
+      <div style="padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;">
+        <div class="user-avatar-circle" id="sidebar-avatar-display" style="background: var(--accent-saffron); font-weight: 700; overflow: hidden;">VR</div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary-deep);" id="acad-sidebar-name">Dr. V.S. Ramaswamy</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" id="acad-sidebar-desig">Dean of Research</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/academician/dashboard.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span> Institutional Analytics</a></li>
+        <li><a href="/academician/portfolio.html" class="active"><span class="menu-icon"><i class="fa-solid fa-id-card-clip"></i></span> Academic Portfolio</a></li>
+        <li><a href="/academician/mentees.html"><span class="menu-icon"><i class="fa-solid fa-user-graduate"></i></span> Mentees &amp; Verification</a></li>
+        <li><a href="/academician/dashboard.html#skill-radar"><span class="menu-icon"><i class="fa-solid fa-satellite-dish"></i></span> Skill Demand Radar</a></li>
+        <li><a href="/academician/dashboard.html#curriculum-gaps"><span class="menu-icon"><i class="fa-solid fa-lightbulb"></i></span> Curriculum Updates</a></li>
+        <li><a href="/academician/dashboard.html#cohorts"><span class="menu-icon"><i class="fa-solid fa-users"></i></span> Student Batches</a></li>
+        <li style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <a href="#" onclick="window.academicLogout(); return false;" style="color: #ef4444;"><span class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span> Sign Out</a>
+        </li>
+      </ul>
+
+      <!-- Quick Switch Role Footer -->
+      <div style="padding: 1rem 1.25rem; margin-top: auto; background: var(--bg-cream); border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+        <div style="font-weight: 700; color: var(--accent-saffron); margin-bottom: 0.25rem;">PORTAL SWITCHER:</div>
+        <div style="display: flex; gap: 0.35rem;">
+          <a href="/student/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('student');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Student</a> &bull;
+          <a href="/industry/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('industry');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Industry</a> &bull;
+          <a href="/admin/dashboard.html" onclick="if(window.switchDemoRole){window.switchDemoRole('admin');return false;}" style="text-decoration: underline; color: var(--text-secondary);">Admin</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      <!-- Top Title & Action Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary-subtle); padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-landmark" style="color: var(--secondary-teal);"></i> AYUSH Academic &amp; Research Directorate
+          </div>
+          <h1 style="font-size: 1.85rem; color: var(--primary-deep); margin: 0 0 0.3rem 0;">Academic Portfolio &amp; Faculty Credentials</h1>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+            Manage verified faculty profile, institutional specifications, research grants, peer-reviewed publications, and NCISM credentials.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" onclick="window.openAcademicianEditModal()">
+            <i class="fa-solid fa-user-pen"></i> Edit Specifications
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="window.openAddPublicationModal()">
+            <i class="fa-solid fa-plus"></i> Add Publication
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="window.openAddGrantModal()">
+            <i class="fa-solid fa-plus"></i> Add Project / Grant
+          </button>
+          <a href="/academician/dashboard.html" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-chart-pie"></i> Analytics
+          </a>
+        </div>
+      </div>
+
+      <!-- PROFILE & CREDENTIALS COMPLETION PROGRESS CARD -->
+      <div class="ayush-card" style="margin-bottom: 2rem; border-left: 4px solid #10b981;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; color: #065f46; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-database"></i> Database Verified Faculty Profile
+            </div>
+            <h3 style="font-size: 1.25rem; color: var(--primary-deep); margin: 0 0 0.25rem 0;">Profile &amp; Credentials Verification Status</h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">
+              Calculated live from institutional records, verified profile photo, publications list, and funded research grants.
+            </p>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 2rem; font-weight: 800; color: #10b981; line-height: 1;" id="acad-completion-num">100%</div>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Overall Verification</span>
+          </div>
+        </div>
+
+        <!-- Green Progress Bar -->
+        <div class="acad-completion-bar-wrapper">
+          <div class="acad-completion-bar-fill" id="acad-completion-bar" style="width: 100%;"></div>
+        </div>
+
+        <!-- Checklist Breakdown -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-identity">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Faculty Identity Details</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-photo">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Verified Profile Photo</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-institution">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Institution &amp; Department</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-specs">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Core Specializations</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-pubs">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Peer-Reviewed Papers</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;" id="step-acad-grants">
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+            <span>Funded Research Grants</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACADEMICIAN IDENTITY & PHOTO CARD -->
+      <div class="acad-identity-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap;">
+          <!-- Profile Photo with Live Upload Trigger -->
+          <div class="candidate-avatar-wrapper" id="acad-photo-container">
+            <div class="candidate-avatar-fallback" id="acad-avatar-initials">VR</div>
+            <img src="" alt="Faculty Photo" class="candidate-avatar-img" id="acad-photo-img" style="display: none;">
+            <label for="acad-photo-input" class="candidate-upload-trigger" title="Upload Faculty Photo">
+              <i class="fa-solid fa-camera"></i>
+            </label>
+            <input type="file" id="acad-photo-input" accept="image/*" style="display: none;">
+          </div>
+
+          <div style="flex: 1; min-width: 280px;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+              <h2 style="font-size: 1.45rem; color: var(--primary-deep); margin: 0;" id="acad-card-name">Dr. V. S. Ramaswamy</h2>
+              <span class="badge badge-teal"><i class="fa-solid fa-circle-check"></i> Verified Academician &bull; NCISM Approved</span>
+            </div>
+            <div style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 0.45rem;" id="acad-designation-badge">
+              <i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> Dean of Research &bull; Department of Dravyaguna &amp; Clinical Pharmacology
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 1.5rem; flex-wrap: wrap;">
+              <span><i class="fa-solid fa-id-badge"></i> Faculty ID: <strong id="acad-faculty-id-display" style="color: var(--primary-deep); font-family: monospace; font-size: 0.95rem;">AYU-FAC-2026-8941</strong></span>
+              <span id="acad-institution-badge"><i class="fa-solid fa-building-columns"></i> National Institute of Ayurveda (NIA), Jaipur</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo & Profile Action Buttons -->
+        <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <button class="btn btn-sm btn-primary" onclick="window.openAcademicianEditModal()" title="Edit Faculty Specifications">
+            <i class="fa-solid fa-user-pen"></i> Edit Specifications
+          </button>
+          <label for="acad-photo-input" class="btn btn-sm btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+          </label>
+          <button class="btn btn-sm btn-secondary" id="btn-remove-acad-photo" style="display: none;" onclick="window.removeAcademicianPhoto()">
+            <i class="fa-solid fa-trash-can"></i> Remove Photo
+          </button>
+          <button class="btn btn-sm btn-secondary" onclick="window.openAddPublicationModal()">
+            <i class="fa-solid fa-book-bookmark"></i> Add Publication
+          </button>
+          <button class="btn btn-sm btn-secondary" onclick="window.openAddGrantModal()">
+            <i class="fa-solid fa-hand-holding-dollar"></i> Add Grant
+          </button>
+        </div>
+      </div>
+
+      <!-- DETAILED SPECIFICATION CARDS GRID -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- CARD 1: Academic & Institutional Specifications -->
+        <div class="ayush-card" style="border-top: 3px solid var(--primary-deep);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-university" style="color: var(--secondary-teal);"></i> Institutional Specifications
+            </h3>
+            <button class="btn btn-xs btn-secondary" onclick="window.openAcademicianEditModal()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Highest Qualification:</span>
+              <strong id="spec-highest-degree" style="color: var(--primary-deep); text-align: right; max-width: 60%;">Ph.D. in Phytochemistry (BHU)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Institution / University:</span>
+              <strong id="spec-institution" style="color: var(--primary-deep); text-align: right; max-width: 60%;">National Institute of Ayurveda, Jaipur</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Department:</span>
+              <span id="spec-department" style="font-weight: 600; text-align: right;">Dravyaguna &amp; Clinical Pharmacology</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">System of Medicine:</span>
+              <span id="spec-system" style="font-weight: 600; color: #166534;">Ayurveda &amp; Integrative Pharmacology</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Teaching &amp; Clinical Experience:</span>
+              <span id="spec-experience" style="font-weight: 600;">18+ Years</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Scholars Guided (PG &amp; Ph.D.):</span>
+              <span id="spec-scholars" style="font-weight: 600; color: var(--secondary-teal);">14 Postgraduates &amp; 6 Ph.D. Scholars</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: Contact, Office Coordinates & Scholarly Identifiers -->
+        <div class="ayush-card" style="border-top: 3px solid var(--secondary-teal);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-address-book" style="color: var(--secondary-teal);"></i> Coordinates &amp; Scholarly IDs
+            </h3>
+            <button class="btn btn-xs btn-secondary" onclick="window.openAcademicianEditModal()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Official Academic Email:</span>
+              <strong id="spec-email" style="color: var(--primary-deep);">vs.ramaswamy@nia.edu.in</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Direct Phone / Intercom:</span>
+              <span id="spec-phone" style="font-weight: 600;">+91 (0141) 2635812</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Office Cabin:</span>
+              <span id="spec-office" style="font-weight: 600; text-align: right; max-width: 60%;">Dean's Office, Academic Wing, NIA Jaipur</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">ORCID iD:</span>
+              <span id="spec-orcid" style="font-family: monospace; font-weight: 600; color: #166534;">0000-0002-1849-9214</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted);">Google Scholar:</span>
+              <a href="https://scholar.google.com" id="spec-scholar-link" target="_blank" rel="noopener noreferrer" style="color: var(--secondary-teal); font-weight: 600; text-decoration: underline;">
+                View Scholar Citations <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+              </a>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">ResearchGate &amp; LinkedIn:</span>
+              <div style="display: flex; gap: 0.75rem;">
+                <a href="#" id="spec-researchgate-link" target="_blank" style="color: var(--secondary-teal); font-weight: 600; text-decoration: underline;">ResearchGate</a>
+                &bull;
+                <a href="#" id="spec-linkedin-link" target="_blank" style="color: var(--secondary-teal); font-weight: 600; text-decoration: underline;">LinkedIn</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ACADEMIC PHILOSOPHY & SCHOLARLY BIO -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-quote-left" style="color: var(--accent-saffron);"></i> Academic Philosophy &amp; Research Vision
+          </h3>
+          <button class="btn btn-xs btn-secondary" onclick="window.openAcademicianEditModal()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+            <i class="fa-solid fa-pen"></i> Edit Bio
+          </button>
+        </div>
+        <p id="acad-display-bio" style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; margin: 0; background: #fafaf9; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          Dedicated to bridging ancient classical Ayurvedic pharmacopoeia with modern molecular chromatography, metabolomics, and evidence-based reverse pharmacology. Over the past 18 years, I have supervised 14 Postgraduate theses, 6 Doctoral scholars, and directed multi-centric clinical trials recognized by the Ministry of AYUSH and WHO Collaborating Centres.
+        </p>
+      </div>
+
+      <!-- SPECIALIZATIONS & TEACHING MODULES GRID -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Core Research Specializations -->
+        <div class="ayush-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-dna" style="color: #10b981;"></i> Research Competencies &amp; Specializations
+            </h3>
+            <button class="btn btn-xs btn-secondary" onclick="window.openAcademicianEditModal()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+          </div>
+          <div id="acad-specializations-container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Teaching Modules Conducted -->
+        <div class="ayush-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-chalkboard-user" style="color: var(--secondary-teal);"></i> Courses &amp; Pedagogical Modules
+            </h3>
+          </div>
+          <div id="acad-courses-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- QUALIFICATIONS & ACADEMIC BACKGROUND -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin: 0 0 0.25rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-graduation-cap" style="color: var(--secondary-teal);"></i> Academic Degrees &amp; Educational Background
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+              Verified doctoral, postgraduate, and undergraduate qualifications.
+            </p>
+          </div>
+          <button class="btn btn-xs btn-secondary" onclick="window.openAcademicianEditModal()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+        </div>
+
+        <div id="acad-qualifications-container" style="display: flex; flex-direction: column; gap: 1rem;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- PEER-REVIEWED PUBLICATIONS SECTION -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <h3 style="font-size: 1.2rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-book-bookmark" style="color: var(--secondary-teal);"></i> Peer-Reviewed Publications &amp; Journals
+              </h3>
+              <span class="badge badge-teal" id="acad-publications-count">4 Papers</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
+              Indexed articles in Scopus, PubMed, and UGC-CARE listed AYUSH journals.
+            </p>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.openAddPublicationModal()">
+            <i class="fa-solid fa-plus"></i> Add Publication
+          </button>
+        </div>
+
+        <div id="acad-publications-container" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <!-- Populated dynamically by academician.js -->
+        </div>
+      </div>
+
+      <!-- FUNDED RESEARCH GRANTS & CLINICAL PROJECTS SECTION -->
+      <div class="ayush-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <h3 style="font-size: 1.2rem; color: var(--primary-deep); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-hand-holding-dollar" style="color: var(--accent-saffron);"></i> Sponsored Grants &amp; Clinical R&amp;D Projects
+              </h3>
+              <span class="badge badge-primary" id="acad-grants-count">3 Grants</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
+              Ministry of AYUSH Extra-Mural Research (EMR), CCRAS, and CSIR sponsored clinical trials.
+            </p>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="window.openAddGrantModal()">
+            <i class="fa-solid fa-plus"></i> Add Project / Grant
+          </button>
+        </div>
+
+        <div id="acad-grants-container" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <!-- Populated dynamically by academician.js -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: EDIT ACADEMICIAN SPECIFICATIONS
+       ========================================================================= -->
+  <div class="acad-modal-backdrop" id="acad-edit-modal-backdrop">
+    <div class="acad-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-subtle); display: flex; align-items: center; justify-content: center; color: var(--primary-deep);">
+            <i class="fa-solid fa-user-pen"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--primary-deep); margin: 0;">Edit Faculty Specifications</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Update your academic credentials, institutional details, and research contacts.</p>
+          </div>
+        </div>
+        <button type="button" onclick="window.closeAcademicianEditModal()" style="background: none; border: none; font-size: 1.35rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="form-edit-acad-specs" onsubmit="event.preventDefault(); window.saveAcademicianSpecifications();">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          
+          <!-- Section 1: Basic & Institutional Identity -->
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.65rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.25rem;">
+              1. Institutional Identity &amp; Title
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Full Academic Name *</label>
+                <input type="text" id="edit-acad-fullname" class="input-field" required placeholder="Prof. Dr. V. S. Ramaswamy" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Designation *</label>
+                <input type="text" id="edit-acad-designation" class="input-field" required placeholder="Dean of Research & Academic Affairs" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 0.75rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Department / Division</label>
+                <input type="text" id="edit-acad-dept" class="input-field" placeholder="Department of Dravyaguna" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Institution / University</label>
+                <input type="text" id="edit-acad-institution" class="input-field" placeholder="National Institute of Ayurveda (NIA), Jaipur" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Qualifications & Experience -->
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.65rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.25rem;">
+              2. Credentials &amp; Experience
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">System of Medicine</label>
+                <select id="edit-acad-system" class="input-field" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+                  <option value="Ayurveda">Ayurveda</option>
+                  <option value="Yoga & Naturopathy">Yoga &amp; Naturopathy</option>
+                  <option value="Unani">Unani</option>
+                  <option value="Siddha">Siddha</option>
+                  <option value="Homeopathy">Homeopathy</option>
+                  <option value="Integrative Medicine">Integrative Medicine</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Teaching Experience</label>
+                <input type="text" id="edit-acad-exp" class="input-field" placeholder="18+ Years" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Faculty / NCISM ID</label>
+                <input type="text" id="edit-acad-faculty-id" class="input-field" placeholder="AYU-FAC-2026-8941" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 0.75rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Highest Degree</label>
+                <input type="text" id="edit-acad-degree" class="input-field" placeholder="Ph.D. in Phytochemistry (BHU)" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Scholars Guided</label>
+                <input type="text" id="edit-acad-scholars" class="input-field" placeholder="14 Postgraduates & 6 Ph.D. Scholars" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Contact & Identifiers -->
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.65rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.25rem;">
+              3. Contact Coordinates &amp; Scholarly Links
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Official Academic Email</label>
+                <input type="email" id="edit-acad-email" class="input-field" placeholder="faculty@nia.edu.in" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Phone / Extension</label>
+                <input type="text" id="edit-acad-phone" class="input-field" placeholder="+91 (0141) 2635812" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+            <div style="margin-top: 0.75rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Office / Department Location</label>
+              <input type="text" id="edit-acad-office" class="input-field" placeholder="Dean's Office, Academic Wing, 3rd Floor, NIA Campus, Jaipur" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 0.75rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">ORCID iD</label>
+                <input type="text" id="edit-acad-orcid" class="input-field" placeholder="0000-0002-1849-9214" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Google Scholar URL</label>
+                <input type="url" id="edit-acad-scholar-url" class="input-field" placeholder="https://scholar.google.com/citations?user=..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 0.75rem;">
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">LinkedIn Profile URL</label>
+                <input type="url" id="edit-acad-linkedin-url" class="input-field" placeholder="https://linkedin.com/in/..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">ResearchGate Profile URL</label>
+                <input type="url" id="edit-acad-researchgate-url" class="input-field" placeholder="https://researchgate.net/profile/..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Specializations & Bio -->
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.65rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.25rem;">
+              4. Specialization Tags &amp; Academic Bio
+            </div>
+            <div style="margin-bottom: 0.75rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Specializations (comma-separated)</label>
+              <input type="text" id="edit-acad-specs" class="input-field" placeholder="HPTLC Fingerprinting, Phytochemistry, Reverse Pharmacology, ASU Pharmacovigilance" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Academic Philosophy &amp; Research Bio</label>
+              <textarea id="edit-acad-bio" rows="4" class="input-field" placeholder="Write your scholarly background, teaching philosophy, and research objectives..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.88rem;"></textarea>
+            </div>
+          </div>
+
+          <!-- Form Buttons -->
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-secondary" onclick="window.closeAcademicianEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Specifications</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: ADD PUBLICATION
+       ========================================================================= -->
+  <div class="acad-modal-backdrop" id="acad-pub-modal-backdrop">
+    <div class="acad-modal-card" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-subtle); display: flex; align-items: center; justify-content: center; color: var(--primary-deep);">
+            <i class="fa-solid fa-book-bookmark"></i>
+          </div>
+          <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin: 0;">Add Peer-Reviewed Publication</h3>
+        </div>
+        <button type="button" onclick="window.closeAddPublicationModal()" style="background: none; border: none; font-size: 1.35rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="form-add-pub" onsubmit="event.preventDefault(); window.saveAcademicianPublication();">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Paper / Article Title *</label>
+            <input type="text" id="pub-input-title" required class="input-field" placeholder="e.g. HPTLC-Densitometric Quantification of Withanolides..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.85rem;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Journal / Publisher Name *</label>
+              <input type="text" id="pub-input-journal" required class="input-field" placeholder="e.g. Journal of Ayurveda and Integrative Medicine" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Year</label>
+              <input type="number" id="pub-input-year" class="input-field" value="2026" min="1980" max="2035" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">DOI Identifier or URL</label>
+            <input type="text" id="pub-input-doi" class="input-field" placeholder="10.1016/j.jaim.2025.100842" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Citations Count</label>
+              <input type="number" id="pub-input-citations" class="input-field" placeholder="0" min="0" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Journal Impact Factor</label>
+              <input type="text" id="pub-input-if" class="input-field" placeholder="e.g. 3.4" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-secondary" onclick="window.closeAddPublicationModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add to Portfolio</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: ADD GRANT / RESEARCH PROJECT
+       ========================================================================= -->
+  <div class="acad-modal-backdrop" id="acad-grant-modal-backdrop">
+    <div class="acad-modal-card" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-subtle); display: flex; align-items: center; justify-content: center; color: var(--primary-deep);">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <h3 style="font-size: 1.15rem; color: var(--primary-deep); margin: 0;">Add Sponsored Research Grant</h3>
+        </div>
+        <button type="button" onclick="window.closeAddGrantModal()" style="background: none; border: none; font-size: 1.35rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="form-add-grant" onsubmit="event.preventDefault(); window.saveAcademicianGrant();">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Project Title *</label>
+            <input type="text" id="grant-input-title" required class="input-field" placeholder="e.g. Standardization & Metabolomic Fingerprinting..." style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Sponsoring Agency *</label>
+            <input type="text" id="grant-input-sponsor" required class="input-field" placeholder="e.g. Ministry of AYUSH (EMR) / CCRAS / CSIR" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Role</label>
+              <input type="text" id="grant-input-role" class="input-field" value="Principal Investigator (PI)" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Duration</label>
+              <input type="text" id="grant-input-duration" class="input-field" placeholder="2025–2028" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;">Status</label>
+              <select id="grant-input-status" class="input-field" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-secondary" onclick="window.closeAddGrantModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add to Portfolio</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { guardDashboardPage, handleLogout, syncUserHeader } from '/js/auth.js';
+    import { initAcademicianPortfolio } from '/js/academician.js';
+
+    window.academicLogout = handleLogout;
+    window.handleUniversalSignOut = handleLogout;
+
+    (async () => {
+      const isAuthorized = await guardDashboardPage('academician');
+      if (!isAuthorized) return;
+
+      await initAcademicianPortfolio();
+      syncUserHeader();
+    })();
+  </script>
+</body>
+</html>

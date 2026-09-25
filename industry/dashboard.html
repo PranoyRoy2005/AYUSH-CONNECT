@@ -159,11 +159,34 @@
     </main>
   </div>
 
+  <!-- CANDIDATE PROFILE DOSSIER MODAL -->
+  <div id="industry-candidate-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: #ffffff; border-radius: 14px; max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); animation: fadeIn 0.2s ease;">
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-id-card" style="color: var(--secondary-teal); font-size: 1.2rem;"></i>
+          <h3 style="margin: 0; font-size: 1.15rem; color: var(--primary-deep);">Candidate Evaluation Dossier</h3>
+        </div>
+        <button onclick="window.closeIndustryCandidateModal()" style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem 0.5rem;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="industry-modal-body" style="padding: 1.5rem;"></div>
+      <div style="padding: 1rem 1.5rem; background: var(--bg-cream); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary" onclick="window.closeIndustryCandidateModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { guardDashboardPage, handleLogout } from '/js/auth.js';
     import { initIndustryDashboard } from '/js/industry.js';
 
     window.industryLogout = handleLogout;
+    window.closeIndustryCandidateModal = function() {
+      const m = document.getElementById('industry-candidate-modal');
+      if (m) m.style.display = 'none';
+    };
 
     // TASK 3: Add a check at the very top of each dashboard's script running before anything else
     (async () => {

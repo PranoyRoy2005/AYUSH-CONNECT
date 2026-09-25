@@ -759,6 +759,112 @@ CREATE POLICY "Audit logs insertable by system and authenticated actions"
   TO authenticated
   WITH CHECK (true);
 
+-- 12.17 Mentorship Requests Policies
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS verified_by_academician_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS public.mentorship_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  academician_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
+  requested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_student_academician UNIQUE (student_id, academician_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mentorship_requests_single_active
+  ON public.mentorship_requests (student_id)
+  WHERE status IN ('pending', 'accepted');
+
+ALTER TABLE public.mentorship_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Students view own mentorship requests"
+  ON public.mentorship_requests FOR SELECT TO authenticated
+  USING (auth.uid() = student_id);
+
+CREATE POLICY "Students insert own mentorship requests"
+  ON public.mentorship_requests FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = student_id AND status = 'pending');
+
+CREATE POLICY "Academicians view requests to them"
+  ON public.mentorship_requests FOR SELECT TO authenticated
+  USING (auth.uid() = academician_id);
+
+CREATE POLICY "Academicians update requests to them"
+  ON public.mentorship_requests FOR UPDATE TO authenticated
+  USING (auth.uid() = academician_id)
+  WITH CHECK (auth.uid() = academician_id);
+
+CREATE OR REPLACE FUNCTION public.handle_mentorship_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.status = 'accepted' THEN
+    UPDATE public.profiles
+    SET is_verified = TRUE,
+        verified_by_academician_id = NEW.academician_id,
+        verified_at = COALESCE(NEW.reviewed_at, NOW()),
+        updated_at = NOW()
+    WHERE id = NEW.student_id;
+
+    UPDATE public.student_profiles
+    SET is_verified = TRUE,
+        verified_by_academician_id = NEW.academician_id,
+        verified_at = COALESCE(NEW.reviewed_at, NOW()),
+        updated_at = NOW()
+    WHERE profile_id = NEW.student_id;
+
+  ELSIF NEW.status = 'rejected' THEN
+    UPDATE public.profiles
+    SET is_verified = FALSE,
+        verified_by_academician_id = NULL,
+        verified_at = NULL,
+        updated_at = NOW()
+    WHERE id = NEW.student_id AND verified_by_academician_id = NEW.academician_id;
+
+    UPDATE public.student_profiles
+    SET is_verified = FALSE,
+        verified_by_academician_id = NULL,
+        verified_at = NULL,
+        updated_at = NOW()
+    WHERE profile_id = NEW.student_id AND verified_by_academician_id = NEW.academician_id;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_mentorship_status_change ON public.mentorship_requests;
+CREATE TRIGGER trigger_mentorship_status_change
+  AFTER UPDATE OF status ON public.mentorship_requests
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_mentorship_status_change();
+
+CREATE OR REPLACE FUNCTION public.prevent_student_self_verification()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF auth.uid() = NEW.id AND NOT public.is_admin(auth.uid()) THEN
+    IF (NEW.is_verified IS DISTINCT FROM OLD.is_verified) OR
+       (NEW.verified_by_academician_id IS DISTINCT FROM OLD.verified_by_academician_id) OR
+       (NEW.verified_at IS DISTINCT FROM OLD.verified_at) THEN
+      NEW.is_verified := OLD.is_verified;
+      NEW.verified_by_academician_id := OLD.verified_by_academician_id;
+      NEW.verified_at := OLD.verified_at;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_prevent_self_verification ON public.profiles;
+CREATE TRIGGER trigger_prevent_self_verification
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.prevent_student_self_verification();
+
 -- ==============================================================================
 -- END OF PRODUCTION SCHEMA
 -- ==============================================================================

@@ -118,21 +118,84 @@ const DEFAULT_SEED_DATA = {
       full_name: 'Ayush Sharma',
       email: 'ayush.sharma@ayush.edu.in',
       role: 'student',
+      candidate_id: 'AYU-STU-000001',
       phone: '+91 98765 43210',
       avatar: 'AS',
       created_at: '2026-01-15T09:00:00Z',
+      is_verified: false,
+      verified_by_academician_id: null,
+      verified_at: null,
+      verified: false
+    },
+    {
+      id: 'usr_student_02',
+      full_name: 'Priya Singh',
+      email: 'priya.singh@nia.edu.in',
+      role: 'student',
+      candidate_id: 'AYU-STU-000002',
+      phone: '+91 98765 43211',
+      avatar: 'PS',
+      created_at: '2026-02-15T09:00:00Z',
+      is_verified: false,
+      verified_by_academician_id: null,
+      verified_at: null,
+      verified: false
+    },
+    {
+      id: 'usr_student_03',
+      full_name: 'Rahul Das',
+      email: 'rahul.das@svyasa.edu.in',
+      role: 'student',
+      candidate_id: 'AYU-STU-000003',
+      phone: '+91 98765 43212',
+      avatar: 'RD',
+      created_at: '2026-02-20T09:00:00Z',
+      is_verified: true,
+      verified_by_academician_id: 'usr_acad_01',
+      verified_at: '2026-09-14T11:00:00Z',
       verified: true
+    },
+    {
+      id: 'usr_student_04',
+      full_name: 'Ananya Verma',
+      email: 'ananya.verma@bhu.ac.in',
+      role: 'student',
+      candidate_id: 'AYU-STU-000004',
+      phone: '+91 98765 43213',
+      avatar: 'AV',
+      created_at: '2026-02-22T09:00:00Z',
+      is_verified: false,
+      verified_by_academician_id: null,
+      verified_at: null,
+      verified: false
+    },
+    {
+      id: 'usr_student_05',
+      full_name: 'Vikram Joshi',
+      email: 'vikram.joshi@gacg.edu.in',
+      role: 'student',
+      candidate_id: 'AYU-STU-000005',
+      phone: '+91 98765 43214',
+      avatar: 'VJ',
+      created_at: '2026-02-25T09:00:00Z',
+      is_verified: false,
+      verified_by_academician_id: null,
+      verified_at: null,
+      verified: false
     },
     {
       id: 'usr_ind_01',
       full_name: 'Sunita Deshmukh',
       email: 's.deshmukh@himalayawellness.com',
       role: 'industry',
+      candidate_id: 'AYU-IND-000001',
       company_name: 'Himalaya Wellness Company',
       designation: 'Head of Clinical R&D Recruitment',
       phone: '+91 98111 22334',
       avatar: 'SD',
       created_at: '2026-01-20T10:30:00Z',
+      is_approved: true,
+      status: 'approved',
       verified: true
     },
     {
@@ -140,12 +203,31 @@ const DEFAULT_SEED_DATA = {
       full_name: 'Dr. V. S. Ramaswamy',
       email: 'vs.ramaswamy@nia.edu.in',
       role: 'academician',
+      candidate_id: 'AYU-ACA-000001',
       institution: 'National Institute of Ayurveda (NIA), Jaipur',
       department: 'Department of Dravyaguna & Clinical Pharmacology',
       designation: 'Professor & Dean of Research',
       phone: '+91 94222 55667',
       avatar: 'VR',
+      is_approved: true,
+      status: 'approved',
       created_at: '2026-02-01T14:15:00Z',
+      verified: true
+    },
+    {
+      id: 'usr_acad_02',
+      full_name: 'Dr. Meenakshi Sundaram',
+      email: 'm.sundaram@aiia.gov.in',
+      role: 'academician',
+      candidate_id: 'AYU-ACA-000002',
+      institution: 'All India Institute of Ayurveda (AIIA), New Delhi',
+      department: 'Department of Rasashastra & Bhaishajya Kalpana',
+      designation: 'Associate Professor & Senior Research Mentor',
+      phone: '+91 94444 88990',
+      avatar: 'MS',
+      is_approved: true,
+      status: 'approved',
+      created_at: '2026-02-10T11:00:00Z',
       verified: true
     },
     {
@@ -153,10 +235,43 @@ const DEFAULT_SEED_DATA = {
       full_name: 'Administrator',
       email: 'admin@ayushconnect.gov.in',
       role: 'admin',
+      candidate_id: 'AYU-ADM-000001',
       designation: 'Director, Digital Skills & Employment Directorate',
       avatar: 'AD',
       created_at: '2025-12-01T08:00:00Z',
+      is_approved: true,
+      status: 'approved',
       verified: true
+    }
+  ],
+
+  mentorship_requests: [
+    {
+      id: 'mreq_01',
+      student_id: 'usr_student_02',
+      academician_id: 'usr_acad_01',
+      status: 'pending',
+      requested_at: '2026-09-21T10:15:00Z',
+      reviewed_at: null,
+      notes: 'Seeking research mentorship for Ayurvedic Pharmacopoeia monograph development.'
+    },
+    {
+      id: 'mreq_02',
+      student_id: 'usr_student_03',
+      academician_id: 'usr_acad_01',
+      status: 'accepted',
+      requested_at: '2026-09-12T08:30:00Z',
+      reviewed_at: '2026-09-14T11:00:00Z',
+      notes: 'Approved for clinical biomechanics and computer vision posture protocol.'
+    },
+    {
+      id: 'mreq_03',
+      student_id: 'usr_student_04',
+      academician_id: 'usr_acad_01',
+      status: 'rejected',
+      requested_at: '2026-09-01T14:00:00Z',
+      reviewed_at: '2026-09-03T09:30:00Z',
+      notes: 'Departmental capacity reached for this term; advised to connect with AIIA Rasashastra department.'
     }
   ],
 
@@ -169,10 +284,55 @@ const DEFAULT_SEED_DATA = {
       bio: 'Aspiring Ayurvedic Data Scientist & Clinical Researcher bridging classical pharmacology with modern bio-statistics and machine learning.',
       profile_completion_pct: 78,
       skill_score: 82,
+      candidate_id: 'AYU-STU-000001',
       github_url: 'https://github.com/ayush-sharma-ayush',
       linkedin_url: 'https://linkedin.com/in/ayush-sharma-biotech',
       resume_filename: 'Ayush_Sharma_CV_2026.pdf',
       career_stage: 'portfolio'
+    },
+    usr_student_02: {
+      college: 'National Institute of Ayurveda (NIA), Jaipur',
+      course: 'BAMS Final Year',
+      year: 'Final Year',
+      graduation_year: '2026',
+      bio: 'Herbal quality control enthusiast specializing in HPTLC botanical fingerprinting and pharmacopoeial monographs.',
+      profile_completion_pct: 85,
+      skill_score: 80,
+      candidate_id: 'AYU-STU-000002',
+      career_stage: 'applied'
+    },
+    usr_student_03: {
+      college: 'S-VYASA Yoga University, Bengaluru',
+      course: 'M.Sc Yoga Therapy & Biomechanics',
+      year: '2nd Year',
+      graduation_year: '2026',
+      bio: 'Motion kinematics and computer vision posture AI researcher developing rehabilitative telemetry.',
+      profile_completion_pct: 92,
+      skill_score: 88,
+      candidate_id: 'AYU-STU-000003',
+      career_stage: 'interview'
+    },
+    usr_student_04: {
+      college: 'Faculty of Ayurveda, IMS BHU, Varanasi',
+      course: 'MD (Dravyaguna Vigyan)',
+      year: '2nd Year',
+      graduation_year: '2027',
+      bio: 'Pharmacovigilance of ASU drugs and toxicological safety profiling in multi-center clinical trials.',
+      profile_completion_pct: 88,
+      skill_score: 86,
+      candidate_id: 'AYU-STU-000004',
+      career_stage: 'placed'
+    },
+    usr_student_05: {
+      college: 'Government Ayurvedic College, Guwahati',
+      course: 'BAMS Intern',
+      year: 'Internship',
+      graduation_year: '2025',
+      bio: 'Clinical scholar with deep field experience in classical Ayurvedic polyherbal formulation compounding.',
+      profile_completion_pct: 70,
+      skill_score: 68,
+      candidate_id: 'AYU-STU-000005',
+      career_stage: 'profile'
     }
   },
 
@@ -598,9 +758,26 @@ function loadLocalDatabase() {
       const rawApps = Array.isArray(parsed.applications) ? parsed.applications : [];
       const cleanApps = rawApps.filter(a => a && !['app_01', 'app_02', 'app_03'].includes(a.id));
 
+      // Merge default seed profiles to ensure candidate IDs and academicians are always available
+      let profilesList = Array.isArray(parsed.profiles) ? [...parsed.profiles] : [...DEFAULT_SEED_DATA.profiles];
+      DEFAULT_SEED_DATA.profiles.forEach(seedP => {
+        const existingIdx = profilesList.findIndex(p => p.id === seedP.id);
+        if (existingIdx === -1) {
+          profilesList.push({ ...seedP });
+        } else {
+          // Keep dynamic fields while ensuring candidate_id, is_approved are present
+          profilesList[existingIdx] = {
+            ...seedP,
+            ...profilesList[existingIdx],
+            candidate_id: profilesList[existingIdx].candidate_id || seedP.candidate_id,
+            is_approved: profilesList[existingIdx].is_approved !== undefined ? profilesList[existingIdx].is_approved : seedP.is_approved
+          };
+        }
+      });
+
       return {
-        profiles: parsed.profiles || DEFAULT_SEED_DATA.profiles,
-        student_profiles: parsed.student_profiles || DEFAULT_SEED_DATA.student_profiles,
+        profiles: profilesList,
+        student_profiles: { ...DEFAULT_SEED_DATA.student_profiles, ...(parsed.student_profiles || {}) },
         skills: DEFAULT_SEED_DATA.skills,
         assessment_questions: DEFAULT_SEED_DATA.assessment_questions,
         opportunity_requirements: DEFAULT_SEED_DATA.opportunity_requirements,
@@ -608,7 +785,8 @@ function loadLocalDatabase() {
         match_results: Array.isArray(parsed.match_results) ? parsed.match_results : [],
         opportunities: parsed.opportunities || DEFAULT_SEED_DATA.opportunities,
         applications: cleanApps,
-        projects: parsed.projects || DEFAULT_SEED_DATA.projects
+        projects: parsed.projects || DEFAULT_SEED_DATA.projects,
+        mentorship_requests: Array.isArray(parsed.mentorship_requests) ? parsed.mentorship_requests : DEFAULT_SEED_DATA.mentorship_requests
       };
     }
   } catch (e) {
@@ -2712,11 +2890,21 @@ export async function fetchIndustryDashboardMetrics(companyName) {
 /**
  * Fetch Industry Applicants Data
  */
-export async function fetchIndustryApplicantsData(statusFilter = 'All', search = '') {
+export async function fetchIndustryApplicantsData(statusFilter = 'All', search = '', verificationFilter = 'all', sortBy = 'default') {
+  let list = [];
+
   if (isDemoMode()) {
-    let list = [
+    // Resolve dynamic verification status from MOCK_DB if available
+    const getStudentVer = (id, defaultVer) => {
+      const p = (MOCK_DB.profiles || []).find(prof => prof.id === id);
+      return p ? Boolean(p.is_verified) : defaultVer;
+    };
+
+    list = [
       {
         id: 'app_ind_01',
+        student_id: 'usr_student_01',
+        candidate_id: 'AYU-STU-000001',
         student_name: 'Ayush Sharma',
         college: 'All India Institute of Ayurveda (AIIA), New Delhi',
         course: 'BAMS + Health Informatics',
@@ -2725,10 +2913,13 @@ export async function fetchIndustryApplicantsData(statusFilter = 'All', search =
         match_pct: 92,
         assessment_score: 84,
         applied_date: '2026-09-05',
-        status: 'Interview'
+        status: 'Interview',
+        is_verified: getStudentVer('usr_student_01', false)
       },
       {
         id: 'app_ind_02',
+        student_id: 'usr_student_02',
+        candidate_id: 'AYU-STU-000002',
         student_name: 'Priya Singh',
         college: 'National Institute of Ayurveda (NIA), Jaipur',
         course: 'BAMS Final Year',
@@ -2737,10 +2928,13 @@ export async function fetchIndustryApplicantsData(statusFilter = 'All', search =
         match_pct: 88,
         assessment_score: 80,
         applied_date: '2026-09-08',
-        status: 'Shortlisted'
+        status: 'Shortlisted',
+        is_verified: getStudentVer('usr_student_02', false)
       },
       {
         id: 'app_ind_03',
+        student_id: 'usr_student_03',
+        candidate_id: 'AYU-STU-000003',
         student_name: 'Rahul Das',
         college: 'S-VYASA Yoga University, Bengaluru',
         course: 'M.Sc Yoga Therapy & Biomechanics',
@@ -2749,10 +2943,13 @@ export async function fetchIndustryApplicantsData(statusFilter = 'All', search =
         match_pct: 95,
         assessment_score: 88,
         applied_date: '2026-09-10',
-        status: 'Interview'
+        status: 'Interview',
+        is_verified: getStudentVer('usr_student_03', true)
       },
       {
         id: 'app_ind_04',
+        student_id: 'usr_student_04',
+        candidate_id: 'AYU-STU-000004',
         student_name: 'Ananya Verma',
         college: 'Faculty of Ayurveda, IMS BHU, Varanasi',
         course: 'MD (Dravyaguna Vigyan)',
@@ -2761,10 +2958,13 @@ export async function fetchIndustryApplicantsData(statusFilter = 'All', search =
         match_pct: 90,
         assessment_score: 86,
         applied_date: '2026-09-02',
-        status: 'Selected'
+        status: 'Selected',
+        is_verified: getStudentVer('usr_student_04', false)
       },
       {
         id: 'app_ind_05',
+        student_id: 'usr_student_05',
+        candidate_id: 'AYU-STU-000005',
         student_name: 'Vikram Joshi',
         college: 'Government Ayurvedic College, Guwahati',
         course: 'BAMS Intern',
@@ -2773,66 +2973,86 @@ export async function fetchIndustryApplicantsData(statusFilter = 'All', search =
         match_pct: 71,
         assessment_score: 68,
         applied_date: '2026-09-09',
-        status: 'Under Review'
+        status: 'Under Review',
+        is_verified: getStudentVer('usr_student_05', false)
       }
     ];
-    if (statusFilter !== 'All') {
-      list = list.filter(a => a.status.toLowerCase() === statusFilter.toLowerCase());
+  } else {
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*, profiles(*), opportunities(*), student_profiles(*)');
+
+      if (!error && Array.isArray(data)) {
+        list = data.map(app => {
+          const studentProfile = app.student_profiles || {};
+          const profile = app.profiles || {};
+          const opp = app.opportunities || {};
+          const isVerified = Boolean(profile.is_verified || studentProfile.is_verified);
+          return {
+            id: app.id,
+            student_id: profile.id || app.student_id,
+            candidate_id: profile.candidate_id || studentProfile.candidate_id || 'AYU-STU-000001',
+            student_name: profile.full_name || 'AYUSH Candidate',
+            college: studentProfile.college_institution || 'University',
+            course: studentProfile.course || 'AYUSH Scholar',
+            role_applied: opp.title || 'Opportunity',
+            skills: Array.isArray(opp.required_skills) ? opp.required_skills : [],
+            match_pct: app.match_pct || 80,
+            assessment_score: studentProfile.overall_skill_score || 0,
+            applied_date: app.applied_at ? new Date(app.applied_at).toISOString().split('T')[0] : 'Recent',
+            status: app.status || 'Applied',
+            is_verified: isVerified,
+            verified_by_academician_id: profile.verified_by_academician_id || studentProfile.verified_by_academician_id || null,
+            verified_at: profile.verified_at || studentProfile.verified_at || null
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('Error fetching live industry applicants:', e);
+      list = [];
     }
-    if (search) {
-      const q = search.toLowerCase();
-      list = list.filter(a =>
-        a.student_name.toLowerCase().includes(q) ||
-        a.college.toLowerCase().includes(q) ||
-        a.role_applied.toLowerCase().includes(q)
-      );
-    }
-    return list;
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('applications')
-      .select('*, profiles(*), opportunities(*), student_profiles(*)');
+  // 1. Filter by application status
+  if (statusFilter && statusFilter !== 'All') {
+    list = list.filter(a => (a.status || '').toLowerCase() === statusFilter.toLowerCase());
+  }
 
-    if (error || !Array.isArray(data)) {
-      return [];
-    }
+  // 2. Filter by verification status (TASK 5)
+  if (verificationFilter === 'verified') {
+    list = list.filter(a => a.is_verified === true);
+  } else if (verificationFilter === 'unverified') {
+    list = list.filter(a => a.is_verified !== true);
+  }
 
-    let list = data.map(app => {
-      const studentProfile = app.student_profiles || {};
-      const profile = app.profiles || {};
-      const opp = app.opportunities || {};
-      return {
-        id: app.id,
-        student_name: profile.full_name || 'AYUSH Candidate',
-        college: studentProfile.college_institution || 'University',
-        course: studentProfile.course || 'AYUSH Scholar',
-        role_applied: opp.title || 'Opportunity',
-        skills: Array.isArray(opp.required_skills) ? opp.required_skills : [],
-        match_pct: app.match_pct || 80,
-        assessment_score: studentProfile.overall_skill_score || 0,
-        applied_date: app.applied_at ? new Date(app.applied_at).toISOString().split('T')[0] : 'Recent',
-        status: app.status || 'Applied'
-      };
+  // 3. Search filter
+  if (search) {
+    const q = search.toLowerCase();
+    list = list.filter(a =>
+      (a.student_name || '').toLowerCase().includes(q) ||
+      (a.college || '').toLowerCase().includes(q) ||
+      (a.role_applied || '').toLowerCase().includes(q) ||
+      (a.candidate_id || '').toLowerCase().includes(q)
+    );
+  }
+
+  // 4. Sorting (TASK 5)
+  if (sortBy === 'verified_first') {
+    list.sort((a, b) => {
+      if (a.is_verified && !b.is_verified) return -1;
+      if (!a.is_verified && b.is_verified) return 1;
+      return (b.match_pct || 0) - (a.match_pct || 0);
     });
-
-    if (statusFilter !== 'All') {
-      list = list.filter(a => a.status.toLowerCase() === statusFilter.toLowerCase());
-    }
-    if (search) {
-      const q = search.toLowerCase();
-      list = list.filter(a =>
-        a.student_name.toLowerCase().includes(q) ||
-        a.college.toLowerCase().includes(q) ||
-        a.role_applied.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  } catch (e) {
-    console.warn('Error fetching live industry applicants:', e);
-    return [];
+  } else if (sortBy === 'match_desc') {
+    list.sort((a, b) => (b.match_pct || 0) - (a.match_pct || 0));
+  } else if (sortBy === 'score_desc') {
+    list.sort((a, b) => (b.assessment_score || 0) - (a.assessment_score || 0));
+  } else if (sortBy === 'date_desc') {
+    list.sort((a, b) => new Date(b.applied_date || 0) - new Date(a.applied_date || 0));
   }
+
+  return list;
 }
 
 /**
@@ -3605,6 +3825,519 @@ export const fetchAdminDashboardStats = fetchAdminDashboardMetrics;
 export const fetchAdminPendingUsers = fetchAdminPendingUsersData;
 export const fetchAdminAllUsers = fetchAdminRolesData;
 
+// ==============================================================================
+// MENTORSHIP VERIFICATION SYSTEM API
+// ==============================================================================
+
+/**
+ * Fetch a student's mentorship and verification status
+ */
+export async function fetchStudentMentorshipStatus(studentId = null) {
+  if (!studentId) {
+    const cur = getCurrentUser();
+    studentId = cur?.id;
+  }
+  if (!studentId) {
+    return { is_verified: false, verified_by: null, verified_at: null, active_request: null, pending_request: null, recent_rejected_request: null, all_requests: [] };
+  }
+
+  // 1. Fallback or Demo Mode resolution
+  const resolveFromLocal = (profileOverride = null) => {
+    const student = (MOCK_DB.profiles || []).find(p => p.id === studentId) || profileOverride || {};
+    const requests = (MOCK_DB.mentorship_requests || []).filter(r => r.student_id === studentId);
+    
+    // Sort latest first
+    requests.sort((a, b) => new Date(b.requested_at || 0) - new Date(a.requested_at || 0));
+
+    const enrich = (req) => {
+      if (!req) return null;
+      const acad = (MOCK_DB.profiles || []).find(p => p.id === req.academician_id) || {};
+      return {
+        ...req,
+        academician_name: acad.full_name || 'Faculty Mentor',
+        candidate_id: acad.candidate_id || 'AYU-ACA-000001',
+        institution: acad.institution || 'National Institute of Ayurveda (NIA), Jaipur',
+        department: acad.department || 'Department of Dravyaguna & Clinical Pharmacology',
+        designation: acad.designation || 'Professor & Dean of Research'
+      };
+    };
+
+    const activeReq = requests.find(r => ['pending', 'accepted'].includes(r.status));
+    const pendingReq = requests.find(r => r.status === 'pending');
+    const recentRejectedReq = requests.find(r => r.status === 'rejected');
+
+    let verifiedBy = null;
+    const isVerified = Boolean(student.is_verified || (activeReq && activeReq.status === 'accepted'));
+
+    if (student.verified_by_academician_id) {
+      const acad = (MOCK_DB.profiles || []).find(p => p.id === student.verified_by_academician_id);
+      if (acad) {
+        verifiedBy = {
+          id: acad.id,
+          name: acad.full_name,
+          candidate_id: acad.candidate_id,
+          institution: acad.institution,
+          department: acad.department,
+          designation: acad.designation
+        };
+      }
+    } else if (activeReq && activeReq.status === 'accepted') {
+      const acad = (MOCK_DB.profiles || []).find(p => p.id === activeReq.academician_id);
+      if (acad) {
+        verifiedBy = {
+          id: acad.id,
+          name: acad.full_name,
+          candidate_id: acad.candidate_id,
+          institution: acad.institution,
+          department: acad.department,
+          designation: acad.designation
+        };
+      }
+    }
+
+    return {
+      is_verified: isVerified,
+      verified_by: verifiedBy,
+      verified_at: student.verified_at || (activeReq && activeReq.status === 'accepted' ? activeReq.reviewed_at : null),
+      active_request: enrich(activeReq),
+      pending_request: enrich(pendingReq),
+      recent_rejected_request: enrich(recentRejectedReq),
+      all_requests: requests.map(enrich)
+    };
+  };
+
+  if (isDemoMode()) {
+    return resolveFromLocal();
+  }
+
+  // 2. Live Supabase Query
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, is_verified, verified_by_academician_id, verified_at, full_name, candidate_id')
+      .eq('id', studentId)
+      .maybeSingle();
+
+    const { data: reqData, error: reqErr } = await supabase
+      .from('mentorship_requests')
+      .select('*, profiles!mentorship_requests_academician_id_fkey(id, full_name, avatar_url, candidate_id, is_approved, academician_profiles(institution, department, designation))')
+      .eq('student_id', studentId)
+      .order('requested_at', { ascending: false });
+
+    if (reqErr) {
+      console.info('Live mentorship_requests query note, falling back to local state:', reqErr.message);
+      return resolveFromLocal(profile);
+    }
+
+    const requests = Array.isArray(reqData) ? reqData : [];
+    const formattedRequests = requests.map(r => {
+      const acadProfile = r.profiles || {};
+      const acadDetails = (Array.isArray(acadProfile.academician_profiles) ? acadProfile.academician_profiles[0] : acadProfile.academician_profiles) || {};
+      return {
+        id: r.id,
+        student_id: r.student_id,
+        academician_id: r.academician_id,
+        status: r.status,
+        requested_at: r.requested_at,
+        reviewed_at: r.reviewed_at,
+        notes: r.notes,
+        academician_name: acadProfile.full_name || 'Faculty Mentor',
+        candidate_id: acadProfile.candidate_id || 'AYU-ACA-000001',
+        institution: acadDetails.institution || 'AYUSH Institution',
+        department: acadDetails.department || 'Faculty of Medicine',
+        designation: acadDetails.designation || 'Professor'
+      };
+    });
+
+    const activeReq = formattedRequests.find(r => ['pending', 'accepted'].includes(r.status));
+    const pendingReq = formattedRequests.find(r => r.status === 'pending');
+    const recentRejectedReq = formattedRequests.find(r => r.status === 'rejected');
+
+    let verifiedBy = null;
+    const isVerified = Boolean(profile?.is_verified || (activeReq && activeReq.status === 'accepted'));
+
+    if (profile?.verified_by_academician_id) {
+      const { data: verifier } = await supabase
+        .from('profiles')
+        .select('id, full_name, candidate_id, academician_profiles(institution, department, designation)')
+        .eq('id', profile.verified_by_academician_id)
+        .maybeSingle();
+
+      if (verifier) {
+        const vDetails = (Array.isArray(verifier.academician_profiles) ? verifier.academician_profiles[0] : verifier.academician_profiles) || {};
+        verifiedBy = {
+          id: verifier.id,
+          name: verifier.full_name,
+          candidate_id: verifier.candidate_id,
+          institution: vDetails.institution || 'AYUSH Institution',
+          department: vDetails.department || 'Faculty',
+          designation: vDetails.designation || 'Academician'
+        };
+      }
+    } else if (activeReq && activeReq.status === 'accepted') {
+      verifiedBy = {
+        id: activeReq.academician_id,
+        name: activeReq.academician_name,
+        candidate_id: activeReq.candidate_id,
+        institution: activeReq.institution,
+        department: activeReq.department,
+        designation: activeReq.designation
+      };
+    }
+
+    return {
+      is_verified: isVerified,
+      verified_by: verifiedBy,
+      verified_at: profile?.verified_at || (activeReq?.status === 'accepted' ? activeReq.reviewed_at : null),
+      active_request: activeReq || null,
+      pending_request: pendingReq || null,
+      recent_rejected_request: recentRejectedReq || null,
+      all_requests: formattedRequests
+    };
+  } catch (err) {
+    console.warn('Error fetching student mentorship status:', err);
+    return resolveFromLocal();
+  }
+}
+
+/**
+ * Search approved academician by candidate_id
+ * Only approved academicians (is_approved = true or status = 'approved') are searchable.
+ */
+export async function searchAcademicianByCandidateId(candidateId) {
+  if (!candidateId || typeof candidateId !== 'string') return null;
+  const cleanId = candidateId.trim().toUpperCase();
+
+  // Try live Supabase query first
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, role, is_approved, status, candidate_id, avatar_url, academician_profiles(*)')
+      .eq('role', 'academician')
+      .ilike('candidate_id', cleanId);
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const approved = data.find(p => p.is_approved === true || p.status === 'approved');
+      if (approved) {
+        const acDetails = (Array.isArray(approved.academician_profiles) ? approved.academician_profiles[0] : approved.academician_profiles) || {};
+        return {
+          id: approved.id,
+          full_name: approved.full_name,
+          candidate_id: approved.candidate_id,
+          avatar_url: approved.avatar_url,
+          institution: acDetails.institution || 'National Institute of Ayurveda (NIA), Jaipur',
+          department: acDetails.department || 'Department of Dravyaguna & Clinical Pharmacology',
+          designation: acDetails.designation || 'Professor & Faculty Mentor',
+          subjects: acDetails.subjects || ['Clinical Research', 'Pharmacology'],
+          research_areas: acDetails.research_areas || []
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('Live search academician error, checking local store:', e);
+  }
+
+  // Fallback to local DB cache / seed
+  const found = (MOCK_DB.profiles || []).find(p => 
+    p.role === 'academician' && 
+    (p.is_approved === true || p.status === 'approved') &&
+    (p.candidate_id || '').toUpperCase() === cleanId
+  );
+
+  if (found) {
+    return {
+      id: found.id,
+      full_name: found.full_name,
+      candidate_id: found.candidate_id || cleanId,
+      avatar_url: found.avatar_url || null,
+      institution: found.institution || 'National Institute of Ayurveda (NIA), Jaipur',
+      department: found.department || 'Department of Dravyaguna & Clinical Pharmacology',
+      designation: found.designation || 'Professor & Dean of Research',
+      subjects: ['Herbal Pharmacology', 'Clinical Research Protocols'],
+      research_areas: ['Standardization', 'Phytochemistry']
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Student creates a mentorship request to an approved academician
+ */
+export async function createMentorshipRequest(studentId, academicianId, notes = '') {
+  if (!studentId || !academicianId) {
+    throw new Error('Both student and academician are required to create a mentorship request.');
+  }
+
+  // Constraint check: A student can only have ONE request with status 'pending' or 'accepted' across all academicians
+  const currentStatus = await fetchStudentMentorshipStatus(studentId);
+  if (currentStatus.active_request) {
+    throw new Error('You already have an active mentorship request (pending review or accepted mentor). Only one active request is allowed at a time.');
+  }
+
+  const newRecord = {
+    id: 'mreq_' + Date.now(),
+    student_id: studentId,
+    academician_id: academicianId,
+    status: 'pending',
+    requested_at: new Date().toISOString(),
+    reviewed_at: null,
+    notes: notes || 'Student requested academic mentorship and faculty verification.'
+  };
+
+  // 1. Try live Supabase insert
+  try {
+    const { data, error } = await supabase
+      .from('mentorship_requests')
+      .insert({
+        student_id: studentId,
+        academician_id: academicianId,
+        status: 'pending',
+        notes: newRecord.notes
+      })
+      .select()
+      .maybeSingle();
+
+    if (!error && data) {
+      newRecord.id = data.id;
+    }
+  } catch (e) {
+    console.warn('Live mentorship request insert note:', e);
+  }
+
+  // 2. Always persist into local DB cache
+  if (!Array.isArray(MOCK_DB.mentorship_requests)) {
+    MOCK_DB.mentorship_requests = [];
+  }
+  MOCK_DB.mentorship_requests.push(newRecord);
+  saveLocalDatabase();
+
+  return { success: true, data: newRecord };
+}
+
+/**
+ * Fetch mentorship requests for an academician dashboard
+ */
+export async function fetchAcademicianMentorshipRequests(academicianId = null) {
+  if (!academicianId) {
+    const user = getCurrentUser();
+    academicianId = user?.id;
+  }
+  if (!academicianId) return { pending: [], accepted: [], rejected: [] };
+
+  // Live Supabase query
+  try {
+    const { data, error } = await supabase
+      .from('mentorship_requests')
+      .select('*, profiles!mentorship_requests_student_id_fkey(id, full_name, email, phone, avatar_url, candidate_id, is_verified, student_profiles(*))')
+      .eq('academician_id', academicianId)
+      .order('requested_at', { ascending: false });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const formatted = data.map(r => {
+        const studentProfile = r.profiles || {};
+        const spDetails = (Array.isArray(studentProfile.student_profiles) ? studentProfile.student_profiles[0] : studentProfile.student_profiles) || {};
+        return {
+          id: r.id,
+          student_id: r.student_id,
+          academician_id: r.academician_id,
+          status: r.status,
+          requested_at: r.requested_at,
+          reviewed_at: r.reviewed_at,
+          notes: r.notes,
+          student_name: studentProfile.full_name || 'Scholar Candidate',
+          candidate_id: studentProfile.candidate_id || spDetails.candidate_id || 'AYU-STU-000000',
+          email: studentProfile.email,
+          college: spDetails.college_institution || 'AYUSH University',
+          course: spDetails.course || 'BAMS',
+          year: spDetails.year || 'Final Year',
+          skill_score: spDetails.overall_skill_score || 82,
+          skills: spDetails.skills || ['Herbal Pharmacology', 'Ayurvedic QC', 'Clinical Research'],
+          is_verified: studentProfile.is_verified === true
+        };
+      });
+
+      return {
+        pending: formatted.filter(r => r.status === 'pending'),
+        accepted: formatted.filter(r => r.status === 'accepted'),
+        rejected: formatted.filter(r => r.status === 'rejected')
+      };
+    }
+  } catch (e) {
+    console.warn('Live academician mentorship requests fetch note:', e);
+  }
+
+  // Fallback / local cache
+  const localList = (MOCK_DB.mentorship_requests || []).filter(r => r.academician_id === academicianId);
+  const formatted = localList.map(r => {
+    const student = (MOCK_DB.profiles || []).find(p => p.id === r.student_id) || {};
+    const sp = (MOCK_DB.student_profiles && MOCK_DB.student_profiles[r.student_id]) || {};
+    return {
+      id: r.id,
+      student_id: r.student_id,
+      academician_id: r.academician_id,
+      status: r.status,
+      requested_at: r.requested_at,
+      reviewed_at: r.reviewed_at,
+      notes: r.notes,
+      student_name: student.full_name || 'Scholar Candidate',
+      candidate_id: student.candidate_id || 'AYU-STU-000001',
+      email: student.email,
+      college: sp.college || 'National Institute of Ayurveda (NIA), Jaipur',
+      course: sp.course || 'BAMS (Ayurvedic Medicine & Surgery)',
+      year: sp.year || '4th Year',
+      skill_score: sp.skill_score || 85,
+      skills: ['Herbal Pharmacology (Dravyaguna)', 'Ayurvedic Pharmacopoeia & QC', 'Clinical Research Protocols'],
+      is_verified: student.is_verified === true
+    };
+  });
+
+  return {
+    pending: formatted.filter(r => r.status === 'pending'),
+    accepted: formatted.filter(r => r.status === 'accepted'),
+    rejected: formatted.filter(r => r.status === 'rejected')
+  };
+}
+
+/**
+ * Academician accepts a mentorship request
+ * Updates status to 'accepted', sets student is_verified = true, verified_by_academician_id = academicianId
+ */
+export async function acceptMentorshipRequest(requestId, academicianId, studentId) {
+  // Edge case check: Block if student is already accepted by a DIFFERENT academician
+  if (isDemoMode()) {
+    const existingAccepted = (MOCK_DB.mentorship_requests || []).find(r => 
+      r.student_id === studentId && 
+      r.status === 'accepted' && 
+      r.academician_id !== academicianId
+    );
+    if (existingAccepted) {
+      throw new Error('This student already has an accepted mentor with another faculty member. A student can only have one active mentor at a time.');
+    }
+  } else {
+    try {
+      const { data: existing } = await supabase
+        .from('mentorship_requests')
+        .select('id, academician_id')
+        .eq('student_id', studentId)
+        .eq('status', 'accepted')
+        .neq('academician_id', academicianId)
+        .maybeSingle();
+
+      if (existing) {
+        throw new Error('This student already has an accepted mentor with another faculty member. A student can only have one active mentor at a time.');
+      }
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  const now = new Date().toISOString();
+
+  // Try live Supabase updates
+  try {
+    await supabase
+      .from('mentorship_requests')
+      .update({ status: 'accepted', reviewed_at: now })
+      .eq('id', requestId);
+
+    await supabase
+      .from('profiles')
+      .update({ is_verified: true, verified_by_academician_id: academicianId, verified_at: now })
+      .eq('id', studentId);
+
+    await supabase
+      .from('student_profiles')
+      .update({ is_verified: true, verified_by_academician_id: academicianId, verified_at: now })
+      .eq('profile_id', studentId);
+  } catch (e) {
+    console.warn('Live accept mentorship request note:', e);
+  }
+
+  // Update local DB cache
+  if (Array.isArray(MOCK_DB.mentorship_requests)) {
+    const req = MOCK_DB.mentorship_requests.find(r => r.id === requestId);
+    if (req) {
+      req.status = 'accepted';
+      req.reviewed_at = now;
+    }
+  }
+  const student = (MOCK_DB.profiles || []).find(p => p.id === studentId);
+  if (student) {
+    student.is_verified = true;
+    student.verified_by_academician_id = academicianId;
+    student.verified_at = now;
+  }
+  saveLocalDatabase();
+
+  // Sync if current active user is this student
+  const cur = getCurrentUser();
+  if (cur && cur.id === studentId) {
+    cur.is_verified = true;
+    cur.verified_by_academician_id = academicianId;
+    cur.verified_at = now;
+    setCurrentUser(cur);
+  }
+
+  return { success: true };
+}
+
+/**
+ * Academician rejects a mentorship request
+ * Updates status to 'rejected', resets student is_verified = false if they were verified by this academician
+ */
+export async function rejectMentorshipRequest(requestId, academicianId, studentId) {
+  const now = new Date().toISOString();
+
+  // Try live Supabase updates
+  try {
+    await supabase
+      .from('mentorship_requests')
+      .update({ status: 'rejected', reviewed_at: now })
+      .eq('id', requestId);
+
+    await supabase
+      .from('profiles')
+      .update({ is_verified: false, verified_by_academician_id: null, verified_at: null })
+      .eq('id', studentId)
+      .eq('verified_by_academician_id', academicianId);
+
+    await supabase
+      .from('student_profiles')
+      .update({ is_verified: false, verified_by_academician_id: null, verified_at: null })
+      .eq('profile_id', studentId)
+      .eq('verified_by_academician_id', academicianId);
+  } catch (e) {
+    console.warn('Live reject mentorship request note:', e);
+  }
+
+  // Update local DB cache
+  if (Array.isArray(MOCK_DB.mentorship_requests)) {
+    const req = MOCK_DB.mentorship_requests.find(r => r.id === requestId);
+    if (req) {
+      req.status = 'rejected';
+      req.reviewed_at = now;
+    }
+  }
+  const student = (MOCK_DB.profiles || []).find(p => p.id === studentId);
+  if (student && student.verified_by_academician_id === academicianId) {
+    student.is_verified = false;
+    student.verified_by_academician_id = null;
+    student.verified_at = null;
+  }
+  saveLocalDatabase();
+
+  const cur = getCurrentUser();
+  if (cur && cur.id === studentId && cur.verified_by_academician_id === academicianId) {
+    cur.is_verified = false;
+    cur.verified_by_academician_id = null;
+    cur.verified_at = null;
+    setCurrentUser(cur);
+  }
+
+  return { success: true };
+}
+
 export default {
   SUPABASE_CONFIG,
   MOCK_DB,
@@ -3644,6 +4377,12 @@ export default {
   fetchAdminRolesData,
   signUpUserWithSupabase,
   signInUserWithSupabase,
-  signOutUserWithSupabase
+  signOutUserWithSupabase,
+  fetchStudentMentorshipStatus,
+  searchAcademicianByCandidateId,
+  createMentorshipRequest,
+  fetchAcademicianMentorshipRequests,
+  acceptMentorshipRequest,
+  rejectMentorshipRequest
 };
 
