@@ -9,9 +9,15 @@ import {
   signInUserWithSupabase, 
   signOutUserWithSupabase,
   signInWithOAuthProvider,
+  resendConfirmationEmail,
+  isOAuthUser,
+  isUserEmailConfirmed,
+  isEmailConfirmedOrOAuth,
   isDemoMode,
   setDemoMode
 } from './supabase.js';
+
+export { resendConfirmationEmail, isOAuthUser, isUserEmailConfirmed, isEmailConfirmedOrOAuth };
 
 // Mode Management: Single unified DEMO_MODE flag (defaults to Production in production builds)
 export function getAppMode() {
@@ -283,6 +289,24 @@ export async function routeUserAfterAuth() {
       return '/login.html';
     }
 
+    // TASK 5 & TASK 6: Central email confirmation check (defense in depth)
+    // Google OAuth users are verified by Google itself and bypass this gate.
+    // Email/password users MUST have email_confirmed_at or confirmed_at populated.
+    if (!isEmailConfirmedOrOAuth(user)) {
+      console.warn('[routeUserAfterAuth] User email is unconfirmed. Destroying session and redirecting to verification pending state.');
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
+      localStorage.removeItem('ayush_current_user');
+      sessionStorage.removeItem('ayush_just_logged_in');
+      localStorage.removeItem('ayush_just_logged_in');
+      const userEmail = user.email || '';
+      const pendingUrl = `/register.html?pending_verification=true&email=${encodeURIComponent(userEmail)}`;
+      window.__ayush_redirect_in_progress = true;
+      window.location.replace(pendingUrl);
+      return pendingUrl;
+    }
+
     // 2. Query the profiles table for a row where id equals the logged-in user's id.
     // Use select('*') so newly added or missing columns do not trigger PGRST204 schema cache errors.
     const { data: profile, error: profileErr } = await supabase
@@ -395,6 +419,19 @@ export async function guardDashboardPage(expectedRole) {
     }
 
     const user = session.user;
+
+    // TASK 5 & TASK 6: Email confirmation gate for portal dashboards
+    if (!isEmailConfirmedOrOAuth(user)) {
+      console.warn('[Dashboard Guard] User email is unconfirmed. Destroying session and redirecting to verification page.');
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
+      localStorage.removeItem('ayush_current_user');
+      sessionStorage.removeItem('ayush_just_logged_in');
+      localStorage.removeItem('ayush_just_logged_in');
+      window.location.replace(`/register.html?pending_verification=true&email=${encodeURIComponent(user.email || '')}`);
+      return false;
+    }
 
     // 2. Query profiles for the current user's profile_completed status and role
     const { data: profile, error: profileErr } = await supabase
@@ -573,6 +610,23 @@ export async function resolveUserRoleAndProfile(sbUser) {
 export async function redirectUserByRole(sbUser, { forceRedirect = false } = {}) {
   if (typeof window === 'undefined') return;
   if (window.__ayush_redirect_in_progress) return;
+
+  // TASK 5 & TASK 6: Check email confirmation status (defense in depth)
+  if (!isEmailConfirmedOrOAuth(sbUser)) {
+    console.warn('[redirectUserByRole] Unconfirmed email/password user detected. Destroying session.');
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {}
+    localStorage.removeItem('ayush_current_user');
+    sessionStorage.removeItem('ayush_just_logged_in');
+    localStorage.removeItem('ayush_just_logged_in');
+    const pathname = window.location.pathname;
+    if (isProtectedPortalPage(pathname) || (!pathname.includes('/register') && !pathname.includes('/login'))) {
+      window.__ayush_redirect_in_progress = true;
+      window.location.replace(`/register.html?pending_verification=true&email=${encodeURIComponent(sbUser.email || '')}`);
+    }
+    return;
+  }
 
   const { role, profile } = await resolveUserRoleAndProfile(sbUser);
 
@@ -828,9 +882,26 @@ export async function handleLogin(email, password, role = 'student') {
   // Supabase Authentication Success!
   if (supabaseResult?.data?.session && supabaseResult?.data?.user) {
     const sbUser = supabaseResult.data.user;
+
+    // TASK 4 & TASK 6: Explicitly check email_confirmed_at / confirmed_at for email/password users
+    if (!isEmailConfirmedOrOAuth(sbUser)) {
+      console.warn('[handleLogin] User email is unconfirmed. Destroying session and redirecting to verification page.');
+      try {
+        await signOutUserWithSupabase();
+      } catch (e) {}
+      localStorage.removeItem('ayush_current_user');
+      sessionStorage.removeItem('ayush_just_logged_in');
+      localStorage.removeItem('ayush_just_logged_in');
+      showToast("We've sent a confirmation link to your email. You must click that link before you can access AYUSH CONNECT.", 'warning');
+      const pendingUrl = `/register.html?pending_verification=true&email=${encodeURIComponent(cleanEmail)}`;
+      window.__ayush_redirect_in_progress = true;
+      window.location.replace(pendingUrl);
+      return { success: false, error: 'email_not_confirmed', emailConfirmationPending: true };
+    }
     
     // Look up true role from profiles table (Requirement 2a)
-    const { role: userRole, profile } = await resolveUserRoleAndProfile(sbUser);
+    const { role: resolvedRole, profile } = await resolveUserRoleAndProfile(sbUser);
+    let userRole = resolvedRole;
 
     // Admin Portal Sign In Handling
     if (role === 'admin') {
@@ -896,12 +967,19 @@ export async function handleLogin(email, password, role = 'student') {
   // Handle Supabase Auth Errors
   if (supabaseResult?.error) {
     const err = supabaseResult.error;
-    if (err.code === 'email_not_confirmed') {
-      const msg = 'Security Notice: Email confirmation is required by your security policy. Please verify your email or check security settings.';
+    if (err.code === 'email_not_confirmed' || (err.message || '').toLowerCase().includes('email not confirmed')) {
+      try {
+        await signOutUserWithSupabase();
+      } catch (e) {}
+      localStorage.removeItem('ayush_current_user');
+      sessionStorage.removeItem('ayush_just_logged_in');
+      localStorage.removeItem('ayush_just_logged_in');
+      const msg = "We've sent a confirmation link to your email. You must click that link before you can access AYUSH CONNECT.";
       showToast(msg, 'warning');
-      if (!isDemoMode()) {
-        return { success: false, error: msg };
-      }
+      const pendingUrl = `/register.html?pending_verification=true&email=${encodeURIComponent(cleanEmail)}`;
+      window.__ayush_redirect_in_progress = true;
+      window.location.replace(pendingUrl);
+      return { success: false, error: 'email_not_confirmed', emailConfirmationPending: true };
     }
     // Check if entered credentials match a known demo account before failing
     const matchedDemo = Object.values(DEMO_USERS).find(
@@ -1116,6 +1194,36 @@ export async function handleRegistration(formData) {
     } catch (roleErr) {
       console.warn('Role profile table init note:', roleErr);
     }
+  }
+
+  // TASK 1 & TASK 2: Inspect returned data.user object for email confirmation timestamp
+  // Check data.user.email_confirmed_at or data.user.confirmed_at.
+  // If null or undefined, treat account as unconfirmed and stop here. Under NO condition proceed past this check.
+  const registeredUser = sbResult?.data?.user;
+  const isConfirmed = isUserEmailConfirmed(registeredUser);
+
+  if (registeredUser && !isConfirmed) {
+    console.log('[handleRegistration] User created with unconfirmed email. Destroying any issued session and halting at pending verification state.');
+    try {
+      await signOutUserWithSupabase();
+    } catch (e) {}
+    localStorage.removeItem('ayush_current_user');
+    sessionStorage.removeItem('ayush_just_logged_in');
+    localStorage.removeItem('ayush_just_logged_in');
+
+    // Do NOT navigate anywhere. Do NOT call window.location.replace or routeUserAfterAuth().
+    // The registration page stays on the same page and displays the "check your email" view.
+    return {
+      success: true,
+      emailConfirmationPending: true,
+      email: cleanEmail,
+      user: {
+        id: registeredUser.id,
+        email: cleanEmail,
+        full_name: fullName,
+        role: role
+      }
+    };
   }
 
   const newUser = {

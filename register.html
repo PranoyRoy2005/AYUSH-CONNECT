@@ -35,136 +35,183 @@
         <p style="font-size: 0.92rem; color: var(--text-secondary);">Connecting Skills, Opportunities &amp; Careers across the AYUSH ecosystem</p>
       </div>
 
-      <!-- Select Account Role -->
-      <div style="margin-bottom: 1.25rem;">
-        <label class="form-label" style="text-align: center; display: block; margin-bottom: 0.6rem;">Select your primary portal role</label>
-        <div class="role-selection-grid" id="register-role-selector" style="margin: 0; gap: 0.65rem;">
-          <div class="role-select-card active" data-role="student" onclick="window.setRegisterRole('student')" style="padding: 0.85rem 0.5rem;">
-            <div style="font-size: 1.35rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-graduation-cap"></i>
-            </div>
-            <div class="role-title" style="font-size: 0.88rem;">Student</div>
-            <div class="role-desc" style="font-size: 0.72rem;">Scholars &amp; Interns</div>
-          </div>
-
-          <div class="role-select-card" data-role="industry" onclick="window.setRegisterRole('industry')" style="padding: 0.85rem 0.5rem;">
-            <div style="font-size: 1.35rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-building"></i>
-            </div>
-            <div class="role-title" style="font-size: 0.88rem;">Organization</div>
-            <div class="role-desc" style="font-size: 0.72rem;">Enterprises &amp; R&amp;D</div>
-          </div>
-
-          <div class="role-select-card" data-role="academician" onclick="window.setRegisterRole('academician')" style="padding: 0.85rem 0.5rem;">
-            <div style="font-size: 1.35rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
-              <i class="fa-solid fa-building-columns"></i>
-            </div>
-            <div class="role-title" style="font-size: 0.88rem;">Academic</div>
-            <div class="role-desc" style="font-size: 0.72rem;">Professors &amp; Deans</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Social Registration Options: Google & GitHub -->
-      <div class="social-login-grid">
-        <button type="button" class="social-btn social-btn-google" id="btn-reg-google" onclick="window.registerWithSocial('google')" title="Sign up with Google">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
-            <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
-            <path d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 0 0 0 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
-            <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.9246 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.656 3.5795 9 3.5795z" fill="#EA4335"/>
-          </svg>
-          <span>Continue with Google</span>
-        </button>
-        <button type="button" class="social-btn social-btn-github" id="btn-reg-github" onclick="window.registerWithSocial('github')" title="Sign up with GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-          </svg>
-          <span>Continue with GitHub</span>
-        </button>
-      </div>
-
-      <!-- Divider -->
-      <div class="auth-divider">
-        <span>OR COMPLETE WITH EMAIL</span>
-      </div>
-
-      <!-- Simplified Form: Name/Organization, Professional Email, and Password -->
-      <form id="register-form">
-        <!-- Professional Full Name / Organization Section -->
-        <div class="gov-email-group">
-          <div class="gov-email-label-row">
-            <label class="form-label" for="reg-name" id="reg-name-label" style="margin: 0; font-weight: 600;">Full Name</label>
-            <span class="gov-domain-badge" id="name-badge-hint"><i class="fa-solid fa-id-card"></i> Candidate Verification</span>
-          </div>
-          <div class="gov-email-wrapper">
-            <span class="gov-email-icon"><i class="fa-solid fa-user" id="name-input-icon"></i></span>
-            <input type="text" id="reg-name" class="gov-email-input" placeholder="e.g. Ayush Sharma" required>
-          </div>
-          <div class="gov-email-footer">
-            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official government or academic name</span>
-            <span id="name-format-hint" style="color: var(--secondary-teal); font-weight: 600;">As per Records</span>
-          </div>
-        </div>
-
-        <!-- Professional Government Portal Email Section -->
-        <div class="gov-email-group">
-          <div class="gov-email-label-row">
-            <label class="form-label" for="reg-email" id="reg-email-label" style="margin: 0; font-weight: 600;">Email</label>
-            <span class="gov-domain-badge"><i class="fa-solid fa-shield-halved"></i> Institutional Verification</span>
-          </div>
-          <div class="gov-email-wrapper">
-            <span class="gov-email-icon"><i class="fa-solid fa-envelope"></i></span>
-            <input type="email" id="reg-email" class="gov-email-input" placeholder="e.g. ayush.sharma@ayush.edu.in" autocomplete="email" required>
-          </div>
-          <div class="gov-email-footer">
-            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official or institutional email</span>
-            <span id="email-format-hint" style="color: var(--secondary-teal); font-weight: 600;">.edu.in / .gov.in / Scholar</span>
-          </div>
-        </div>
-
-        <!-- Professional Government Portal Password Section -->
-        <div class="gov-email-group">
-          <div class="gov-email-label-row">
-            <label class="form-label" for="reg-password" style="margin: 0; font-weight: 600;">Password</label>
-            <span class="gov-domain-badge"><i class="fa-solid fa-lock"></i> 256-Bit Encrypted</span>
-          </div>
-          <div class="gov-email-wrapper">
-            <span class="gov-email-icon"><i class="fa-solid fa-key"></i></span>
-            <input type="password" id="reg-password" class="gov-email-input" placeholder="Minimum 8 characters" style="padding-right: 2.75rem !important;" required>
-            <button type="button" onclick="window.toggleRegPasswordVisibility()" style="position: absolute; right: 0.85rem; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; z-index: 2;" title="Toggle Password Visibility" id="btn-toggle-reg-pwd">
-              <i class="fa-solid fa-eye" id="pwd-toggle-icon"></i>
-            </button>
-          </div>
-          <div class="gov-email-footer">
-            <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Minimum 8 characters</span>
-            <span style="color: var(--secondary-teal); font-weight: 600;">Alphanumeric Passphrase</span>
-          </div>
-        </div>
-
-        <!-- Post-login profile setup notice -->
-        <div class="profile-postlogin-notice">
-          <i class="fa-solid fa-circle-info"></i>
-          <div id="postlogin-notice-text">
-            <strong>Streamlined Registration:</strong> Additional profile details (institution, degree, year of study, and verified competencies) can be completed in your dashboard after registration.
-          </div>
-        </div>
-
-        <!-- Terms checkbox -->
+      <!-- Registration Form View -->
+      <div id="registration-form-view">
+        <!-- Select Account Role -->
         <div style="margin-bottom: 1.25rem;">
-          <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer;">
-            <input type="checkbox" id="terms-checkbox" required style="margin-top: 0.2rem;">
-            <span>I agree to the AYUSH CONNECT platform charter, <a href="/privacy.html" target="_blank" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline;">privacy policy</a>, and institutional integrity standards.</span>
-          </label>
+          <label class="form-label" style="text-align: center; display: block; margin-bottom: 0.6rem;">Select your primary portal role</label>
+          <div class="role-selection-grid" id="register-role-selector" style="margin: 0; gap: 0.65rem;">
+            <div class="role-select-card active" data-role="student" onclick="window.setRegisterRole('student')" style="padding: 0.85rem 0.5rem;">
+              <div style="font-size: 1.35rem; color: var(--primary-deep); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div class="role-title" style="font-size: 0.88rem;">Student</div>
+              <div class="role-desc" style="font-size: 0.72rem;">Scholars &amp; Interns</div>
+            </div>
+
+            <div class="role-select-card" data-role="industry" onclick="window.setRegisterRole('industry')" style="padding: 0.85rem 0.5rem;">
+              <div style="font-size: 1.35rem; color: var(--secondary-teal); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <div class="role-title" style="font-size: 0.88rem;">Organization</div>
+              <div class="role-desc" style="font-size: 0.72rem;">Enterprises &amp; R&amp;D</div>
+            </div>
+
+            <div class="role-select-card" data-role="academician" onclick="window.setRegisterRole('academician')" style="padding: 0.85rem 0.5rem;">
+              <div style="font-size: 1.35rem; color: var(--accent-saffron); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div class="role-title" style="font-size: 0.88rem;">Academic</div>
+              <div class="role-desc" style="font-size: 0.72rem;">Professors &amp; Deans</div>
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; white-space: normal; text-align: center; line-height: 1.35; box-sizing: border-box;" id="btn-reg-submit">
-          <span id="btn-reg-text">Create Account &amp; Access Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </form>
+        <!-- Social Registration Options: Google & GitHub -->
+        <div class="social-login-grid">
+          <button type="button" class="social-btn social-btn-google" id="btn-reg-google" onclick="window.registerWithSocial('google')" title="Sign up with Google">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+              <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+              <path d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 0 0 0 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
+              <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.9246 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.656 3.5795 9 3.5795z" fill="#EA4335"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+          <button type="button" class="social-btn social-btn-github" id="btn-reg-github" onclick="window.registerWithSocial('github')" title="Sign up with GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            <span>Continue with GitHub</span>
+          </button>
+        </div>
 
-      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
-        Already registered? <a href="/login.html" style="color: var(--primary-deep); font-weight: 700; text-decoration: underline;">Sign In here</a>
+        <!-- Divider -->
+        <div class="auth-divider">
+          <span>OR COMPLETE WITH EMAIL</span>
+        </div>
+
+        <!-- Simplified Form: Name/Organization, Professional Email, and Password -->
+        <form id="register-form">
+          <!-- Professional Full Name / Organization Section -->
+          <div class="gov-email-group">
+            <div class="gov-email-label-row">
+              <label class="form-label" for="reg-name" id="reg-name-label" style="margin: 0; font-weight: 600;">Full Name</label>
+              <span class="gov-domain-badge" id="name-badge-hint"><i class="fa-solid fa-id-card"></i> Candidate Verification</span>
+            </div>
+            <div class="gov-email-wrapper">
+              <span class="gov-email-icon"><i class="fa-solid fa-user" id="name-input-icon"></i></span>
+              <input type="text" id="reg-name" class="gov-email-input" placeholder="e.g. Ayush Sharma" required>
+            </div>
+            <div class="gov-email-footer">
+              <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official government or academic name</span>
+              <span id="name-format-hint" style="color: var(--secondary-teal); font-weight: 600;">As per Records</span>
+            </div>
+          </div>
+
+          <!-- Professional Government Portal Email Section -->
+          <div class="gov-email-group">
+            <div class="gov-email-label-row">
+              <label class="form-label" for="reg-email" id="reg-email-label" style="margin: 0; font-weight: 600;">Email</label>
+              <span class="gov-domain-badge"><i class="fa-solid fa-shield-halved"></i> Institutional Verification</span>
+            </div>
+            <div class="gov-email-wrapper">
+              <span class="gov-email-icon"><i class="fa-solid fa-envelope"></i></span>
+              <input type="email" id="reg-email" class="gov-email-input" placeholder="e.g. ayush.sharma@ayush.edu.in" autocomplete="email" required>
+            </div>
+            <div class="gov-email-footer">
+              <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Official or institutional email</span>
+              <span id="email-format-hint" style="color: var(--secondary-teal); font-weight: 600;">.edu.in / .gov.in / Scholar</span>
+            </div>
+          </div>
+
+          <!-- Professional Government Portal Password Section -->
+          <div class="gov-email-group">
+            <div class="gov-email-label-row">
+              <label class="form-label" for="reg-password" style="margin: 0; font-weight: 600;">Password</label>
+              <span class="gov-domain-badge"><i class="fa-solid fa-lock"></i> 256-Bit Encrypted</span>
+            </div>
+            <div class="gov-email-wrapper">
+              <span class="gov-email-icon"><i class="fa-solid fa-key"></i></span>
+              <input type="password" id="reg-password" class="gov-email-input" placeholder="Minimum 8 characters" style="padding-right: 2.75rem !important;" required>
+              <button type="button" onclick="window.toggleRegPasswordVisibility()" style="position: absolute; right: 0.85rem; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; z-index: 2;" title="Toggle Password Visibility" id="btn-toggle-reg-pwd">
+                <i class="fa-solid fa-eye" id="pwd-toggle-icon"></i>
+              </button>
+            </div>
+            <div class="gov-email-footer">
+              <span><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 3px;"></i> Minimum 8 characters</span>
+              <span style="color: var(--secondary-teal); font-weight: 600;">Alphanumeric Passphrase</span>
+            </div>
+          </div>
+
+          <!-- Post-login profile setup notice -->
+          <div class="profile-postlogin-notice">
+            <i class="fa-solid fa-circle-info"></i>
+            <div id="postlogin-notice-text">
+              <strong>Streamlined Registration:</strong> Additional profile details (institution, degree, year of study, and verified competencies) can be completed in your dashboard after registration.
+            </div>
+          </div>
+
+          <!-- Terms checkbox -->
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" id="terms-checkbox" required style="margin-top: 0.2rem;">
+              <span>I agree to the AYUSH CONNECT platform charter, <a href="/privacy.html" target="_blank" style="color: var(--primary-deep); font-weight: 600; text-decoration: underline;">privacy policy</a>, and institutional integrity standards.</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; white-space: normal; text-align: center; line-height: 1.35; box-sizing: border-box;" id="btn-reg-submit">
+            <span id="btn-reg-text">Create Account &amp; Access Dashboard</span> <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+          Already registered? <a href="/login.html" style="color: var(--primary-deep); font-weight: 700; text-decoration: underline;">Sign In here</a>
+        </div>
+      </div>
+
+      <!-- TASK 3: Pending Email Verification State View -->
+      <div id="pending-verification-view" style="display: none; text-align: center; animation: fadeIn 0.3s ease-out;">
+        <div style="width: 68px; height: 68px; border-radius: 50%; background: #ecfdf5; border: 2px solid #10b981; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);">
+          <i class="fa-solid fa-envelope-circle-check" style="font-size: 2.25rem; color: #059669;"></i>
+        </div>
+
+        <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 0.75rem;">Check Your Email</h2>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1.15rem; margin-bottom: 1.25rem; text-align: left;">
+          <p style="margin: 0; font-size: 0.95rem; color: #166534; line-height: 1.55;">
+            We've sent a confirmation link to <strong id="pending-user-email" style="color: #0f5132; word-break: break-all;">your email</strong>. You must click that link before you can access AYUSH CONNECT.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: left; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.55;">
+          <div style="font-weight: 700; color: var(--primary-deep); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-circle-info" style="color: var(--secondary-teal);"></i> Important instructions:
+          </div>
+          <ul style="margin: 0; padding-left: 1.25rem;">
+            <li>Check your inbox for a message from AYUSH CONNECT / Brevo.</li>
+            <li>If you don't see it within 2 minutes, check your <strong>Spam / Junk</strong> folder.</li>
+            <li>Click the link in the email to activate your account, then sign in below.</li>
+          </ul>
+        </div>
+
+        <div id="resend-alert-message" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.86rem; text-align: center;"></div>
+
+        <button type="button" id="btn-resend-verification" class="btn btn-secondary" style="width: 100%; padding: 0.85rem 1rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span id="btn-resend-text">Resend confirmation email</span>
+        </button>
+
+        <div id="resend-cooldown-text" style="font-size: 0.82rem; color: var(--text-muted); min-height: 1.2rem; margin-bottom: 1.25rem;"></div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem;">
+          <a href="/login.html" id="btn-goto-login" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1rem; text-decoration: none;">
+            <span>Already confirmed? Sign In</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <button type="button" id="btn-back-to-register" style="background: none; border: none; color: var(--text-secondary); text-decoration: underline; cursor: pointer; font-size: 0.84rem; padding: 0.4rem;">
+            Need to change email or re-enter details?
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -179,9 +226,123 @@
   </footer>
 
   <script type="module">
-    import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser, routeUserAfterAuth } from '/js/auth.js';
+    import { supabase } from '/js/supabase.js';
+    import { handleRegistration, handleSocialAuth, setCurrentUser, saveRegisteredUser, routeUserAfterAuth, resendConfirmationEmail } from '/js/auth.js';
 
     let selectedRole = 'student';
+    let pendingVerificationEmail = '';
+    let resendCooldownInterval = null;
+    let resendCooldownSeconds = 0;
+
+    window.showPendingVerificationState = function(email) {
+      pendingVerificationEmail = (email || '').trim().toLowerCase();
+      
+      const formView = document.getElementById('registration-form-view');
+      const pendingView = document.getElementById('pending-verification-view');
+      const emailDisplay = document.getElementById('pending-user-email');
+      const loginBtn = document.getElementById('btn-goto-login');
+
+      if (formView) formView.style.display = 'none';
+      if (pendingView) pendingView.style.display = 'block';
+      if (emailDisplay) emailDisplay.textContent = pendingVerificationEmail || 'your email';
+      if (loginBtn && pendingVerificationEmail) {
+        loginBtn.href = `/login.html?email=${encodeURIComponent(pendingVerificationEmail)}`;
+      }
+
+      // Update URL query params without triggering reload
+      try {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('pending_verification', 'true');
+        if (pendingVerificationEmail) {
+          newUrl.searchParams.set('email', pendingVerificationEmail);
+        }
+        window.history.replaceState({}, '', newUrl.toString());
+      } catch (e) {}
+    };
+
+    window.backToRegistrationForm = function() {
+      if (resendCooldownInterval) {
+        clearInterval(resendCooldownInterval);
+        resendCooldownInterval = null;
+      }
+      resendCooldownSeconds = 0;
+      const formView = document.getElementById('registration-form-view');
+      const pendingView = document.getElementById('pending-verification-view');
+      if (formView) formView.style.display = 'block';
+      if (pendingView) pendingView.style.display = 'none';
+
+      try {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('pending_verification');
+        window.history.replaceState({}, '', newUrl.toString());
+      } catch (e) {}
+    };
+
+    async function handleResendConfirmation() {
+      const email = pendingVerificationEmail || document.getElementById('reg-email')?.value?.trim();
+      if (!email) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      if (resendCooldownSeconds > 0) return;
+
+      const btn = document.getElementById('btn-resend-verification');
+      const btnText = document.getElementById('btn-resend-text');
+      const alertEl = document.getElementById('resend-alert-message');
+      const cooldownEl = document.getElementById('resend-cooldown-text');
+
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Sending link...</span>';
+
+      try {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email: email
+        });
+
+        if (error) {
+          console.warn('Resend email error:', error);
+          if (alertEl) {
+            alertEl.style.display = 'block';
+            alertEl.style.background = '#fef2f2';
+            alertEl.style.border = '1px solid #fecaca';
+            alertEl.style.color = '#991b1b';
+            alertEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${error.message || 'Failed to resend confirmation email.'}`;
+          }
+        } else {
+          if (alertEl) {
+            alertEl.style.display = 'block';
+            alertEl.style.background = '#ecfdf5';
+            alertEl.style.border = '1px solid #a7f3d0';
+            alertEl.style.color = '#065f46';
+            alertEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Confirmation email resent successfully to <strong>${email}</strong>!`;
+          }
+        }
+      } catch (err) {
+        console.error('Resend exception:', err);
+      }
+
+      // Start 60-second cooldown to prevent spam-clicking
+      resendCooldownSeconds = 60;
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = 'Resend confirmation email';
+      if (cooldownEl) cooldownEl.textContent = `You can request another email in ${resendCooldownSeconds} seconds.`;
+
+      if (resendCooldownInterval) clearInterval(resendCooldownInterval);
+      resendCooldownInterval = setInterval(() => {
+        resendCooldownSeconds--;
+        if (resendCooldownSeconds <= 0) {
+          clearInterval(resendCooldownInterval);
+          resendCooldownInterval = null;
+          resendCooldownSeconds = 0;
+          if (btn) btn.disabled = false;
+          if (cooldownEl) cooldownEl.textContent = '';
+        } else {
+          if (cooldownEl) cooldownEl.textContent = `You can request another email in ${resendCooldownSeconds} seconds.`;
+        }
+      }, 1000);
+    }
 
     window.setRegisterRole = function(role) {
       selectedRole = role;
@@ -296,6 +457,23 @@
       }
     });
 
+    // Check URL parameters for pending verification state
+    const regUrlParams = new URLSearchParams(window.location.search);
+    if (regUrlParams.get('pending_verification') === 'true') {
+      const email = regUrlParams.get('email') || '';
+      window.showPendingVerificationState(email);
+    }
+
+    // Attach listeners for verification view buttons
+    const resendBtn = document.getElementById('btn-resend-verification');
+    if (resendBtn) {
+      resendBtn.addEventListener('click', handleResendConfirmation);
+    }
+    const backBtn = document.getElementById('btn-back-to-register');
+    if (backBtn) {
+      backBtn.addEventListener('click', window.backToRegistrationForm);
+    }
+
     // Form Submission: Name, Email, Password
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -326,7 +504,10 @@
 
       try {
         const res = await handleRegistration(userData);
-        if (res?.success) {
+        // TASK 1 & TASK 3: If email confirmation is pending, transition to pending verification state on this page
+        if (res?.emailConfirmationPending) {
+          window.showPendingVerificationState(email);
+        } else if (res?.success) {
           await routeUserAfterAuth();
         }
       } finally {

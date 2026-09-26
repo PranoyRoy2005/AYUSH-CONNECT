@@ -2022,7 +2022,7 @@
        VANILLA JAVASCRIPT / ES MODULE SCRIPT
        ========================================================= -->
   <script type="module">
-    import { supabase, saveStudentCV, uploadUserAvatar, uploadStudentResume } from '/js/supabase.js';
+    import { supabase, saveStudentCV, uploadUserAvatar, uploadStudentResume, isEmailConfirmedOrOAuth } from '/js/supabase.js';
     import { routeUserAfterAuth, setCurrentUser } from '/js/auth.js';
 
     /**
@@ -2116,6 +2116,21 @@
 
       if (session?.user) {
         const user = session.user;
+
+        // TASK 5 & TASK 6: Check email confirmation status (defense in depth)
+        // Google OAuth users are verified by Google itself and bypass this gate.
+        if (!isEmailConfirmedOrOAuth(user)) {
+          console.warn('[Complete Profile] User email is unconfirmed. Destroying session and redirecting to verification pending state.');
+          try {
+            await supabase.auth.signOut();
+          } catch (e) {}
+          localStorage.removeItem('ayush_current_user');
+          sessionStorage.removeItem('ayush_just_logged_in');
+          localStorage.removeItem('ayush_just_logged_in');
+          window.location.replace(`/register.html?pending_verification=true&email=${encodeURIComponent(user.email || '')}`);
+          return;
+        }
+
         currentUser.id = user.id;
         currentUser.email = user.email || currentUser.email;
         currentUser.name = user.user_metadata?.full_name 

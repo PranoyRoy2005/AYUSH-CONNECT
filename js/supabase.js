@@ -980,6 +980,74 @@ export async function signOutUserWithSupabase() {
 }
 
 /**
+ * Supabase Auth: Resend Email Confirmation Link (Brevo / Custom SMTP)
+ */
+export async function resendConfirmationEmail(email) {
+  try {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      return { data: null, error: { message: 'Please provide a valid email address.' } };
+    }
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: cleanEmail
+    });
+    return { data, error };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Distinguish Google/OAuth users from standard email/password users.
+ * TASK 6: Google OAuth users are verified by Google and must not be blocked.
+ */
+export function isOAuthUser(user) {
+  if (!user) return false;
+  
+  const appProvider = (user.app_metadata?.provider || '').toLowerCase();
+  if (appProvider === 'google' || appProvider === 'github') {
+    return true;
+  }
+
+  const appProviders = user.app_metadata?.providers;
+  if (Array.isArray(appProviders)) {
+    if (appProviders.some(p => p === 'google' || p === 'github')) {
+      return true;
+    }
+  }
+
+  if (Array.isArray(user.identities) && user.identities.length > 0) {
+    if (user.identities.some(i => i.provider === 'google' || i.provider === 'github')) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * TASK 2: Inspect email_confirmed_at or confirmed_at
+ */
+export function isUserEmailConfirmed(user) {
+  if (!user) return false;
+  const confirmedAt = user.email_confirmed_at || user.confirmed_at;
+  return Boolean(confirmedAt);
+}
+
+/**
+ * Combined verification check:
+ * Returns true if the user is an OAuth user (e.g. Google) OR has a verified email.
+ */
+export function isEmailConfirmedOrOAuth(user) {
+  if (!user) return false;
+  if (isOAuthUser(user)) {
+    return true;
+  }
+  return isUserEmailConfirmed(user);
+}
+
+/**
  * Supabase Auth: Real OAuth Sign In / Sign Up with Google or GitHub
  * 
  * Works symmetrically for both new registrations and existing user logins.
@@ -4378,6 +4446,10 @@ export default {
   signUpUserWithSupabase,
   signInUserWithSupabase,
   signOutUserWithSupabase,
+  resendConfirmationEmail,
+  isOAuthUser,
+  isUserEmailConfirmed,
+  isEmailConfirmedOrOAuth,
   fetchStudentMentorshipStatus,
   searchAcademicianByCandidateId,
   createMentorshipRequest,
